@@ -48,6 +48,9 @@ posts_by_tag:
   type: liquid
   path: /tags/
 
+footer_scripts:
+  - /assets/prism.js
+
 defaults:
   # _posts
   - scope:

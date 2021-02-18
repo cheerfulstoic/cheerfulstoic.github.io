@@ -30,7 +30,7 @@ One of my goals was to examine relationships between contributors, so it made se
 
 To give you a taste, I have a cypher query which `UNION`s together all the different places where users can collaborate in the model:
 
-{% prism cypher %}
+<pre><code class="language-cypher">
 
 MATCH (u1:User:GitHub)--(:Repository)--(u2:User:GitHub) WHERE u1 <> u2
 RETURN u1.login, u2.login
@@ -50,7 +50,7 @@ UNION
 MATCH (u1:User:GitHub)-[:AUTHORED|:COMMITTED|:COMMENTS_ON|:MADE_COMMENT*1..2]-(:Commit)-[:AUTHORED|:COMMITTED|:COMMENTS_ON|:MADE_COMMENT*1..2]-(u2:User:GitHub) WHERE u1 <> u2
 RETURN u1.login, u2.login
 
-{% endprism %}
+</code></pre>
 
 After a bit of post-processing we get the following top 20 results:
 

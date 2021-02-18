@@ -107,7 +107,7 @@ So how do we actually do this?  First let's take our sub-graph and turn our node
 In this example let's take resident `h1 r1` (house 1, resident 1) as the resident in question and `h2 r1` as the candidate that we want to compare it to.  This is the sort of query that Neo4j is wonderful at both performing quickly and making easy to formulate.  Let's look at part of the Ruby code:
 
 
-{% prism ruby %}
+<pre><code class="language-ruby">
 
 def get_similarity_candidate_relationship_paths
   self.query_as(:h1_r1)
@@ -136,7 +136,7 @@ def get_similarity_candidate_relationship_paths
   end
 end
 
-{% endprism %}
+</code></pre>
 
 Here we start with a Cypher query using the `Query` API from neo4j.rb.  The object upon which we've called `get_similarity_candidate_relationship_paths` is our `h1_r1` anchor.  Note here that we match paths with a length of either one or two relationships long from between two residents of the same house.  Then we return all residents found via the `SIMILARITY_CANDIDATE` relationship from our anchor and the family relationship paths aggregated into an Array.
 

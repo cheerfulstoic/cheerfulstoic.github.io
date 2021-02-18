@@ -10,3 +10,25 @@ Prism.languages.sql={comment:{pattern:/(^|[^\\])(\/\*[\w\W]*?\*\/|((--)|(\/\/)|#
 Prism.languages.ruby=Prism.languages.extend("clike",{comment:/#[^\r\n]*(\r?\n|$)/g,keyword:/\b(alias|and|BEGIN|begin|break|case|class|def|define_method|defined|do|each|else|elsif|END|end|ensure|false|for|if|in|module|new|next|nil|not|or|raise|redo|require|rescue|retry|return|self|super|then|throw|true|undef|unless|until|when|while|yield)\b/g,builtin:/\b(Array|Bignum|Binding|Class|Continuation|Dir|Exception|FalseClass|File|Stat|File|Fixnum|Fload|Hash|Integer|IO|MatchData|Method|Module|NilClass|Numeric|Object|Proc|Range|Regexp|String|Struct|TMS|Symbol|ThreadGroup|Thread|Time|TrueClass)\b/,constant:/\b[A-Z][a-zA-Z_0-9]*[?!]?\b/g}),Prism.languages.insertBefore("ruby","keyword",{regex:{pattern:/(^|[^/])\/(?!\/)(\[.+?]|\\.|[^/\r\n])+\/[gim]{0,3}(?=\s*($|[\r\n,.;})]))/g,lookbehind:!0},variable:/[@$]+\b[a-zA-Z_][a-zA-Z_0-9]*[?!]?\b/g,symbol:/:\b[a-zA-Z_][a-zA-Z_0-9]*[?!]?\b/g});;
 Prism.languages.r={comment:/#.+/,string:/(['"])(?:\\?.)*?\1/,"percent-operator":{pattern:/%[^%]*?%/,alias:"operator"},"boolean":/\b(?:TRUE|FALSE)\b/,ellipsis:/\.\.(?:\.|\d+)/,number:[/\b(?:NaN|Inf)\b/,/\b(?:0x[\dA-Fa-f]+(?:\.\d*)?|\d*\.?\d+)(?:[EePp][+-]??\d+)?[iL]?\b/],keyword:/\b(?:if|else|repeat|while|function|for|in|next|break|NULL|NA|NA_integer_|NA_real_|NA_complex_|NA_character_)\b/,operator:/->>?|<?<-|[<>!=]=?|::?|&&?|\|\|?|[+\-*\/^$@~]/,punctuation:/[(){}\[\],;]/};;
 !function(){if(self.Prism){var a={csharp:"C#",cpp:"C++"};Prism.hooks.add("before-highlight",function(e){var t=a[e.language]||e.language;e.element.setAttribute("data-language",t)})}}();;
+
+
+
+Prism.languages.cypher= {
+  //'comment': {
+  //  pattern: /(^|[^\\])(\/\*[\w\W]*?\*\/|((--)|(\/\/)|#).*?(\r?\n|$))/g,
+  //  lookbehind: true
+  //},
+  //'string' : {
+  //  pattern: /(^|[^@])("|')(\\?[\s\S])*?\2/g,
+  //  lookbehind: true
+  //},
+  //'variable': /@[\w.$]+|@("|'|`)(\\?[\s\S])+?\1/g,
+  //'function': /\b(?:COUNT|SUM|AVG|MIN|MAX|FIRST|LAST|UCASE|LCASE|MID|LEN|ROUND|NOW|FORMAT)(?=\s*\()/ig, // Should we highlight user defined functions too?
+  'keyword': /\b(?:MATCH|OPTIONAL MATCH|START|CREATE|CREATE UNIQUE|MERGE|SET|DELETE|REMOVE|WHERE|CASE|END|FOREACH|WITH|RETURN|LIMIT|ORDER BY|SKIP|UNWIND|UNION|UNION ALL|USING)\b/gi,
+  'node': /\(([\w]*)(:[\w]+)*\)/i,
+  'relationship': /\[(:\w+)?(\|:\w+)*(\*\d*(\.\.)?\d*)?\]/i
+  //'boolean': /\b(?:TRUE|FALSE|NULL)\b/gi,
+  //'number': /\b-?(0x)?\d*\.?[\da-f]+\b/g,
+  //'operator': /\b(?:ALL|AND|ANY|BETWEEN|EXISTS|IN|LIKE|NOT|OR|IS|UNIQUE|CHARACTER SET|COLLATE|DIV|OFFSET|REGEXP|RLIKE|SOUNDS LIKE|XOR)\b|[-+]{1}|!|[=<>]{1,2}|(&){1,2}|\|?\||\?|\*|\//gi,
+  //'punctuation': /[;[\]()`,.]/g
+};

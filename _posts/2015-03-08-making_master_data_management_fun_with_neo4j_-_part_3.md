@@ -55,11 +55,13 @@ All of the above generated properties get downcased, stripped of extra whitespac
 
 After all domains have been looked for, I run the followed to extract any domains which have been used more than once to find and eliminate domains like `gmail.com`, `github.com`, `neo4j.com`, etc...
 
-{% prism ruby linenos %}
+<pre><code class="language-ruby line-numbers">
+
 query.match(u: :User).unwind(domain: 'u.domains').
   with(:domain, count: 'count(domain)').where('count > 1').
   pluck(:domain)
-{% endprism %}
+
+</code></pre>
 
 
 ### Linkage
@@ -68,7 +70,7 @@ With the data standardized we can now easily do record comparison and scoring.  
 
 I created a class called `ObjectIdentifier` which allows me to create rules for comparing and scoring records.
 
-{% prism ruby linenos %}
+<pre><code class="language-ruby line-numbers">
 
 identifier = ObjectIdentifier.new do |config|
   config.default_threshold = 0.8
@@ -87,13 +89,13 @@ identifier = ObjectIdentifier.new do |config|
 
 end
 
-{% endprism %}
+</code></pre>
 
 You can see that there are anonymous functions for both fuzzy and exact string matching.
 
 With the `identifier` object I can call `identifier.classify_hash(ghu, sou)` to get the following result:
 
-{% prism ruby linenos %}
+<pre><code class="language-ruby line-numbers">
 
 {
                     [ :name, :display_name ] => 0.9769319492502884,
@@ -105,7 +107,8 @@ With the `identifier` object I can call `identifier.classify_hash(ghu, sou)` to 
                       [ :domains, :domains ] => 0.0,
                   [ :usernames, :usernames ] => 0.0,
 }
-{% endprism %}
+
+</code></pre>
 
 Using the `identifier` object, I then compare every combination of users between GitHub and StackOverflow.  With **2,312** StackOverflow users and **6,255** GitHub users there are **14,461,560** potential pairs, which can take some time.
 
@@ -132,25 +135,25 @@ This view would show me a randomly chosen pair of users.  80% of the time those 
 In making decisions on hundres of pairs of profiles, a number of questions occurred to me:
 
 <dl>
-  <dt>How should do I choose between the five levels?</dt>
-  <dd>
-    I made some rules to describe how I evaluate the evidence.  By evidence I mean comparing name, location, photo, etc...
+<dt>How should do I choose between the five levels?</dt>
+<dd>
+  I made some rules to describe how I evaluate the evidence.  By evidence I mean comparing name, location, photo, etc...
 
-    <ul>
-      <li>two pieces of matching evidence mean "Probably"</li>
-      <li>three pieces of matching evidence mean "Definitely"</li>
-      <li>two pieces of contradictory evidence means "Probably not"</li>
-      <li>three pieces of contradictory evidence means "Definitely not"</li>
-    </ul>
+  <ul>
+    <li>two pieces of matching evidence mean "Probably"</li>
+    <li>three pieces of matching evidence mean "Definitely"</li>
+    <li>two pieces of contradictory evidence means "Probably not"</li>
+    <li>three pieces of contradictory evidence means "Definitely not"</li>
+  </ul>
 
-    While I placed "Not sure" in the middle, that was a special case which means that I don't have enough evidence.
-  </dd>
+  While I placed "Not sure" in the middle, that was a special case which means that I don't have enough evidence.
+</dd>
 
-  <dt>Should I follow links and otherwise research the users?</dt>
-  <dd>No.  If I want to determine how well my matching algorithms work, I should use only same data that they have.</dd>
+<dt>Should I follow links and otherwise research the users?</dt>
+<dd>No.  If I want to determine how well my matching algorithms work, I should use only same data that they have.</dd>
 
-  <dt>What about pictures?</dt>
-  <dd>I happen to be a human and humans are pretty good at comparing photos, particularly photos of people.  I was torn about this, but decided that if two photos were obviously not the same person, I should classify the profiles as different.</dd>
+<dt>What about pictures?</dt>
+<dd>I happen to be a human and humans are pretty good at comparing photos, particularly photos of people.  I was torn about this, but decided that if two photos were obviously not the same person, I should classify the profiles as different.</dd>
 
 </dl>
 
@@ -159,15 +162,17 @@ In making decisions on hundres of pairs of profiles, a number of questions occur
 To figure out how well my classification algorithm worked I turned, of course, to [R](http://www.r-project.org/).  Using [RNeo4j](https://github.com/nicolewhite/RNeo4j) I run a query to get the human score (from **-2** as 'Definitely not' and **2** as 'Definitely') and the computer score (for the rules I specified this runs from **0** to about **6**):
 
 
-{% prism r %}
+<pre><code class="language-r">
+
 query <- "MATCH
-            (ghu:User:GitHub)-[ci:COMPUTER_IDENTIFIED]-(u:User),
-            MATCH ghu-[i:IDENTIFIED]-u
-          RETURN ci.score, toInt(i.index)"
+          (ghu:User:GitHub)-[ci:COMPUTER_IDENTIFIED]-(u:User),
+          MATCH ghu-[i:IDENTIFIED]-u
+        RETURN ci.score, toInt(i.index)"
 result <- cypher(graph, query)
 
 plot(result[[2]], result[[1]], xlab = "Human Score", ylab = "ObjectIdentifier score")
-{% endprism %}
+
+</code></pre>
 
 ...and plot the results...
 

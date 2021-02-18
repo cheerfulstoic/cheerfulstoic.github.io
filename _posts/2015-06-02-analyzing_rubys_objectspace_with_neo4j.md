@@ -119,14 +119,14 @@ As you can see I chose to make my files tab-separated.  I did this because the `
 
 Great, now we're cooking with graphs!  What does this look like in the Neo4j web console?
 
-{% prism cypher %}
+<pre><code class="language-cypher">
 
 MATCH (o:Object) WHERE NOT(o:Class) AND NOT(o:Module) WITH o LIMIT 20
 MATCH o-[:HAS_CLASS]->(c:Class)
 OPTIONAL MATCH c-[:INCLUDES_MODULE]->(m:Module)
 RETURN *
 
-{% endprism %}
+</code></pre>
 
 <div style="text-align: center">
   <img src="/assets/neo4j-ruby-memory/console.png" style="width: 800px">
@@ -134,13 +134,13 @@ RETURN *
 
 Nice!  As another sanity check, let's see what our top allocated objects are:
 
-{% prism cypher %}
+<pre><code class="language-cypher">
 
 MATCH (o:Object)-[:HAS_CLASS]->(c:Class)
 WHERE NOT(o:Class) AND NOT(o:Module)
 RETURN c.inspect, count(o) ORDER BY count(o) DESC LIMIT 10
 
-{% endprism %}
+</code></pre>
 
 | c.inspect                          | count(o)  | c.inspect                          | count(o)  | 
 |------------------------------------|-----------|------------------------------------|-----------|
@@ -154,7 +154,7 @@ That seems right!  Any experienced Rubyists will know that Ruby will allocate a 
 
 So let's really get into it and use the power of graphs.  Let's find out which objects have the most references via instance variables.  This query takes every object in the database as the root of a tree of instance variable references and calculates the total number of descendent objects in that tree.  This should give us an idea for what objects have a lot of other objects depending on them which cannot be garbage collected.
 
-{% prism cypher %}
+<pre><code class="language-cypher">
 
 // Count of tree
 MATCH (o:Object) WHERE NOT(o:Class) AND NOT(o:Module) WITH o
@@ -162,7 +162,7 @@ MATCH o-[:HAS_CLASS]->(c:Class)
 OPTIONAL MATCH path=o-[:INSTANCE_VARIABLE*]->(other)
 RETURN c.inspect, o.inspect, count(other) ORDER BY count(other) DESC LIMIT 10
 
-{% endprism %}
+</code></pre>
 
 | c.inspect | o.inspect | count(other) |
 |-----------|-----------|--------------|
@@ -201,7 +201,7 @@ Looking at this I learned a couple of things I didn't know about Ruby:
 
 While we're here let's grab a random sample of classes and modules (excluding some ones that I hand-picked which had too many connections to make for a useful graph visualization):
 
-{% prism cypher %}
+<pre><code class="language-cypher">
 
 MATCH (o:Object)
 WHERE (o:Class OR o:Module) AND
@@ -209,7 +209,7 @@ WHERE (o:Class OR o:Module) AND
       NOT o.inspect =~ "JSON::Ext.*"
 RETURN o LIMIT 80
 
-{% endprism %}
+</code></pre>
 
 Here's the graph (click to zoom):
 

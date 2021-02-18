@@ -63,7 +63,7 @@ To record the data, I used my [neo4apis](https://github.com/neo4jrb/neo4apis) ge
 
 Lastly, I've built a [ruby_code_analytics](https://github.com/neo4j-examples/ruby_code_analytics) Rails application to give a UI to examine the results of the dump.  You can see an example running [on Heroku](https://ruby-neo4j-code-analysis.herokuapp.com) which is a record of the following simple Ruby code:
 
-{% prism ruby %}
+<pre><code class="language-ruby">
 
 neo4j_session = Neo4j::Session.open(:server_db, neo4j_url)
 Neolytics.record_execution(neo4j_session) do
@@ -71,7 +71,7 @@ Neolytics.record_execution(neo4j_session) do
   doc.xpath('//form/input').map(&:name)
 end
 
-{% endprism %}
+</code></pre>
 
 ## Querying the data
 
@@ -81,14 +81,14 @@ Let's look at some examples of things that you can do with the data from neolyti
 
 Let's say that we want to know what goes on during the execution of a method.  With the following query we grab the first TracePoint which was a `call` event and find the entire series of TracePoints until the method is returned from:
 
-{% prism cypher %}
+<pre><code class="language-cypher">
 
 MATCH (call_tp:TracePoint {event: 'call'})
 WITH call_tp LIMIT 1
 MATCH path=shortestPath((call_tp)-[:NEXT*]->(return_tp:TracePoint {event: 'return'}))
 RETURN path
 
-{% endprism %}
+</code></pre>
 
 Visually we can see the query like this:
 
@@ -106,7 +106,7 @@ For more details you can see [this example tabular output](https://github.com/ne
 
 Let's run a query to evaluate the [cyclomatic complexity](https://en.wikipedia.org/wiki/Cyclomatic_complexity) of our methods:
 
-{% prism cypher %}
+<pre><code class="language-cypher">
 
 MATCH (def:ASTNode {type: 'def'})
 OPTIONAL MATCH (def)<-[:HAS_PARENT*]-(condition:ASTNode)
@@ -115,7 +115,7 @@ RETURN def.name, def.file_path, def.first_line, count(condition)
 ORDER BY count(condition) DESC
 LIMIT 10
 
-{% endprism %}
+</code></pre>
 
 This gives us a straightforward listing of methods, where to find them, and their complexity score, all ordered with the most complex methods at the top:
 
@@ -135,7 +135,7 @@ This gives us a straightforward listing of methods, where to find them, and thei
 
 Now let's extend this complexity metric by using the TracePoint data to see how long each method actually took:
 
-{% prism cypher %}
+<pre><code class="language-cypher">
 
 MATCH (tp:TracePoint)
 WITH sum(tp.execution_time) AS total_execution_time
@@ -165,7 +165,7 @@ RETURN
 ORDER BY total_method_execution_time DESC
 LIMIT 10
 
-{% endprism %}
+</code></pre>
 
 With this we get a nice table of methods which take the most time, along with the cyclomatic complexity.  We can sort by either metric or create a combined metric of our own in order to determine which methods might be ripe for refactoring.
 
