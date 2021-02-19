@@ -86,6 +86,7 @@ plugins:
   - jekyll-feed
   - jekyll-sitemap
   - jekyll-include-cache
+  - jekyll-feed
 
 # Exclude from processing.
 # The following items will not be processed, by default.
