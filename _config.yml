@@ -85,6 +85,7 @@ permalink: /:categories/:year/:month/:day/:title
 plugins:
   - jekyll-feed
   - jekyll-sitemap
+  - jekyll-include-cache
 
 # Exclude from processing.
 # The following items will not be processed, by default.
