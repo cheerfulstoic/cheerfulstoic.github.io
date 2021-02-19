@@ -1,0 +1,818 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.22.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>GraphStarter: Getting a Neo4j Rails app up and running quickly - brian-underwood.blogs</title>
+<meta name="description" content="For a while now I’ve been building various Neo4j.rb educational resources using the example of an asset portal.  There has been:">
+
+
+  <meta name="author" content="Brian Underwood">
+  
+  <meta property="article:author" content="Brian Underwood">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="brian-underwood.blogs">
+<meta property="og:title" content="GraphStarter: Getting a Neo4j Rails app up and running quickly">
+<meta property="og:url" content="http://www.brian-underwood.codes//2015/10/27/graph_starter">
+
+
+  <meta property="og:description" content="For a while now I’ve been building various Neo4j.rb educational resources using the example of an asset portal.  There has been:">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2015-10-27T10:55:00+01:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://www.brian-underwood.codes//2015/10/27/graph_starter">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://www.brian-underwood.codes//"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="brian-underwood.blogs Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+    <link rel="stylesheet" href="/assets/prism.css">
+
+  </head>
+
+  <body class="layout--posts">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          brian-underwood.blogs
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/tags/">Tags</a>
+            </li><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+        <img src="/assets/images/bio-photo.jpg" alt="Brian Underwood" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Brian Underwood</h3>
+    
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li itemprop="homeLocation" itemscope itemtype="https://schema.org/Place">
+          <i class="fas fa-fw fa-map-marker-alt" aria-hidden="true"></i> <span itemprop="name">Stockholm, Sweden</span>
+        </li>
+      
+
+      
+        
+          
+            <li><a href="http://www.brian-underwood.codes/" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-link" aria-hidden="true"></i><span class="label">brian-underwood.codes</span></a></li>
+          
+        
+          
+            <li><a href="https://twitter.com/cheerfulstoic" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i><span class="label">@cheerfulstoic</span></a></li>
+          
+        
+          
+            <li><a href="https://github.com/cheerfulstoic" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github-square" aria-hidden="true"></i><span class="label">@cheerfulstoic</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <div class="archive">
+    
+      <h1 id="page-title" class="page__title">GraphStarter: Getting a Neo4j Rails app up and running quickly</h1>
+    
+    <p>For a while now I’ve been building various <a href="http://neo4jrb.io/">Neo4j.rb</a> educational resources using the example of an <a href="http://github.com/neo4j-examples/asset_portal">asset portal</a>.  There has been:</p>
+
+<ul>
+  <li>a screencast series (the <a href="http://neo4j.com/blog/create-a-ruby-on-rails-app-with-neo4j-screencast-series/">first half</a> and the <a href="http://neo4j.com/blog/advanced-ruby-on-rails-with-neo4j/">second half</a>)</li>
+  <li>a <a href="http://www.sitepoint.com/why-you-should-use-neo4j-in-your-next-ruby-app/">SitePoint article</a> on building recommendations and access control</li>
+  <li>a <a href="https://www.youtube.com/watch?v=dlRL-3XZvHs">webinar</a> on advanced access control</li>
+  <li>a <a href="http://neo4j.com/developer/ruby-course/">introduction course</a> for Neo4j using Ruby</li>
+</ul>
+
+<p>As part of this process I’ve wanted to use what I’ve been building and allow anybody to easily create a UI for their own assets in Rails.  I’m pleased to say that I’ve got a good start with the <a href="https://github.com/neo4j-examples/graph_starter">graph_starter</a> gem.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">graph_starter</code> gem is a Rails engine, which means that it can be placed within a Rails application.  The goal is to be able to quickly set up a basic UI for your entities, but to also be able to override it when you want to provide custom logic.</p>
+
+<p>Setting up a <code class="language-plaintext highlighter-rouge">graph_starter</code> application is as simple as the following steps:</p>
+
+<h2 id="installation">Installation</h2>
+
+<p>Using <code class="language-plaintext highlighter-rouge">graph_starter</code> is easy!</p>
+
+<p>First create a Rails application if you don’t already have one:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rails new application_name
+</code></pre></div></div>
+
+<p>Include the <code class="language-plaintext highlighter-rouge">graph_starter</code> gem (it will include the Neo4j.rb gems for you):</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Gemfile
+
+gem 'graph_starter'
+</code></pre></div></div>
+
+<p>Mount the engine:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># config/routes.rb
+
+mount GraphStarter::Engine =&gt; '/'
+</code></pre></div></div>
+
+<p>Create some asset models:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># app/models/product.rb
+
+class Product &lt; GraphStarter::Asset
+  # `title` property is added automatically
+
+  property :name
+  property :description
+  property :price, type: Integer
+
+  has_images
+
+  has_one :in, :vendor, type: :SELLS_PRODUCT
+end
+
+# app/models/vendor.rb
+
+class Vendor &lt; GraphStarter::Asset
+  property :brand_name
+  property :code
+
+  name_property :brand_name
+
+  has_many :out, :products, origin: :vendor
+end
+</code></pre></div></div>
+
+<p>These models are simply Neo4j.rb <code class="language-plaintext highlighter-rouge">ActiveNode</code> models so you can refer to the <a href="http://neo4jrb.readthedocs.org/">Neo4j.rb documentation</a> to define them.  They do have some special methods, however, which let you control how GraphStarter works.  In the above <code class="language-plaintext highlighter-rouge">Product</code> model, for example, <code class="language-plaintext highlighter-rouge">has_images</code> has been called to indicate that products have images which defines a separate <code class="language-plaintext highlighter-rouge">Image</code> model along with the neccessary association.  See the <a href="https://github.com/neo4j-examples/graph_starter#models">graph_starter README</a> for documentation on how to configure aspects of your models.</p>
+
+<p>Once that framework is in place you can define a way to import data, if desired.  For this I would suggest making a rake task:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># lib/tasks/store.rake
+
+namespace :store do
+  task :import do
+    CSV.open(File.read('vendors.csv')).each do |row|
+      Vendor.create(name: row['brand_name'],
+                    code: row['code'])
+    end
+
+    CSV.open(File.read('products.csv')).each do |row|
+      product = Product.create(name: row['name'],
+                               description: row['description'],
+                               price: row['price'].to_i)
+
+      product.vendor = Vendor.find_by(code: row['vendor_code'])
+    end
+  end
+end
+</code></pre></div></div>
+
+<p>And that’s all!</p>
+
+<p>When everything is in place you can simply start up your Rails server (by running <code class="language-plaintext highlighter-rouge">rails server</code>) and you get a UI which looks like this example site I made using data from the <a href="http://www.nhm.ac.uk/">Natural History Museum</a> in London:</p>
+
+<p><img style="width: 100%; display: block; margin: 0 auto" src="/assets/graph_starter/assets_index.png" /></p>
+
+<p><img style="width: 100%; display: block; margin: 0 auto" src="/assets/graph_starter/assets_show.png" /></p>
+
+<p>You can <a href="http://nhm-portal.herokuapp.com/">browse the app</a> on Heroku and <a href="https://github.com/neo4j-examples/nhm_asset_portal">checkout the repository</a> on Github</p>
+
+<p>I’ll be working on a new project to create a <a href="http://graphgist.neo4j.com/">GraphGist portal</a> based on the <code class="language-plaintext highlighter-rouge">graph_starter</code> gem so I plan to continue improving it!</p>
+
+
+<ul class="taxonomy__index">
+  
+  
+    <li>
+      <a href="#2020">
+        <strong>2020</strong> <span class="taxonomy__count">2</span>
+      </a>
+    </li>
+  
+    <li>
+      <a href="#2015">
+        <strong>2015</strong> <span class="taxonomy__count">9</span>
+      </a>
+    </li>
+  
+    <li>
+      <a href="#2014">
+        <strong>2014</strong> <span class="taxonomy__count">5</span>
+      </a>
+    </li>
+  
+</ul>
+
+
+
+
+  <section id="2020" class="taxonomy__section">
+    <h2 class="archive__subtitle">2020</h2>
+    <div class="entries-list">
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/elixir/2020/07/17/structuring-an-elixir+phoenix-app" rel="permalink">Structuring an Elixir+Phoenix App
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">I’ve mix phx.new ed many applications and when doing so I often start with wondering how to organize my code. I love how Phoenix pushes you to think about th...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/elixir/2020/01/31/expecting-the-unexpected-in-elixir" rel="permalink">Expecting the Unexpected in Elixir
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+</p>
+  </article>
+</div>
+
+      
+    </div>
+    <a href="#page-title" class="back-to-top">Back to Top &uarr;</a>
+  </section>
+
+  <section id="2015" class="taxonomy__section">
+    <h2 class="archive__subtitle">2015</h2>
+    <div class="entries-list">
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/08/20/using_graph_structure_record_linkage_on_irish_census_data_with_neo4j" rel="permalink">Using Graph Structure Record Linkage on Irish Census Data with Neo4j
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">For just over a year I’ve been obsessed on-and-off with a project ever since I stayed in the town of Skibbereen, Ireland.  Taking data from the 1901 and 1911...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/06/03/analyzing_rubys_objectspace_with_neo4j" rel="permalink">Analyzing Ruby’s ObjectSpace with Neo4j
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+
+</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/05/14/master_data_management_scoring_examples" rel="permalink">Master Data Management Scoring Examples
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">A while ago my colleague Michael suggested to me that I draw out some examples of how my record linkage algorithm did it’s thing.  In order to do that, I’ve ...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/04/16/running_a_neo4j_intro_workshop" rel="permalink">Running a Neo4j Cypher Introduction Workshop
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">Last night I ran a very successful workshop at the Friends of Neo4j Stockholm meetup group.  The format was based on a workshop that I attended in San Franci...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/03/08/making_master_data_management_fun_with_neo4j_-_part_3" rel="permalink">Making Master Data Management Fun with Neo4j - Part 3
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">In my last two posts I covered the process of importing data from StackOverflow and GitHub for the purpose of creating a combined MDM database.  Now we get t...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/02/22/making_master_data_management_fun_with_neo4j_-_part_2" rel="permalink">Making Master Data Management Fun with Neo4j - Part 2
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">In my last post I said I would “bring in another data source, show how I linked the data together, and demonstrate the sort of bigger picture that one can ge...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/02/16/making_master_data_management_fun_with_neo4j_-_part_1" rel="permalink">Making Master Data Management Fun with Neo4j - Part 1
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">Joining multiple disparate data-sources, commonly dubbed Master Data Management (MDM), is usually not a fun exercise. I would like to show you how to use a g...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/ruby/rails/neo4j/announcements/2015/02/04/modeling_in_neo4j_sans_programming" rel="permalink">Modeling in Neo4j Sans Programming
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+  
+
+</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/sql/neo4j/neo4apis/activerecord/announcements/2015/01/08/loading_sql_to_neo4j_like_magic" rel="permalink">Loading SQL to Neo4j Like Magic
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">When using neo4j for the first time, most people want to import data from another database to start playing around.  There are a lot of options including LOA...</p>
+  </article>
+</div>
+
+      
+    </div>
+    <a href="#page-title" class="back-to-top">Back to Top &uarr;</a>
+  </section>
+
+  <section id="2014" class="taxonomy__section">
+    <h2 class="archive__subtitle">2014</h2>
+    <div class="entries-list">
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/ruby/rails/neo4j/announcements/2014/12/17/analyzing_twitter_with_neo4j_and_rails" rel="permalink">Analyzing Twitter with Neo4j and Rails
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/ruby/neo4j/announcements/neo4apis/2014/11/03/neo4apis" rel="permalink">neo4apis
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/investigations/neo4j/irish%20census/2014/10/26/matchmaking_irish_citizens" rel="permalink">Matchmaking Irish Citizens
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+  I am he as you are he as you are me and we are all together
+
+  – The Beatles
+
+
+</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/investigations/neo4j/irish%20census/2014/09/02/normalizing_religion_in_ireland" rel="permalink">Normalizing Religion in Ireland
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+  When I told the people of Northern Ireland that I was an atheist,
+a woman in the audience stood up and said, ‘Yes, but is it the God
+of the Catholics or t...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/investigations/philisophical%20language/2014/07/20/a_blog_post_towards_a_programatically_generated_philisophical_language" rel="permalink">A Blog Post Toward a Programatically Generated Philisophical Language
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+  “Wilkins!  Yes!  I’ve considered decorating these walls with some graffiti of my own,
+and writing it in the Universal Character.. but it is too depressing...</p>
+  </article>
+</div>
+
+      
+    </div>
+    <a href="#page-title" class="back-to-top">Back to Top &uarr;</a>
+  </section>
+
+
+  </div>
+</div>
+    </div>
+
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2021 brian-underwood.blogs. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  
+    <script src="/assets/prism.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

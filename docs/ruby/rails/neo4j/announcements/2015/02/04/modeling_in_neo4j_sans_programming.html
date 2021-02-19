@@ -1,0 +1,800 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.22.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Modeling in Neo4j Sans Programming - brian-underwood.blogs</title>
+<meta name="description" content="">
+
+
+  <meta name="author" content="Brian Underwood">
+  
+  <meta property="article:author" content="Brian Underwood">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="brian-underwood.blogs">
+<meta property="og:title" content="Modeling in Neo4j Sans Programming">
+<meta property="og:url" content="http://www.brian-underwood.codes//ruby/rails/neo4j/announcements/2015/02/04/modeling_in_neo4j_sans_programming">
+
+
+  <meta property="og:description" content="">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2015-02-04T18:09:00+01:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://www.brian-underwood.codes//ruby/rails/neo4j/announcements/2015/02/04/modeling_in_neo4j_sans_programming">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://www.brian-underwood.codes//"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="brian-underwood.blogs Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+    <link rel="stylesheet" href="/assets/prism.css">
+
+  </head>
+
+  <body class="layout--posts">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          brian-underwood.blogs
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/tags/">Tags</a>
+            </li><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+        <img src="/assets/images/bio-photo.jpg" alt="Brian Underwood" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Brian Underwood</h3>
+    
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li itemprop="homeLocation" itemscope itemtype="https://schema.org/Place">
+          <i class="fas fa-fw fa-map-marker-alt" aria-hidden="true"></i> <span itemprop="name">Stockholm, Sweden</span>
+        </li>
+      
+
+      
+        
+          
+            <li><a href="http://www.brian-underwood.codes/" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-link" aria-hidden="true"></i><span class="label">brian-underwood.codes</span></a></li>
+          
+        
+          
+            <li><a href="https://twitter.com/cheerfulstoic" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i><span class="label">@cheerfulstoic</span></a></li>
+          
+        
+          
+            <li><a href="https://github.com/cheerfulstoic" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github-square" aria-hidden="true"></i><span class="label">@cheerfulstoic</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <div class="archive">
+    
+      <h1 id="page-title" class="page__title">Modeling in Neo4j Sans Programming</h1>
+    
+    <p><a href="http://www.xkcd.com/917/" target="_blank">
+  <img style="float: right; width: 450px; margin: 0.6em;" src="/assets/neo4j-meta_model/hofstadter.png" />
+</a></p>
+
+<p>I have a bit of a problem.</p>
+
+<p>Sometimes I have a hard time implementing a specific solution to a problem.  Sometimes I think: <em>“If I just took a step back, I could create a tool which anybody could use to do anything!”</em>  If I do it right, nobody will ever need to write a piece of software again!</p>
+
+<p>I’m not there yet, but I’d like to announce a big step on my journey: <strong><a href="https://github.com/neo4jrb/neo4j-meta_model">neo4j-meta_model</a></strong></p>
+
+<p><code class="language-plaintext highlighter-rouge">neo4j-meta_model</code> is a tool for managing Neo4j <a href="http://neo4j.com/developer/graph-database/">graph databases</a> in <a href="http://rubyonrails.org/">Ruby on Rails</a> apps.  A big goal of the project is to create something which, while a very powerful tool for programmers, can also be used by <strong>non-programmers</strong>.  This is such an important goal that I created a Rails app (creatively named <a href="https://github.com/neo4jrb/neo4j-meta_model-app">neo4j-meta_model-app</a>) which you need only to download, install, and run to set up a user-friendly interface for working with Neo4j databases.</p>
+
+<h2 id="what-does-it-do">What does it do?</h2>
+
+<p><code class="language-plaintext highlighter-rouge">neo4j-meta_model</code> provides a web-based user interface for doing two things:</p>
+
+<ul>
+  <li>Defining the structure of your data in Neo4j</li>
+  <li>Browsing and managing your data</li>
+</ul>
+
+<h3 id="defining-the-structure-of-your-data">Defining the structure of your data</h3>
+
+<p>An administrative section is provided to allow users to define models and associations.  Since the <a href="https://github.com/neo4jrb/neo4j">neo4j Ruby library</a>’s <a href="https://github.com/neo4jrb/neo4j/wiki/Neo4j%3A%3AActiveNode">ActiveNode</a> is used behind the scenes, models and associations correspond to Neo4j’s nodes and relationships.  A quick primer:</p>
+
+<h4 id="models">Models</h4>
+
+<p>Models correspond to Neo4j <a href="http://neo4j.com/docs/stable/graphdb-neo4j-labels.html">Labels</a> which define entity tyes like <code class="language-plaintext highlighter-rouge">User</code>, <code class="language-plaintext highlighter-rouge">Product</code>, etc…  For a model, you can define</p>
+
+<ul>
+  <li>Properties (such as <code class="language-plaintext highlighter-rouge">name</code> or <code class="language-plaintext highlighter-rouge">price</code>) with which we are concerned</li>
+  <li>Data validations and other business logic</li>
+  <li><a href="https://github.com/neo4jrb/neo4j/wiki/Neo4j.rb-v3-Inheritance">Inheritance</a> for when we want one model to have mostly the same properties as another</li>
+</ul>
+
+<p>Currently <code class="language-plaintext highlighter-rouge">neo4j-meta_model</code> supports properties and inheritance but not validation or custom business logic.</p>
+
+<h4 id="associations">Associations</h4>
+
+<p>Associations specify which nodes are related to a node under consideration.  For example, if there are <code class="language-plaintext highlighter-rouge">Person</code> and <code class="language-plaintext highlighter-rouge">Article</code> models with a <code class="language-plaintext highlighter-rouge">WROTE_ARTICLE</code> relationship between them, one might define an <code class="language-plaintext highlighter-rouge">articles</code> association for the <code class="language-plaintext highlighter-rouge">Person</code> model and an <code class="language-plaintext highlighter-rouge">author</code> association for the <code class="language-plaintext highlighter-rouge">Article</code> model.  In <code class="language-plaintext highlighter-rouge">neo4j-meta_model</code>, both associations are always defined at the same time.</p>
+
+<p><img style="float: right; margin: 0.6em;" src="/assets/neo4j-meta_model/association_diagram.png" /></p>
+
+<p>To the right is the diagram which is shown when creating associations.  The diagram represents a pair of associations and changes in real time as the pair of associations is defined.  In this case it indicates a one-to-many relationship where:</p>
+
+<ul>
+  <li>the <code class="language-plaintext highlighter-rouge">Song</code> model has one <code class="language-plaintext highlighter-rouge">artist</code></li>
+  <li>the <code class="language-plaintext highlighter-rouge">Person</code> model has many <code class="language-plaintext highlighter-rouge">songs</code></li>
+  <li>there is a <code class="language-plaintext highlighter-rouge">WRITTEN_BY</code> relationship type in Neo4j which goes from Songs to People and it is used to find nodes for the associations</li>
+</ul>
+
+<h3 id="browsing-and-managing-your-data">Browsing and managing your data</h3>
+
+<div style="float: right; width: 350px; margin: 0.6em">
+  <a href="/assets/neo4j-meta_model/gist_view.png" target="_blank">
+    <img style="float: right; width: 350px; margin: 0" src="/assets/neo4j-meta_model/gist_view.png" />
+  </a>
+  <em style="font-size: 0.8em">A `Gist` record with associated `UseCase` and `Domain` records</em>
+</div>
+
+<p>Once the database model has been established users can browse and edit the data itself.  A simple <a href="http://en.wikipedia.org/wiki/Create,_read,_update_and_delete">CRUD</a> interface is provided for records of the defined models.  When a record is found all other records known via associations are displayed (see screenshot to the right which shows a <code class="language-plaintext highlighter-rouge">Gist</code> and it’s associated <code class="language-plaintext highlighter-rouge">UseCases</code> and <code class="language-plaintext highlighter-rouge">Domains</code>).  When editing a record properties can be edited but associations can also be selected to create/destroy relationships.  For <code class="language-plaintext highlighter-rouge">has one</code> relationships this is done via a simple drop-down, but for <code class="language-plaintext highlighter-rouge">has many</code> relationships an add/remove list interface is provided.</p>
+
+<h2 id="try-it">Try it!</h2>
+
+<p>I’ve deployed an instance of <a href="https://github.com/neo4jrb/neo4j-meta_model-app">neo4j-meta_model-app</a> at <a href="http://neo4j-meta-model-app.herokuapp.com/">http://neo4j-meta-model-app.herokuapp.com/</a> so that you can play around with it.  Let me know what you think and if you have any issues feel free to report them on the <a href="https://github.com/neo4jrb/neo4j-meta_model">project page</a>!</p>
+
+<h2 id="the-technical-stuff">The Technical Stuff</h2>
+
+<p><code class="language-plaintext highlighter-rouge">neo4j-meta_model</code> is a <a href="http://guides.rubyonrails.org/engines.html">Rails engine</a>, which means it is a Rails application inside a Rails application.  It must be given a route inside the host rails application to provide the user interface for the Neo4j database.  In the case of <a href="https://github.com/neo4jrb/neo4j-meta_model-app">neo4j-meta_model-app</a>, this is simply the root (‘/’) route.</p>
+
+<p>The admin side of the engine is built as an <a href="http://emberjs.com/">Ember.js</a> application, while the CRUD record management side is built with standard Rails server-side rendering (with a touch of <a href="http://rivetsjs.com/">Rivets.js</a> and <a href="http://backbonejs.org/">Backbone.js</a> where needed)</p>
+
+<h2 id="the-future">The Future</h2>
+
+<p>The current version of this project is a bare bones starting point.  Some things that I’d like to see in the near future:</p>
+
+<ul>
+  <li>Search, filtering, and pagination when browsing records</li>
+  <li>Permissions for the admin side as well as individual models</li>
+  <li>Visual data browsing (see <a href="http://maxdemarzi.com/2012/01/11/graph-visualization-and-neo4j/">Graph Visualization and Neo4j</a> and <a href="http://maxdemarzi.com/2013/07/03/the-last-mile/">The Last Mile</a>)</li>
+  <li>Tools for running graph analytics metrics</li>
+</ul>
+
+
+
+<ul class="taxonomy__index">
+  
+  
+    <li>
+      <a href="#2020">
+        <strong>2020</strong> <span class="taxonomy__count">2</span>
+      </a>
+    </li>
+  
+    <li>
+      <a href="#2015">
+        <strong>2015</strong> <span class="taxonomy__count">9</span>
+      </a>
+    </li>
+  
+    <li>
+      <a href="#2014">
+        <strong>2014</strong> <span class="taxonomy__count">5</span>
+      </a>
+    </li>
+  
+</ul>
+
+
+
+
+  <section id="2020" class="taxonomy__section">
+    <h2 class="archive__subtitle">2020</h2>
+    <div class="entries-list">
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/elixir/2020/07/17/structuring-an-elixir+phoenix-app" rel="permalink">Structuring an Elixir+Phoenix App
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">I’ve mix phx.new ed many applications and when doing so I often start with wondering how to organize my code. I love how Phoenix pushes you to think about th...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/elixir/2020/01/31/expecting-the-unexpected-in-elixir" rel="permalink">Expecting the Unexpected in Elixir
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+</p>
+  </article>
+</div>
+
+      
+    </div>
+    <a href="#page-title" class="back-to-top">Back to Top &uarr;</a>
+  </section>
+
+  <section id="2015" class="taxonomy__section">
+    <h2 class="archive__subtitle">2015</h2>
+    <div class="entries-list">
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/08/20/using_graph_structure_record_linkage_on_irish_census_data_with_neo4j" rel="permalink">Using Graph Structure Record Linkage on Irish Census Data with Neo4j
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">For just over a year I’ve been obsessed on-and-off with a project ever since I stayed in the town of Skibbereen, Ireland.  Taking data from the 1901 and 1911...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/06/03/analyzing_rubys_objectspace_with_neo4j" rel="permalink">Analyzing Ruby’s ObjectSpace with Neo4j
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+
+</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/05/14/master_data_management_scoring_examples" rel="permalink">Master Data Management Scoring Examples
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">A while ago my colleague Michael suggested to me that I draw out some examples of how my record linkage algorithm did it’s thing.  In order to do that, I’ve ...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/04/16/running_a_neo4j_intro_workshop" rel="permalink">Running a Neo4j Cypher Introduction Workshop
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">Last night I ran a very successful workshop at the Friends of Neo4j Stockholm meetup group.  The format was based on a workshop that I attended in San Franci...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/03/08/making_master_data_management_fun_with_neo4j_-_part_3" rel="permalink">Making Master Data Management Fun with Neo4j - Part 3
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">In my last two posts I covered the process of importing data from StackOverflow and GitHub for the purpose of creating a combined MDM database.  Now we get t...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/02/22/making_master_data_management_fun_with_neo4j_-_part_2" rel="permalink">Making Master Data Management Fun with Neo4j - Part 2
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">In my last post I said I would “bring in another data source, show how I linked the data together, and demonstrate the sort of bigger picture that one can ge...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/02/16/making_master_data_management_fun_with_neo4j_-_part_1" rel="permalink">Making Master Data Management Fun with Neo4j - Part 1
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">Joining multiple disparate data-sources, commonly dubbed Master Data Management (MDM), is usually not a fun exercise. I would like to show you how to use a g...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/ruby/rails/neo4j/announcements/2015/02/04/modeling_in_neo4j_sans_programming" rel="permalink">Modeling in Neo4j Sans Programming
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+  
+
+</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/sql/neo4j/neo4apis/activerecord/announcements/2015/01/08/loading_sql_to_neo4j_like_magic" rel="permalink">Loading SQL to Neo4j Like Magic
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">When using neo4j for the first time, most people want to import data from another database to start playing around.  There are a lot of options including LOA...</p>
+  </article>
+</div>
+
+      
+    </div>
+    <a href="#page-title" class="back-to-top">Back to Top &uarr;</a>
+  </section>
+
+  <section id="2014" class="taxonomy__section">
+    <h2 class="archive__subtitle">2014</h2>
+    <div class="entries-list">
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/ruby/rails/neo4j/announcements/2014/12/17/analyzing_twitter_with_neo4j_and_rails" rel="permalink">Analyzing Twitter with Neo4j and Rails
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/ruby/neo4j/announcements/neo4apis/2014/11/03/neo4apis" rel="permalink">neo4apis
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/investigations/neo4j/irish%20census/2014/10/26/matchmaking_irish_citizens" rel="permalink">Matchmaking Irish Citizens
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+  I am he as you are he as you are me and we are all together
+
+  – The Beatles
+
+
+</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/investigations/neo4j/irish%20census/2014/09/02/normalizing_religion_in_ireland" rel="permalink">Normalizing Religion in Ireland
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+  When I told the people of Northern Ireland that I was an atheist,
+a woman in the audience stood up and said, ‘Yes, but is it the God
+of the Catholics or t...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/investigations/philisophical%20language/2014/07/20/a_blog_post_towards_a_programatically_generated_philisophical_language" rel="permalink">A Blog Post Toward a Programatically Generated Philisophical Language
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+  “Wilkins!  Yes!  I’ve considered decorating these walls with some graffiti of my own,
+and writing it in the Universal Character.. but it is too depressing...</p>
+  </article>
+</div>
+
+      
+    </div>
+    <a href="#page-title" class="back-to-top">Back to Top &uarr;</a>
+  </section>
+
+
+  </div>
+</div>
+    </div>
+
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2021 brian-underwood.blogs. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  
+    <script src="/assets/prism.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

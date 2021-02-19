@@ -1,0 +1,1049 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.22.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Using Graph Structure Record Linkage on Irish Census Data with Neo4j - brian-underwood.blogs</title>
+<meta name="description" content="For just over a year I’ve been obsessed on-and-off with a project ever since I stayed in the town of Skibbereen, Ireland.  Taking data from the 1901 and 1911 Irish censuses I hoped I would be able to find a way to reliably link resident records from the two together to identify the same residents.  Since then I’ve learned a bit about master data management and record linkage and so I thought I would give it another stab.  Here I’d like to talk about how I’ve been matching records based on the local data space around objects to improve my record linkage scoring.">
+
+
+  <meta name="author" content="Brian Underwood">
+  
+  <meta property="article:author" content="Brian Underwood">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="brian-underwood.blogs">
+<meta property="og:title" content="Using Graph Structure Record Linkage on Irish Census Data with Neo4j">
+<meta property="og:url" content="http://www.brian-underwood.codes//2015/08/20/using_graph_structure_record_linkage_on_irish_census_data_with_neo4j">
+
+
+  <meta property="og:description" content="For just over a year I’ve been obsessed on-and-off with a project ever since I stayed in the town of Skibbereen, Ireland.  Taking data from the 1901 and 1911 Irish censuses I hoped I would be able to find a way to reliably link resident records from the two together to identify the same residents.  Since then I’ve learned a bit about master data management and record linkage and so I thought I would give it another stab.  Here I’d like to talk about how I’ve been matching records based on the local data space around objects to improve my record linkage scoring.">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2015-08-20T09:55:00+02:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://www.brian-underwood.codes//2015/08/20/using_graph_structure_record_linkage_on_irish_census_data_with_neo4j">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://www.brian-underwood.codes//"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="brian-underwood.blogs Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+    <link rel="stylesheet" href="/assets/prism.css">
+
+  </head>
+
+  <body class="layout--posts">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          brian-underwood.blogs
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/tags/">Tags</a>
+            </li><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+        <img src="/assets/images/bio-photo.jpg" alt="Brian Underwood" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Brian Underwood</h3>
+    
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li itemprop="homeLocation" itemscope itemtype="https://schema.org/Place">
+          <i class="fas fa-fw fa-map-marker-alt" aria-hidden="true"></i> <span itemprop="name">Stockholm, Sweden</span>
+        </li>
+      
+
+      
+        
+          
+            <li><a href="http://www.brian-underwood.codes/" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-link" aria-hidden="true"></i><span class="label">brian-underwood.codes</span></a></li>
+          
+        
+          
+            <li><a href="https://twitter.com/cheerfulstoic" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i><span class="label">@cheerfulstoic</span></a></li>
+          
+        
+          
+            <li><a href="https://github.com/cheerfulstoic" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github-square" aria-hidden="true"></i><span class="label">@cheerfulstoic</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <div class="archive">
+    
+      <h1 id="page-title" class="page__title">Using Graph Structure Record Linkage on Irish Census Data with Neo4j</h1>
+    
+    <p>For just over a year I’ve been obsessed on-and-off with a project ever since I stayed in the town of Skibbereen, Ireland.  Taking data from the <a href="http://www.census.nationalarchives.ie/">1901 and 1911 Irish censuses</a> I hoped I would be able to find a way to reliably link resident records from the two together to identify the same residents.  Since then I’ve learned a bit about <a href="/tag/master-data-management">master data management and record linkage</a> and so I thought I would give it another stab.  Here I’d like to talk about how I’ve been matching records based on the local data space around objects to improve my record linkage scoring.</p>
+
+<p>The data model of the imported data is very linear:</p>
+
+<p><img style="width: 100%; display: block; margin: 0 auto" src="/assets/neo4j-mdm/irish_census_wrah.png" /></p>
+
+<p>In this post, however, I’m going to be focusing on Houses and Residents and creating relationships between them based on their properties.</p>
+
+<h2 id="relations-to-the-head">Relations to the Head</h2>
+
+<p>To view an example of what a census record from 1911 Ireland looks like you can have a look at the McCarthys of <a href="http://www.census.nationalarchives.ie/pages/1901/Cork/Cloghdowell/Barnagowlane/1154382/">1901</a> and <a href="http://www.census.nationalarchives.ie/pages/1911/Cork/Cloghdonnell/Barnagowlane/440559/">1911</a>.  Charles is the head of the family with his wife Hannah, mother Ellen, children (two in 1901 and seven in 1911), and a servant (Timothy Walsh in 1901 and William Regan in 1911).</p>
+
+<style>
+table {
+  border-collapse: collapse;
+  margin: 0 auto !important;
+}
+table, th, td {
+  border: 1px solid #CCC;
+  padding: 0.3em;
+}
+</style>
+
+<table>
+  <tr>
+    <td style="font-weight: 0.8em; font-weight: bold; text-align: center">
+      <a href="http://www.census.nationalarchives.ie/pages/1901/Cork/Cloghdowell/Barnagowlane/1154382/">
+        <img style="width: 350px; display: block; margin: 0 auto" src="/assets/neo4j-mdm/mccarthy_census_1901.png" />
+        The McCarthy family of Barnagowlane, Cloghdowell, Cork, 1901
+      </a>
+    </td>
+    <td style="font-weight: 0.8em; font-weight: bold; text-align: center">
+      <a href="http://www.census.nationalarchives.ie/pages/1911/Cork/Cloghdonnell/Barnagowlane/440559/">
+        <img style="width: 350px; display: block; margin: 0 auto" src="/assets/neo4j-mdm/mccarthy_census_1911.png" />
+        The McCarthy family of Barnagowlane, Cloghdonnell, Cork, 1911
+      </a>
+    </td>
+  </tr>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>Surname</th>
+      <th>Forename</th>
+      <th>Age</th>
+      <th>Sex</th>
+      <th>Relation to Head</th>
+      <th>Religion</th>
+      <th> </th>
+      <th>Surname</th>
+      <th>Forename</th>
+      <th>Age</th>
+      <th>Sex</th>
+      <th>Relation to Head</th>
+      <th>Religion</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>McCarthy</td>
+      <td>Charles</td>
+      <td>37</td>
+      <td>Male</td>
+      <td>Head of Family</td>
+      <td>Roman Catholic</td>
+      <td> </td>
+      <td>McCarthy</td>
+      <td>Charles</td>
+      <td>47</td>
+      <td>Male</td>
+      <td>Head of Family</td>
+      <td>Roman Catholic</td>
+    </tr>
+    <tr>
+      <td>McCarthy</td>
+      <td>Hannah</td>
+      <td>25</td>
+      <td>Female</td>
+      <td>Wife</td>
+      <td>Roman Catholic</td>
+      <td> </td>
+      <td>McCarthy</td>
+      <td>Hannah</td>
+      <td>35</td>
+      <td>Female</td>
+      <td>Wife</td>
+      <td>Roman Catholic</td>
+    </tr>
+    <tr>
+      <td>McCarthy</td>
+      <td>William</td>
+      <td>1</td>
+      <td>Male</td>
+      <td>Son</td>
+      <td>Roman Catholic</td>
+      <td> </td>
+      <td>McCarthy</td>
+      <td>William</td>
+      <td>11</td>
+      <td>Male</td>
+      <td>Son</td>
+      <td>Roman Catholic</td>
+    </tr>
+    <tr>
+      <td>McCarthy</td>
+      <td>Bridget</td>
+      <td> </td>
+      <td>Female</td>
+      <td>Daughter</td>
+      <td>Roman Catholic</td>
+      <td> </td>
+      <td>McCarthy</td>
+      <td>Bridget</td>
+      <td>10</td>
+      <td>Female</td>
+      <td>Daughter</td>
+      <td>Roman Catholic</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td>McCarthy</td>
+      <td>Ellen</td>
+      <td>8</td>
+      <td>Female</td>
+      <td>Daughter</td>
+      <td>Roman Catholic</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td>McCarthy</td>
+      <td>Kate</td>
+      <td>6</td>
+      <td>Female</td>
+      <td>Daughter</td>
+      <td>Roman Catholic</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td>McCarthy</td>
+      <td>Florence</td>
+      <td>4</td>
+      <td>Male</td>
+      <td>Son</td>
+      <td>Roman Catholic</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td>McCarthy</td>
+      <td>Charles Peter</td>
+      <td>2</td>
+      <td>Male</td>
+      <td>Son</td>
+      <td>Roman Catholic</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td>McCarthy</td>
+      <td>Annie</td>
+      <td> </td>
+      <td>Female</td>
+      <td>Daughter</td>
+      <td>Roman Catholic</td>
+    </tr>
+    <tr>
+      <td>McCarthy</td>
+      <td>Ellen</td>
+      <td>65</td>
+      <td>Female</td>
+      <td>Mother</td>
+      <td>Roman Catholic</td>
+      <td> </td>
+      <td>McCarthy</td>
+      <td>? Ellen</td>
+      <td>75</td>
+      <td>Female</td>
+      <td>Mother</td>
+      <td>Roman Catholic</td>
+    </tr>
+    <tr>
+      <td>Walsh</td>
+      <td>Timothy</td>
+      <td>25</td>
+      <td>Male</td>
+      <td>Servant</td>
+      <td>Roman Catholic</td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td>Regan</td>
+      <td>William</td>
+      <td>24</td>
+      <td>Male</td>
+      <td>Servant</td>
+      <td>Roman Catholic</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The McCarthys are an almost exact match between two census records between 1901 and 1911.  The names, ages, occupations, and relationships all match perfectly.  Unfortunately the story for other records is not so simple.  Many times houses, which to the human eye seem to be the same house, can have wildly varying details.  For example Hannah might go be listed as Hana or Anne in a different census.  Likewise ages vary a lot more than you might think.  In examining the records I regularly found ages varying by a year or two and have even found a few houses with ages off by as much as 10-15 years.</p>
+
+<p>In both censuses there is a field for residents to fill out called “Relation to Head”.  This gives us information about how each resident is related to the head of the house.  In the case of the McCarthys, Charles is listed as “Head of Fa<D-i>mily" in both years.  The rest of the family has a nice representation of things that we often see in the data: "Wife", "Son", "Daughter", and "Servant".</D-i></p>
+
+<p>We might be tempted to say “This person was the head in 1901, so they must be the same person who was the head in 1911”.  Often, however, the head of the family can die or retire leaving the roll of head of the family to their wife or child.  Can the “Relation to Head” values still be useful to us to match any given resident from 1901 to another resident in 1911?</p>
+
+<p>First let’s cover the general the process of record linkage I have been using.  To find a match for a resident I start by using an <code class="language-plaintext highlighter-rouge">elasticsearch</code> server (which contains a duplicate of my Neo4j census data) to quickly find a list of other residents with a match on very rough criteria:</p>
+
+<ul>
+  <li>Is the resident in the other census?</li>
+  <li>Does the sex match (or it it <code class="language-plaintext highlighter-rouge">NULL</code>)?</li>
+  <li>Is the resident’s age within 15 years of what it would be expected to be in the other census?</li>
+  <li>Does the name match roughly (within an edit distance of 4)</li>
+</ul>
+
+<p>This comes back with anywhere from zero to hundreds of results.  I call these “similarity candidates” and for each I create a relationship between the original record and the candidate.</p>
+
+<p>With this list I can compare the attributes of the two records (using the <a href="https://rubygems.org/gems/record_linkage">record_linkage</a> gem I created) to see how closely they match.  The closer their name, sex, age, etc.. matches, the higher score they get.  Ideally the real match should have the highest score, but that isn’t always true and can take <a href="http://127.0.0.1:4000/2015/05/14/master_data_management_scoring_examples/">some tuning</a>.</p>
+
+<p>In addition to this simple comparison of attributes, I have now added a process to take advantage of the similarity candidate relationships to compare family relationships.  Let’s start with this example of a sub-graph pattern:</p>
+
+<p><img style="width: 850px; margin: 0.6em;" src="/assets/neo4j-mdm/mccarthy_charles_comparison.png" /></p>
+
+<p>The relationship <code class="language-plaintext highlighter-rouge">CHILD_OF</code> is created whenever there is a “Son” or “Daughter” in the “Realation to Head” field.  Likewise we can create other gender-neutral relationships like <code class="language-plaintext highlighter-rouge">MARRIED_TO</code>, <code class="language-plaintext highlighter-rouge">SIBLING_OF</code>, <code class="language-plaintext highlighter-rouge">NIECE_NEPHEW_OF</code>, etc…</p>
+
+<p>In this case the resident in question is the 1901 record for William.  When we are evaluating the 1911 record of William as a potential match we can explore other residents in the same house as evidence of similarity.  The diagram above shows that both records have a <code class="language-plaintext highlighter-rouge">CHILD_OF</code> relationship to the two “Charles” records which furthermore are linked via a <code class="language-plaintext highlighter-rouge">SIMILARITY_CANDIDATE</code> relationship.  Because of this we can say that there is a greater chance that the two “William” records represent the same person.</p>
+
+<p>This only gives us the ability to find these relationships between the head of the family and other residents.  What about generically matching based on the relationship of any two residents of a house?  Let’s say that Charles died sometime between 1901 and 1911.  If his wife Hannah takes over as the head of the family we would have a sub-graph which looks like this:</p>
+
+<p><img style="width: 850px; margin: 0.6em;" src="/assets/neo4j-mdm/mccarthy_hannah_comparison.png" /></p>
+
+<p>We could say that when we have the paths <code class="language-plaintext highlighter-rouge">-CHILD_OF-&gt;&lt;-MARIED_TO-</code> and <code class="language-plaintext highlighter-rouge">-CHILD_OF-&gt;</code> on either side that we can build our case for a match a bit more.  This kind of matching can be used on all of the other residents of the house with <code class="language-plaintext highlighter-rouge">SIMILARITY_CANDIDATE</code> relationships.  For example, <code class="language-plaintext highlighter-rouge">-CHILD_OF-&gt;&lt;-CHILD_OF-</code> could be matched to <code class="language-plaintext highlighter-rouge">-CHILD_OF-&gt;&lt;-CHILD_OF-</code> even in this case where the wife becomes the head of the house.  Or if a child becomes the head then it could be compared to a <code class="language-plaintext highlighter-rouge">-SIBLING_OF-</code> relationship.</p>
+
+<h2 id="the-code">The Code</h2>
+
+<p>So how do we actually do this?  First let’s take our sub-graph and turn our nodes into variables:</p>
+
+<p><img style="width: 850px; margin: 0.6em;" src="/assets/neo4j-mdm/irish_census_relationship_mapping.png" /></p>
+
+<p>In this example let’s take resident <code class="language-plaintext highlighter-rouge">h1 r1</code> (house 1, resident 1) as the resident in question and <code class="language-plaintext highlighter-rouge">h2 r1</code> as the candidate that we want to compare it to.  This is the sort of query that Neo4j is wonderful at both performing quickly and making easy to formulate.  Let’s look at part of the Ruby code:</p>
+
+<pre><code class="language-ruby">
+
+def get_similarity_candidate_relationship_paths
+  self.query_as(:h1_r1)
+    .match('(h1:House), (h2:House)')
+    .match('h1&lt;-[:LIVES_IN]-h1_r1-[sc_1:similarity_candidate]-(h2_r1)-[:LIVES_IN]-&gt;h2')
+    .match('h1&lt;-[:LIVES_IN]-h1_r2-[sc_2:similarity_candidate]-(h2_r2)-[:LIVES_IN]-&gt;h2')
+    .match('path1=h1_r1-[:born_to|married_to|grandchild_of|niece_nephew_of|sibling_of|cousin_of|child_in_law_of|step_child_of*1..2]-h1_r2')
+    .match('path2=h2_r1-[:born_to|married_to|grandchild_of|niece_nephew_of|sibling_of|cousin_of|child_in_law_of|step_child_of*1..2]-h2_r2')
+    .pluck(
+      :h2_r1,
+      'collect([path1, rels(path1), path2, rels(path2)])'
+      ).each_with_object({}) do |(r2, data), result|
+
+    result[r2] = data.inject(0) do |total, (path1, rels1, path2, rels2)|
+      relations1 = relation_string_from_path_and_rels(path1, rels1)
+      relations2 = relation_string_from_path_and_rels(path2, rels2)
+
+      if relations1 == relations2
+        1.0
+      elsif score = (RELATION_EQUIVILENCE_SCORES[relations1] || {})[relations2]
+        score
+      else
+        -2.0
+      end + total
+    end
+  end
+end
+
+</code></pre>
+
+<p>Here we start with a Cypher query using the <code class="language-plaintext highlighter-rouge">Query</code> API from neo4j.rb.  The object upon which we’ve called <code class="language-plaintext highlighter-rouge">get_similarity_candidate_relationship_paths</code> is our <code class="language-plaintext highlighter-rouge">h1_r1</code> anchor.  Note here that we match paths with a length of either one or two relationships long from between two residents of the same house.  Then we return all residents found via the <code class="language-plaintext highlighter-rouge">SIMILARITY_CANDIDATE</code> relationship from our anchor and the family relationship paths aggregated into an Array.</p>
+
+<p>Once the Cypher query returns data we call <code class="language-plaintext highlighter-rouge">relation_string_from_path_and_rels</code> which is a way of transforming the path into a string like <code class="language-plaintext highlighter-rouge">-BORN_TO-&gt;&lt;-BORN_TO</code>.  This string gives us a simple way to express the path between the two residents as a string.</p>
+
+<p>We then can give a score based on the two paths.  If the paths are the same then we say that the score is 1.0.  If the pair of paths is something like <code class="language-plaintext highlighter-rouge">-BORN_TO-&gt;&lt;-BORN_TO</code> and <code class="language-plaintext highlighter-rouge">-SIBLING_OF-&gt;</code> then we can give a score based on a lookup.  We add these scores up to give us a total score comparing our anchor resident and each of it’s similarity candidates.  All with just one query to the database.</p>
+
+<h3 id="challenges">Challenges</h3>
+
+<p>There are a couple of things that I needed to do to make this work:</p>
+
+<p>Previously I was simply grabbing one resident at a time, finding all of the similarity candidates, and then creating a set of relationships to link the resident with the candidates and to store the record linkage scores (both the individual scores for fields and the total score).  However this approach requires all of the candidates in the house to have <code class="language-plaintext highlighter-rouge">SIMILARITY_CANDIDATE</code> relationships in order to compare family relationships.  So I first process all residents for a house to create the similarity candidate relationships and store the record linkage scores and then go through them again with the graph-based comparisons and store that score and update the total.</p>
+
+<p>Beyond that there is the conceptual problem of determining the scoring when comparing paths.  For example, if somebody was <code class="language-plaintext highlighter-rouge">BORN_TO</code> the head one year but their spouse takes over as the head, could we say that they’re <code class="language-plaintext highlighter-rouge">BORN_TO</code> the spouse if they are are a step-child?  Family relationships are complicated and don’t always fit neatly into our properties and algorithms.</p>
+
+<h3 id="conclusion">Conclusion</h3>
+
+<p>Most record linkage focuses on the properties of an object, but we need to remember that relationships are data about our entities too.  With Neo4j we have a powerful tool for analyzing those relationships natuarally and quickly.  Additionally I have found that the ability to create relationships on the fly to aggregate calculations like the ones discussed above is a wonderful way to find the best solution quickly.</p>
+
+
+
+<ul class="taxonomy__index">
+  
+  
+    <li>
+      <a href="#2020">
+        <strong>2020</strong> <span class="taxonomy__count">2</span>
+      </a>
+    </li>
+  
+    <li>
+      <a href="#2015">
+        <strong>2015</strong> <span class="taxonomy__count">9</span>
+      </a>
+    </li>
+  
+    <li>
+      <a href="#2014">
+        <strong>2014</strong> <span class="taxonomy__count">5</span>
+      </a>
+    </li>
+  
+</ul>
+
+
+
+
+  <section id="2020" class="taxonomy__section">
+    <h2 class="archive__subtitle">2020</h2>
+    <div class="entries-list">
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/elixir/2020/07/17/structuring-an-elixir+phoenix-app" rel="permalink">Structuring an Elixir+Phoenix App
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">I’ve mix phx.new ed many applications and when doing so I often start with wondering how to organize my code. I love how Phoenix pushes you to think about th...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/elixir/2020/01/31/expecting-the-unexpected-in-elixir" rel="permalink">Expecting the Unexpected in Elixir
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+</p>
+  </article>
+</div>
+
+      
+    </div>
+    <a href="#page-title" class="back-to-top">Back to Top &uarr;</a>
+  </section>
+
+  <section id="2015" class="taxonomy__section">
+    <h2 class="archive__subtitle">2015</h2>
+    <div class="entries-list">
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/08/20/using_graph_structure_record_linkage_on_irish_census_data_with_neo4j" rel="permalink">Using Graph Structure Record Linkage on Irish Census Data with Neo4j
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">For just over a year I’ve been obsessed on-and-off with a project ever since I stayed in the town of Skibbereen, Ireland.  Taking data from the 1901 and 1911...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/06/03/analyzing_rubys_objectspace_with_neo4j" rel="permalink">Analyzing Ruby’s ObjectSpace with Neo4j
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+
+</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/05/14/master_data_management_scoring_examples" rel="permalink">Master Data Management Scoring Examples
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">A while ago my colleague Michael suggested to me that I draw out some examples of how my record linkage algorithm did it’s thing.  In order to do that, I’ve ...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/04/16/running_a_neo4j_intro_workshop" rel="permalink">Running a Neo4j Cypher Introduction Workshop
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">Last night I ran a very successful workshop at the Friends of Neo4j Stockholm meetup group.  The format was based on a workshop that I attended in San Franci...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/03/08/making_master_data_management_fun_with_neo4j_-_part_3" rel="permalink">Making Master Data Management Fun with Neo4j - Part 3
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">In my last two posts I covered the process of importing data from StackOverflow and GitHub for the purpose of creating a combined MDM database.  Now we get t...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/02/22/making_master_data_management_fun_with_neo4j_-_part_2" rel="permalink">Making Master Data Management Fun with Neo4j - Part 2
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">In my last post I said I would “bring in another data source, show how I linked the data together, and demonstrate the sort of bigger picture that one can ge...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/02/16/making_master_data_management_fun_with_neo4j_-_part_1" rel="permalink">Making Master Data Management Fun with Neo4j - Part 1
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">Joining multiple disparate data-sources, commonly dubbed Master Data Management (MDM), is usually not a fun exercise. I would like to show you how to use a g...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/ruby/rails/neo4j/announcements/2015/02/04/modeling_in_neo4j_sans_programming" rel="permalink">Modeling in Neo4j Sans Programming
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+  
+
+</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/sql/neo4j/neo4apis/activerecord/announcements/2015/01/08/loading_sql_to_neo4j_like_magic" rel="permalink">Loading SQL to Neo4j Like Magic
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">When using neo4j for the first time, most people want to import data from another database to start playing around.  There are a lot of options including LOA...</p>
+  </article>
+</div>
+
+      
+    </div>
+    <a href="#page-title" class="back-to-top">Back to Top &uarr;</a>
+  </section>
+
+  <section id="2014" class="taxonomy__section">
+    <h2 class="archive__subtitle">2014</h2>
+    <div class="entries-list">
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/ruby/rails/neo4j/announcements/2014/12/17/analyzing_twitter_with_neo4j_and_rails" rel="permalink">Analyzing Twitter with Neo4j and Rails
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/ruby/neo4j/announcements/neo4apis/2014/11/03/neo4apis" rel="permalink">neo4apis
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/investigations/neo4j/irish%20census/2014/10/26/matchmaking_irish_citizens" rel="permalink">Matchmaking Irish Citizens
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+  I am he as you are he as you are me and we are all together
+
+  – The Beatles
+
+
+</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/investigations/neo4j/irish%20census/2014/09/02/normalizing_religion_in_ireland" rel="permalink">Normalizing Religion in Ireland
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+  When I told the people of Northern Ireland that I was an atheist,
+a woman in the audience stood up and said, ‘Yes, but is it the God
+of the Catholics or t...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/investigations/philisophical%20language/2014/07/20/a_blog_post_towards_a_programatically_generated_philisophical_language" rel="permalink">A Blog Post Toward a Programatically Generated Philisophical Language
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+  “Wilkins!  Yes!  I’ve considered decorating these walls with some graffiti of my own,
+and writing it in the Universal Character.. but it is too depressing...</p>
+  </article>
+</div>
+
+      
+    </div>
+    <a href="#page-title" class="back-to-top">Back to Top &uarr;</a>
+  </section>
+
+
+  </div>
+</div>
+    </div>
+
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2021 brian-underwood.blogs. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  
+    <script src="/assets/prism.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

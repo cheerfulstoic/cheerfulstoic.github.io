@@ -1,0 +1,560 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.22.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Structuring an Elixir+Phoenix App - brian-underwood.blogs</title>
+<meta name="description" content="I’ve mix phx.new ed many applications and when doing so I often start with wondering how to organize my code. I love how Phoenix pushes you to think about the different domains in your app via generators while at the same time I have the freedom to organize modules on my own. Ecto schemas make for a nice abstraction, but where should I put code related just to that table? It could be in the context, but I don’t want the context to become a “grab bag” of unorganized function calls.">
+
+
+  <meta name="author" content="Brian Underwood">
+  
+  <meta property="article:author" content="Brian Underwood">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="brian-underwood.blogs">
+<meta property="og:title" content="Structuring an Elixir+Phoenix App">
+<meta property="og:url" content="http://www.brian-underwood.codes//elixir/2020/07/17/structuring-an-elixir+phoenix-app">
+
+
+  <meta property="og:description" content="I’ve mix phx.new ed many applications and when doing so I often start with wondering how to organize my code. I love how Phoenix pushes you to think about the different domains in your app via generators while at the same time I have the freedom to organize modules on my own. Ecto schemas make for a nice abstraction, but where should I put code related just to that table? It could be in the context, but I don’t want the context to become a “grab bag” of unorganized function calls.">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2020-07-17T00:00:00+02:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://www.brian-underwood.codes//elixir/2020/07/17/structuring-an-elixir+phoenix-app">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://www.brian-underwood.codes//"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="brian-underwood.blogs Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+    <link rel="stylesheet" href="/assets/prism.css">
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          brian-underwood.blogs
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/tags/">Tags</a>
+            </li><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+        <img src="/assets/images/bio-photo.jpg" alt="Brian Underwood" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Brian Underwood</h3>
+    
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li itemprop="homeLocation" itemscope itemtype="https://schema.org/Place">
+          <i class="fas fa-fw fa-map-marker-alt" aria-hidden="true"></i> <span itemprop="name">Stockholm, Sweden</span>
+        </li>
+      
+
+      
+        
+          
+            <li><a href="http://www.brian-underwood.codes/" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-link" aria-hidden="true"></i><span class="label">brian-underwood.codes</span></a></li>
+          
+        
+          
+            <li><a href="https://twitter.com/cheerfulstoic" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i><span class="label">@cheerfulstoic</span></a></li>
+          
+        
+          
+            <li><a href="https://github.com/cheerfulstoic" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github-square" aria-hidden="true"></i><span class="label">@cheerfulstoic</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Structuring an Elixir+Phoenix App">
+    <meta itemprop="description" content="I’ve mix phx.new ed many applications and when doing so I often start with wondering how to organize my code. I love how Phoenix pushes you to think about the different domains in your app via generators while at the same time I have the freedom to organize modules on my own. Ecto schemas make for a nice abstraction, but where should I put code related just to that table? It could be in the context, but I don’t want the context to become a “grab bag” of unorganized function calls.">
+    <meta itemprop="datePublished" content="2020-07-17T00:00:00+02:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Structuring an Elixir+Phoenix App
+</h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right ">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-file-alt"></i> On this page</h4></header>
+              <ul class="toc__menu"><li><a href="#avia">Avia</a></li><li><a href="#changelog">Changelog</a></li><li><a href="#hexpm">Hexpm</a></li><li><a href="#elixirstatus-web">elixirstatus-web</a></li><li><a href="#my-thoughts">My thoughts:</a></li></ul>
+
+            </nav>
+          </aside>
+        
+        <p>I’ve <code class="language-plaintext highlighter-rouge">mix phx.new</code> ed many applications and when doing so I often start with wondering how to organize my code. I love how Phoenix pushes you to think about the different domains in your app via generators while at the same time I have the freedom to organize modules on my own. Ecto schemas make for a nice abstraction, but where should I put code related just to that table? It could be in the context, but I don’t want the context to become a “grab bag” of unorganized function calls.</p>
+
+<p>In the past, I’ve searched for someone writing on the subject but haven’t come up with much. I’ve even done some cursory glancing into repositories to get a feeling for what they do, but I’ve never looked thoroughly at different options. In this post, I share what I have found from four different open source Phoenix+Ecto applications. And as the old joke goes, I’ll be asking four developers for their opinions and getting four different answers. In the end, I’ll summarize how I plan to move forward.</p>
+
+<p>Notes:</p>
+
+<p>Phoenix has evolved in how modules are organized, most notably splitting into <a href="https://hexdocs.pm/phoenix/directory_structure.html#content"><code class="language-plaintext highlighter-rouge">my_app</code> and <code class="language-plaintext highlighter-rouge">my_app_web</code></a> folders and with the concept of <a href="https://hexdocs.pm/phoenix/contexts.html">contexts</a>. Some of these applications were created with early versions of Phoenix which could explain some of the differences.</p>
+
+<p>When I say “typical Ecto schema logic” below, I’m referring to examples in the <a href="https://hexdocs.pm/ecto/Ecto.Schema.html">Ecto documentation</a> and the community on the things to put into schema files (field definitions, schema attributes (such as <code class="language-plaintext highlighter-rouge">@primary_key</code>, <code class="language-plaintext highlighter-rouge">@schema_prefix</code>, etc…), and changeset logic)</p>
+
+<h2 id="avia">Avia</h2>
+
+<p><a href="https://github.com/aviacommerce/avia/">GitHub</a></p>
+
+<p><strong>Repository description:</strong> “open source e-commerce framework”</p>
+
+<p>A lot of the business logic can be found under <code class="language-plaintext highlighter-rouge">apps/snitch_core/lib/core</code>. There is a <code class="language-plaintext highlighter-rouge">domain</code> folder containing what appears to be the front-end API modules (what Phoenix might call “contexts”). Next to the <code class="language-plaintext highlighter-rouge">domain</code> folder is a <code class="language-plaintext highlighter-rouge">data</code> folder containing <code class="language-plaintext highlighter-rouge">schema</code> and <code class="language-plaintext highlighter-rouge">model</code> directories.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">schema</code> directory contains typical Ecto schema files. The <code class="language-plaintext highlighter-rouge">model</code> directory contains correspondingly named modules with CRUD functions (like <code class="language-plaintext highlighter-rouge">create</code>, <code class="language-plaintext highlighter-rouge">update</code>, <code class="language-plaintext highlighter-rouge">delete</code>, <code class="language-plaintext highlighter-rouge">get</code>) but also occasionally some helper functions related to those domain objects (functions like <code class="language-plaintext highlighter-rouge">formatted_list</code> or <code class="language-plaintext highlighter-rouge">get_all_by_shipping_category</code>)</p>
+
+<p>Each type of module also has a <code class="language-plaintext highlighter-rouge">use</code> statement at the top (i.e. <code class="language-plaintext highlighter-rouge">use Snitch.Data.Model</code>) referring to a module containing shared logic. It’s worth looking at what that shared logic is:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    # apps/snitch_core/lib/core/domain/domain.ex
+    alias Ecto.Multi
+    alias Snitch.Data.{Model, Schema}
+    alias Snitch.Domain
+    alias Snitch.Core.Tools.MultiTenancy.Repo
+
+    # apps/snitch_core/lib/core/data/model/model.ex
+    import Ecto.Query
+    alias Snitch.Core.Tools.MultiTenancy.Repo
+    alias Snitch.Tools
+    alias Tools.Helper.Query, as: QH
+
+    # apps/snitch_core/lib/core/data/schema/schema.ex
+    use Ecto.Schema
+    import Ecto.Changeset
+    import Snitch.Tools.Validations
+    alias Snitch.Core.Tools.MultiTenancy.Repo
+</code></pre></div></div>
+
+<p>The domain modules alias the model modules and the model modules alias the schema modules, indicating the usage pattern of going deeper (Domain -&gt; Model -&gt; Schema):</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    # apps/snitch_core/lib/core/domain/stock/stock_location.ex
+    alias Model.StockLocation, as: StockLocationModel
+
+    # apps/snitch_core/lib/core/data/model/stock/stock_location.ex
+    alias Snitch.Data.Schema.StockLocation, as: StockLocationSchema
+</code></pre></div></div>
+
+<h2 id="changelog">Changelog</h2>
+
+<p><a href="https://github.com/thechangelog/changelog.com">GitHub</a></p>
+
+<p><strong>Repository description:</strong> This is the CMS behind <a href="https://changelog.com/">changelog.com</a>.</p>
+
+<p>The business logic is under <code class="language-plaintext highlighter-rouge">lib/changelog</code>. This directory seems to contain various modules as well as directories containing grouped functionality. All of the Ecto logic looks to be under the <code class="language-plaintext highlighter-rouge">schema</code> directory which contains some base schema modules as well as directories containing grouped schema functionality.</p>
+
+<p>Schemas have the typical Ecto schema logic but also sometimes many helpers like <code class="language-plaintext highlighter-rouge">admins</code>, <code class="language-plaintext highlighter-rouge">with_email</code>, <code class="language-plaintext highlighter-rouge">get_by_website</code> which are scoping/querying as well as defining changeset functions like <code class="language-plaintext highlighter-rouge">auth_changeset</code>, <code class="language-plaintext highlighter-rouge">admin_insert_changeset</code>, <code class="language-plaintext highlighter-rouge">admin_update_changeset</code>, <code class="language-plaintext highlighter-rouge">file_changeset</code>, etc…</p>
+
+<p>The schemas use the <code class="language-plaintext highlighter-rouge">Changelog.Schema</code> module which, in addition to adding many helper functions like <code class="language-plaintext highlighter-rouge">any?</code>, <code class="language-plaintext highlighter-rouge">by_position</code>, <code class="language-plaintext highlighter-rouge">limit</code>, <code class="language-plaintext highlighter-rouge">newest_first</code>, <code class="language-plaintext highlighter-rouge">newest_last</code>, etc…, does this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    use Ecto.Schema
+    use Arc.Ecto.Schema
+
+    import Ecto
+    import Ecto.Changeset
+    import Ecto.Query, only: [from: 1, from: 2]
+    import EctoEnum, only: [defenum: 2]
+
+    alias Changelog.{Hashid, Repo}
+</code></pre></div></div>
+
+<h2 id="hexpm">Hexpm</h2>
+
+<p><a href="https://github.com/hexpm/hexpm">GitHub</a></p>
+
+<p><strong>Repository description:</strong> API server and website for Hex <a href="https://hex.pm/">https://hex.pm</a></p>
+
+<p>The <code class="language-plaintext highlighter-rouge">lib/hexpm</code> directory contains some modules with basic logic, but the schemas and contexts exist inside of grouping folders. For example, the <code class="language-plaintext highlighter-rouge">lib/hexpm/accounts</code> folder has the <code class="language-plaintext highlighter-rouge">User</code> schema and the <code class="language-plaintext highlighter-rouge">Users</code> context as well as the <code class="language-plaintext highlighter-rouge">Organization</code> schema and the <code class="language-plaintext highlighter-rouge">Organizations</code> context. The singular modules (i.e. <code class="language-plaintext highlighter-rouge">User</code> and <code class="language-plaintext highlighter-rouge">Organization</code>) have the typical Ecto schema logic.</p>
+
+<p>The two types of module <code class="language-plaintext highlighter-rouge">use</code> the <code class="language-plaintext highlighter-rouge">Hexpm.Schema</code> and <code class="language-plaintext highlighter-rouge">Hexpm.Context</code> modules:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    # lib/hexpm/schema.ex
+    import Ecto
+    import Ecto.Changeset
+    import Ecto.Query, only: [from: 1, from: 2]
+    import Hexpm.Changeset
+    alias Ecto.Multi
+
+    use Hexpm.Shared
+
+    # lib/hexpm/context.ex
+    import Ecto
+    import Ecto.Changeset
+    import Ecto.Query, only: [from: 1, from: 2]
+
+    import Hexpm.Accounts.AuditLog,
+      only: [audit: 3, audit: 4, audit_many: 4, audit_with_user: 4]
+
+    alias Ecto.Multi
+    alias Hexpm.Repo
+
+    use Hexpm.Shared
+</code></pre></div></div>
+
+<p>You might have noticed that both <code class="language-plaintext highlighter-rouge">use</code> the <code class="language-plaintext highlighter-rouge">Hexpm.Shared</code> module. This just does a lot of aliases which means that modules like <code class="language-plaintext highlighter-rouge">Hexpm.Accounts.AuditLog</code> and <code class="language-plaintext highlighter-rouge">Hexpm.Repository.Download</code> become just <code class="language-plaintext highlighter-rouge">AuditLog</code> and <code class="language-plaintext highlighter-rouge">Download</code>…</p>
+
+<p>While that pattern seems common, it’s not always the case. There is an <code class="language-plaintext highlighter-rouge">Auth</code> module which is just a plain module as well as <code class="language-plaintext highlighter-rouge">UserHandles</code> and <code class="language-plaintext highlighter-rouge">Email</code> schema modules without corresponding context modules. <code class="language-plaintext highlighter-rouge">Hexpm.Accounts.Email</code> actually seems to be used in the emails folder in <code class="language-plaintext highlighter-rouge">Hexpm.Emails</code> and <code class="language-plaintext highlighter-rouge">Hexpm.Emails.Bamboo</code>, which seems to be a case of one context reaching into another.</p>
+
+<h2 id="elixirstatus-web">elixirstatus-web</h2>
+
+<p><a href="https://github.com/rrrene/elixirstatus-web">GitHub</a></p>
+
+<p><strong>Repository description:</strong> Community site for Elixir project/blog post/version updates</p>
+
+<p>At the root of this project, there are <code class="language-plaintext highlighter-rouge">lib</code> and <code class="language-plaintext highlighter-rouge">web</code> directories. The schemas are located under <code class="language-plaintext highlighter-rouge">web/models</code>. This appears to be a pretty old app (the <code class="language-plaintext highlighter-rouge">LICENSE</code> file is five years old), which is probably why it’s not using the recent pattern of putting business logic outside of the “web” part of the app.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">models</code> directory contains four schemas (<code class="language-plaintext highlighter-rouge">Impression</code>, <code class="language-plaintext highlighter-rouge">Posting</code>, <code class="language-plaintext highlighter-rouge">ShortLink</code>, and <code class="language-plaintext highlighter-rouge">User</code>) which all define typical Ecto schema logic. These all <code class="language-plaintext highlighter-rouge">use ElixirStatus.Web, :model</code> which does:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    use Ecto.Schema
+    import Ecto
+    import Ecto.Changeset
+</code></pre></div></div>
+
+<p>Another module under <code class="language-plaintext highlighter-rouge">web/models</code> is <code class="language-plaintext highlighter-rouge">Avatar</code> which doesn’t seem to be a schema but rather a grouping of helper functions.</p>
+
+<p>As an example of an context-like module, the <code class="language-plaintext highlighter-rouge">Impressionist</code> module (stored at <code class="language-plaintext highlighter-rouge">lib/elixir_status/impressionist.ex</code>) defines various querying methods for the <code class="language-plaintext highlighter-rouge">Impression</code> schema along with some other helpers.</p>
+
+<h2 id="my-thoughts">My thoughts:</h2>
+
+<p>I already like Phoenix conventions like:</p>
+
+<ul>
+  <li>Separating business logic from the web application logic</li>
+  <li>Separating business logic into contexts with well-established APIs</li>
+  <li>Ecto schema modules which are focused on mapping and validation of the data source
+Things I like about these projects:</li>
+  <li>It’s very nice to have modules headed with something like <code class="language-plaintext highlighter-rouge">use MyApp.Schema</code> or <code class="language-plaintext highlighter-rouge">use MyApp.Context</code> as the Hexpm project does. Even if the used module doesn’t do much, it provides an at-a-glance label when browsing files.</li>
+  <li>I like that Hexpm has established a bit of a convention around schemas (singular <code class="language-plaintext highlighter-rouge">User</code>) vs contexts (plural <code class="language-plaintext highlighter-rouge">Users</code>).</li>
+  <li>I like how the Avia project separates “domain”, “model”, and “schema”. In particular as a fan of <a href="https://en.wikipedia.org/wiki/Domain-driven_design">Domain Driven Design</a> using the word “domain” is nice and I think it’s used in the same way.</li>
+</ul>
+
+<p>Things I don’t like from these projects:</p>
+
+<ul>
+  <li>Aliasing the right-most module in a path (as the Avia project does) drops it’s context. If <code class="language-plaintext highlighter-rouge">Hexpm.Accounts.AuditLog</code> is aliased as <code class="language-plaintext highlighter-rouge">AuditLog</code>, that might not be so bad because <code class="language-plaintext highlighter-rouge">AuditLog</code> is potentially a unique concept. But aliasing <code class="language-plaintext highlighter-rouge">Hexpm.Repository.Download</code> as <code class="language-plaintext highlighter-rouge">Download</code> could confuse. If you alias <code class="language-plaintext highlighter-rouge">Hexpm.Accounts</code> or <code class="language-plaintext highlighter-rouge">Hexpm.Repository</code> you can refer to <code class="language-plaintext highlighter-rouge">Accounts.AuditLog</code> or <code class="language-plaintext highlighter-rouge">Repository.Download</code> which I find clearer.</li>
+  <li>In the Avia project sometimes there are aliases like <code class="language-plaintext highlighter-rouge">Model.StockLocation</code> aliased as <code class="language-plaintext highlighter-rouge">StockLocationModel</code>. I would find it simpler to just refer to <code class="language-plaintext highlighter-rouge">Model.StockLocation</code> which is one character longer but makes the source clearer.</li>
+  <li>In hexpm the schema vs context convention doesn’t help when browsing a directory to distinguish schemas from plain module files.</li>
+</ul>
+
+<p>As a long-time Rails developer, one thing that makes Rails nice is being able to go between apps easily because there is always a place for everything. But as an app grows large, grouping files by type means that directories like <code class="language-plaintext highlighter-rouge">controllers</code> and <code class="language-plaintext highlighter-rouge">models</code> get very full. The Phoenix project, I think trying to learn from Rails, encourages using contexts with well-defined APIs. Since each context often needs to solve different problems (such as wrapping a database, creating an API client, or just doing calculations), these can be structured however you like. But when it makes sense I think that we could create directories according to conventions to organize our code. For a long time, many projects have established loose conventions with directories like <code class="language-plaintext highlighter-rouge">lib</code>, <code class="language-plaintext highlighter-rouge">docs</code>, <code class="language-plaintext highlighter-rouge">log</code>, and <code class="language-plaintext highlighter-rouge">test</code>. In the web part of a Phoenix application, we have <code class="language-plaintext highlighter-rouge">controller</code>, <code class="language-plaintext highlighter-rouge">channel</code>, <code class="language-plaintext highlighter-rouge">view</code>, etc…</p>
+
+<p>We could do the same in the very common case where our contexts contain Ecto database logic. We are given the “schema” idea from Ecto itself as a way to separate transformation and validation logic. This helps us trim the fat from our “fat model” problem. But we’re left to put other query logic either into our schema or to have it mixed it with all of our context’s business logic.</p>
+
+<p>So after my investigation, the way that I plan to move forward:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    # The context's public API, headed with `use MyApp.Context`
+    my_app/&lt;context&gt;.ex
+
+    # Headed with `use MyApp.Schema`
+    my_app/&lt;context&gt;/schema/user.ex
+
+    # Headed with `use MyApp.Query`
+    my_app/&lt;context&gt;/query/user.ex
+
+    # For non-DB business logic
+    my_app/&lt;context&gt;/&lt;some_module&gt;.ex
+    my_app/&lt;context&gt;/&lt;some_module&gt;/&lt;sub_module&gt;.ex
+</code></pre></div></div>
+
+<p>These things might certainly change, but having looked through some other codebases and reflecting on what I like and don’t like, I think that this will be a good start.</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        Foooo
+
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/tags/#ecto" class="page__taxonomy-item" rel="tag">ecto</a><span class="sep">, </span>
+    
+      <a href="/tags/#elixir" class="page__taxonomy-item" rel="tag">elixir</a><span class="sep">, </span>
+    
+      <a href="/tags/#phoenix" class="page__taxonomy-item" rel="tag">phoenix</a>
+    
+    </span>
+  </p>
+
+
+
+
+
+        
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2020-07-17T00:00:00+02:00">July 17, 2020</time></p>
+
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/elixir/2020/01/31/expecting-the-unexpected-in-elixir" class="pagination--pager" title="Expecting the Unexpected in Elixir
+">Previous</a>
+    
+    
+      <a href="#" class="pagination--pager disabled">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2021 brian-underwood.blogs. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  
+    <script src="/assets/prism.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

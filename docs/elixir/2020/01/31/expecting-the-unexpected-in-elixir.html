@@ -1,0 +1,445 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.22.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Expecting the Unexpected in Elixir - brian-underwood.blogs</title>
+<meta name="description" content="">
+
+
+  <meta name="author" content="Brian Underwood">
+  
+  <meta property="article:author" content="Brian Underwood">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="brian-underwood.blogs">
+<meta property="og:title" content="Expecting the Unexpected in Elixir">
+<meta property="og:url" content="http://www.brian-underwood.codes//elixir/2020/01/31/expecting-the-unexpected-in-elixir">
+
+
+  <meta property="og:description" content="">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2020-01-31T00:00:00+01:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://www.brian-underwood.codes//elixir/2020/01/31/expecting-the-unexpected-in-elixir">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://www.brian-underwood.codes//"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="brian-underwood.blogs Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+    <link rel="stylesheet" href="/assets/prism.css">
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          brian-underwood.blogs
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/tags/">Tags</a>
+            </li><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+        <img src="/assets/images/bio-photo.jpg" alt="Brian Underwood" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Brian Underwood</h3>
+    
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li itemprop="homeLocation" itemscope itemtype="https://schema.org/Place">
+          <i class="fas fa-fw fa-map-marker-alt" aria-hidden="true"></i> <span itemprop="name">Stockholm, Sweden</span>
+        </li>
+      
+
+      
+        
+          
+            <li><a href="http://www.brian-underwood.codes/" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-link" aria-hidden="true"></i><span class="label">brian-underwood.codes</span></a></li>
+          
+        
+          
+            <li><a href="https://twitter.com/cheerfulstoic" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i><span class="label">@cheerfulstoic</span></a></li>
+          
+        
+          
+            <li><a href="https://github.com/cheerfulstoic" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github-square" aria-hidden="true"></i><span class="label">@cheerfulstoic</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Expecting the Unexpected in Elixir">
+    <meta itemprop="description" content="">
+    <meta itemprop="datePublished" content="2020-01-31T00:00:00+01:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Expecting the Unexpected in Elixir
+</h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p><img style="width: 800px; margin: 0 auto;" src="/assets/expecting_the_unexpected/rocket.jpg" /></p>
+
+<p style="text-align: center;">
+<em>Apollo 11's Saturn V rocket on the launchpad at the Kennedy Space Center. 1 July 1969. Photo: <a href="https://commons.wikimedia.org/wiki/File:Apollo_11_Saturn_V_on_the_pad_at_the_Kennedy_Space_Center.jpg">NASA</a></em>
+</p>
+
+<p><strong>What can a 50 year old cryptic error message teach us about the software we write today?</strong></p>
+
+<p><strong>Cross-posted from <a href="https://medium.com/fishbrain/expecting-the-unexpected-in-elixir-a24deb06b5a6">Medium</a></strong></p>
+
+<p>On July 24, 1969 Neil Armstrong and Buzz Aldrin were attempting to land on the moon for the first time in human history. As you might expect it was a tense situation. Of course it was just then that they got what every computer user hates to get… a cryptic error code:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Neil Armstrong: PROGRAM ALARM.
+Mission Control: It’s looking good to us. Over.
+Neil Armstrong: It’s a 1202.
+Buzz Aldrin: 1202.
+
+(14 seconds later…)
+
+Neil Armstrong: Give us a reading on the 1202 PROGRAM ALARM.
+Mission Control: Roger. We got — We’re GO on that alarm
+</code></pre></div></div>
+
+<p>Source: <a href="https://www.hq.nasa.gov/alsj/a11/a11transcript_tec.html">Apollo 11 — Technical Air-To-Ground Voice Transcription</a></p>
+
+<p>Unhelpfully, the error (along with a related 1201 error) continued to pop up in the minutes before landing as Armstrong focused on piloting. As they finally touched down the error was forgotten and they prepared to take their giant leap for mankind. But what was the mysterious error?</p>
+
+<h2 id="expecting-the-unexpected">Expecting the Unexpected</h2>
+
+<p>Some months back I wanted to give a brief presentation at our local Stockholm Elixir meetup group. As Scenic (a application user interface library) had been recently released it was a perfect opportunity to learn something new while hanging out with other Alchemists. When thinking of what to do with Scenic, I decided that I wanted to integrate with one of my favorite games: Kerbal Space Program. After all, why have only one challenge when you can have two instead?</p>
+
+<p>Kerbal Space Program is a game that gives you a small space center and the opportunity to try rocket science for yourself (be ready for lots of explosions). From the community of its fans we also get the kRPC plugin which allows other programs to interface with the game’s internal APIs using Protocol Buffers. This was just what I needed to implement a Kerbal Space Program dashboard demo.</p>
+
+<p><img style="width: 800px; margin: 0 auto;" src="/assets/expecting_the_unexpected/dashboard.png" /></p>
+
+<p style="text-align: center;">
+<em>The Demo Dashboard Interface</em>
+</p>
+
+<p>As part of the Apollo program, the MIT Instrumentation Laboratory was tasked with designing the Apollo Guidance Computer. For that the team exhaustively tested the computer and the mission programs to make sure there would always be capacity. Fortunately the computer was also designed so that if it did exceed capacity it would restart and pick back up where it left off. The 1202 / 1201 errors were indications of this happening.</p>
+
+<p>While you may never build something as important as the Apollo Guidance Computer, users of your software would prefer that it Just Worked. Fortunately with Elixir we are given the tools which allow us to give our users just as seamless of an experience.</p>
+
+<p>In creating my demo I realized that Scenic and Kerbal Space Program would make a great demonstration on how to design for failure in (mock) life-critical situations. Since Scenic uses supervisors for its components it’s designed to fail and recover seamlessly. Perfect to visually demonstrate designing for failure.</p>
+
+<h2 id="integrating-with-scenic-and-krpc">Integrating with Scenic and kRPC</h2>
+
+<p>When I researched Elixir solutions to work with kRPC I found the <a href="https://github.com/FiniteMonkeys/jooce">jooce</a> project. This project had some good example code which I looked through, though when I tried running the code it didn’t work. After quite a lot of struggling I found that it seemed to have been designed for an older version of the kRPC plugin. Because of this I ended up building my own (very simple) interface using <a href="https://github.com/bitwalker/exprotobuf">exprotobuf</a>. This worked, more or less, though I needed to use a specific branch of the Erlang gpb (Google Protobuf) library from CraigCottingham’s fork which fixed a bug I was experiencing.</p>
+
+<p>All of this worked fine and you can see the code <a href="https://gitlab.com/cheerfulstoic/ksp_scenic_dashboard/blob/master/lib/krpc.ex">here</a>, but more recently I found the <a href="https://github.com/wisq/space_ex">space_ex</a> Elixir library. This probably would have been an ideal solution if I had found it when I was putting together my demo project.</p>
+
+<p>Once I was able to integrate kRPC, I needed to be able to display the dashboard. In Scenic you create a hierarchy of components representing more and more focused parts of your UI. The components are Elixir processes and can receive messages which may change the state of the components and cause the display to be refreshed. I was able to use the <a href="https://github.com/boydm/scenic_sensor">scenic_sensor</a> library to create another supervised hierarchy of to hold my “sensors”. These sensors would simply send themselves messages to loop every 200 milliseconds at which point they could query the game and then send the latest readings to the Scenic components. The supervision tree looked like this:</p>
+
+<p><img style="width: 800px; margin: 0 auto;" src="/assets/expecting_the_unexpected/supervision_tree.png" /></p>
+
+<p>When I was first testing this out, my components would flash back and forth. After debugging for a while it I found that while each component would set its own value just fine, the Scenic graph that was being used was always the initial one. Therefore each change reflected only the most recent sensor. Fortunately the fix in my project was easy and a simple PR to the <a href="https://github.com/boydm/scenic_new">scenic_new</a> project would help prevent others from running into it.</p>
+
+<p>With the UI updating smoothly, I wanted to be able to simulate failure in the system. I decide to start with each component having a 1% chance of failing on every sensor check. With a check every 200 milliseconds and two sensors refreshing, that means that there should be a failure approximately every 10 seconds! That worked well, though when I would try to scale it up I would get a mess of Elixir backtraces that I had a hard time figuring out. After more struggling I realized that I was hitting the retry limits of the supervisors and they were simply giving up. After a simple update of <code class="language-plaintext highlighter-rouge">max_restarts</code>, I could monitor my sensors without even noticing flickering as things constantly crashed. I was even able to demo it at the meetup!</p>
+
+<h2 id="bonus-notes">Bonus Notes</h2>
+
+<ul>
+  <li>I found this <a href="https://www.youtube.com/watch?v=Qj2IETkScWA">video</a> of somebody simulating the Apollo Guidance Computer to use in my presentation. In includes audio from the astronauts asking about the 1202 alarm</li>
+  <li>For those interested in more information, Vintage Space has a good <a href="https://www.youtube.com/watch?v=kGD0zEbiDPQ">video</a> and <a href="https://www.discovermagazine.com/the-sciences/apollo-11s-1202-alarm-explained#.W__d35NKh24">writeup</a> about the 1201 / 1202 alarms.</li>
+  <li>Aviation Week had an <a href="https://web.archive.org/web/20180505110204/http://aviationweek.com/blog/dragons-radiation-tolerant-design">interview</a> (Wayback Machine link) with John Muratore at SpaceX discussing how they make radiation-tolerant hardware (which double checks it’s work and restarts as needed)</li>
+</ul>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        Foooo
+
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/tags/#elixir" class="page__taxonomy-item" rel="tag">elixir</a><span class="sep">, </span>
+    
+      <a href="/tags/#ksp" class="page__taxonomy-item" rel="tag">ksp</a>
+    
+    </span>
+  </p>
+
+
+
+
+
+        
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2020-01-31T00:00:00+01:00">January 31, 2020</time></p>
+
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/ruby/rails/neo4j/2016/01/11/analyzing_ruby_code_with_Neo4j" class="pagination--pager" title="Analyzing Ruby Code with Neo4j
+">Previous</a>
+    
+    
+      <a href="/elixir/2020/07/17/structuring-an-elixir+phoenix-app" class="pagination--pager" title="Structuring an Elixir+Phoenix App
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2021 brian-underwood.blogs. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  
+    <script src="/assets/prism.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

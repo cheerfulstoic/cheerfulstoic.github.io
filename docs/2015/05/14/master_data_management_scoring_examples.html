@@ -1,0 +1,3241 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.22.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Master Data Management Scoring Examples - brian-underwood.blogs</title>
+<meta name="description" content="A while ago my colleague Michael suggested to me that I draw out some examples of how my record linkage algorithm did it’s thing.  In order to do that, I’ve picked some users from both GitHub and StackOverflow which are big names in the Neo4j community to give you the idea.">
+
+
+  <meta name="author" content="Brian Underwood">
+  
+  <meta property="article:author" content="Brian Underwood">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="brian-underwood.blogs">
+<meta property="og:title" content="Master Data Management Scoring Examples">
+<meta property="og:url" content="http://www.brian-underwood.codes//2015/05/14/master_data_management_scoring_examples">
+
+
+  <meta property="og:description" content="A while ago my colleague Michael suggested to me that I draw out some examples of how my record linkage algorithm did it’s thing.  In order to do that, I’ve picked some users from both GitHub and StackOverflow which are big names in the Neo4j community to give you the idea.">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2015-05-14T18:10:00+02:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://www.brian-underwood.codes//2015/05/14/master_data_management_scoring_examples">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://www.brian-underwood.codes//"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="brian-underwood.blogs Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+    <link rel="stylesheet" href="/assets/prism.css">
+
+  </head>
+
+  <body class="layout--posts">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          brian-underwood.blogs
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/tags/">Tags</a>
+            </li><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+        <img src="/assets/images/bio-photo.jpg" alt="Brian Underwood" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Brian Underwood</h3>
+    
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li itemprop="homeLocation" itemscope itemtype="https://schema.org/Place">
+          <i class="fas fa-fw fa-map-marker-alt" aria-hidden="true"></i> <span itemprop="name">Stockholm, Sweden</span>
+        </li>
+      
+
+      
+        
+          
+            <li><a href="http://www.brian-underwood.codes/" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-link" aria-hidden="true"></i><span class="label">brian-underwood.codes</span></a></li>
+          
+        
+          
+            <li><a href="https://twitter.com/cheerfulstoic" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i><span class="label">@cheerfulstoic</span></a></li>
+          
+        
+          
+            <li><a href="https://github.com/cheerfulstoic" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github-square" aria-hidden="true"></i><span class="label">@cheerfulstoic</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <div class="archive">
+    
+      <h1 id="page-title" class="page__title">Master Data Management Scoring Examples</h1>
+    
+    <p>A while ago my colleague <a href="https://twitter.com/mesirii">Michael</a> suggested to me that I draw out some examples of how my <a href="/2015/03/08/making_master_data_management_fun_with_neo4j_-_part_3">record linkage</a> algorithm did it’s thing.  In order to do that, I’ve picked some users from both GitHub and StackOverflow which are big names in the Neo4j community to give you the idea.</p>
+
+<p>For each user in my list of famous Neo4jers I find the user on the other site which my algorithm matches best based on the matching score meeting a threshold.
+In that algorithm I match users via attribute pairings (e.g. <code class="language-plaintext highlighter-rouge">name</code> on GitHub and <code class="language-plaintext highlighter-rouge">display_name</code> on StackOverflow).
+Below I show how these property pairs contribute to each user’s score.</p>
+
+<h3 id="the-selected-users">The selected users</h3>
+
+<p>Below are the users which I selected.  I selected a set from both GitHub and StackOverflow so that I could test matching in both directions.</p>
+
+<h4 id="github">GitHub</h4>
+
+<table>
+  <tbody>
+    <tr>
+      <td><a href="https://github.com/jexp">Michael Hunger</a></td>
+      <td><a href="https://github.com/sarmbruster">Stefan Armbruster</a></td>
+      <td><a href="https://github.com/maxdemarzi">Max De Marzi</a></td>
+      <td><a href="https://github.com/peterneubauer">Peter Neubauer</a></td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/ikwattro">Christophe Willemsen</a></td>
+      <td><a href="https://github.com/wfreeman">Wes Freeman</a></td>
+      <td><a href="https://github.com/moxious">moxious</a></td>
+      <td><a href="https://github.com/mneedham">Mark Needham</a></td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/subvertallchris">Chris Grigg</a></td>
+      <td><a href="https://github.com/cheerfulstoic">Brian Underwood</a></td>
+      <td><a href="https://github.com/pombredanne">Philippe Ombredanne</a></td>
+      <td><a href="https://github.com/nawroth">Anders Nawroth</a></td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/akollegger">Andreas Kollegger</a></td>
+      <td><a href="https://github.com/thobe">Tobias Lindaaker</a></td>
+      <td><a href="https://github.com/jakewins">Jacob Hansson</a></td>
+      <td><a href="https://github.com/simpsonjulian">Julian Simpson</a></td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/andreasronge">Andreas Ronge</a></td>
+      <td><a href="https://github.com/tbaum">Thomas Baum</a></td>
+      <td> </td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="stackoverflow">StackOverflow</h4>
+
+<table>
+  <tbody>
+    <tr>
+      <td><a href="http://stackoverflow.com/users/2920686">FrobberOfBits</a></td>
+      <td><a href="http://stackoverflow.com/users/232671">Luanne</a></td>
+      <td><a href="http://stackoverflow.com/users/4187346">Dave Bennett</a></td>
+      <td><a href="http://stackoverflow.com/users/974731">cybersam</a></td>
+    </tr>
+    <tr>
+      <td><a href="http://stackoverflow.com/users/2061244">albertoperdomo</a></td>
+      <td><a href="http://stackoverflow.com/users/2481199">jjaderberg</a></td>
+      <td><a href="http://stackoverflow.com/users/256108">Nicholas</a></td>
+      <td><a href="http://stackoverflow.com/users/272109">David Makogon</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="property-matching-chart">Property Matching Chart</h3>
+
+<p>Here is a chart which shows all of the users.  The total bar size represents their total score while each section represents a pair of properties which were chosen for matching.  You’ll notice that seven of the 25 users aren’t matched.</p>
+
+<div style="text-align: center">
+  <img src="/assets/neo4j-mdm/famous_peeps.png" />
+</div>
+
+<h3 id="score-details">Score Details</h3>
+
+<p>Here I dig down into the nitty details of the values of interest for each user pair and the scores given for matches on those values.  For each property pair for each user pair I show:</p>
+
+<ul>
+  <li>the weight</li>
+  <li>the base score</li>
+  <li>the total score</li>
+</ul>
+
+<p>The weights for each property pair are constant from user to user and are based on an my analysis comparing my human identified results with various weights and thresholds to maximize <a href="http://en.wikipedia.org/wiki/Precision_and_recall">precision and recall</a>.</p>
+
+<p>The total score for for each user (not shown here) is the sum of the total scores of the property pairs.  The user pairs which I am displaying below are considered matches because they have the largest score among other pairs and because they match a minimum threshold.</p>
+
+<style>
+table {
+  border-collapse: collapse;
+}
+table, th, td {
+  border: 1px solid #CCC;
+  padding: 0.3em;
+}
+
+</style>
+
+<table>
+  <thead>
+    <tr>
+      <th>GH Prop</th>
+      <th>SO Prop</th>
+      <th>GH Value</th>
+      <th>SO Value</th>
+      <th>Weight</th>
+      <th>Base Score</th>
+      <th>Weighted Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>login</td>
+      <td>display_name</td>
+      <td>cybersam</td>
+      <td>cybersam</td>
+      <td>1.5</td>
+      <td>1.0</td>
+      <td>1.5</td>
+    </tr>
+    <tr>
+      <td>name</td>
+      <td>display_name</td>
+      <td>Sam</td>
+      <td>cybersam</td>
+      <td>1.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>location</td>
+      <td>location</td>
+      <td>Silicon Valley</td>
+      <td>Silicon Valley</td>
+      <td>3.5</td>
+      <td>1.0</td>
+      <td>3.5</td>
+    </tr>
+    <tr>
+      <td>usernames</td>
+      <td>usernames</td>
+      <td>[“cybersam”]</td>
+      <td>[“cybersam”]</td>
+      <td>3.5</td>
+      <td>1.0</td>
+      <td>3.5</td>
+    </tr>
+    <tr>
+      <td>uncommon_domains</td>
+      <td>uncommon_domains</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>blog</td>
+      <td>website_url</td>
+      <td> </td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>image_comparison</td>
+      <td>image_comparison</td>
+      <td>77601</td>
+      <td>51509</td>
+      <td>4.5</td>
+      <td>0.73</td>
+      <td>3.3</td>
+    </tr>
+    <tr>
+      <td>login</td>
+      <td>github_username</td>
+      <td>cybersam</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>twitter_username</td>
+      <td>twitter_username</td>
+      <td> </td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>GH Prop</th>
+      <th>SO Prop</th>
+      <th>GH Value</th>
+      <th>SO Value</th>
+      <th>Weight</th>
+      <th>Base Score</th>
+      <th>Weighted Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>login</td>
+      <td>display_name</td>
+      <td>davestern</td>
+      <td>Dave Bennett</td>
+      <td>1.5</td>
+      <td>0.83</td>
+      <td>1.2</td>
+    </tr>
+    <tr>
+      <td>name</td>
+      <td>display_name</td>
+      <td>Dave Stern</td>
+      <td>Dave Bennett</td>
+      <td>1.5</td>
+      <td>0.87</td>
+      <td>1.3</td>
+    </tr>
+    <tr>
+      <td>location</td>
+      <td>location</td>
+      <td> </td>
+      <td>Calgary</td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>usernames</td>
+      <td>usernames</td>
+      <td>[“davestern”]</td>
+      <td>[“dave bennett”]</td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>uncommon_domains</td>
+      <td>uncommon_domains</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>blog</td>
+      <td>website_url</td>
+      <td> </td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>image_comparison</td>
+      <td>image_comparison</td>
+      <td>76872</td>
+      <td>51521</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>login</td>
+      <td>github_username</td>
+      <td>davestern</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>twitter_username</td>
+      <td>twitter_username</td>
+      <td> </td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>GH Prop</th>
+      <th>SO Prop</th>
+      <th>GH Value</th>
+      <th>SO Value</th>
+      <th>Weight</th>
+      <th>Base Score</th>
+      <th>Weighted Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>login</td>
+      <td>display_name</td>
+      <td> </td>
+      <td>FrobberOfBits</td>
+      <td>1.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>name</td>
+      <td>display_name</td>
+      <td> </td>
+      <td>FrobberOfBits</td>
+      <td>1.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>location</td>
+      <td>location</td>
+      <td> </td>
+      <td>East Coast, USA</td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>usernames</td>
+      <td>usernames</td>
+      <td> </td>
+      <td>[“frobberofbits”]</td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>uncommon_domains</td>
+      <td>uncommon_domains</td>
+      <td> </td>
+      <td>[]</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>blog</td>
+      <td>website_url</td>
+      <td> </td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>image_comparison</td>
+      <td>image_comparison</td>
+      <td> </td>
+      <td>51799</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>login</td>
+      <td>github_username</td>
+      <td> </td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>twitter_username</td>
+      <td>twitter_username</td>
+      <td> </td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>GH Prop</th>
+      <th>SO Prop</th>
+      <th>GH Value</th>
+      <th>SO Value</th>
+      <th>Weight</th>
+      <th>Base Score</th>
+      <th>Weighted Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>login</td>
+      <td>display_name</td>
+      <td>NicholasAStuart</td>
+      <td>Nicholas</td>
+      <td>1.5</td>
+      <td>0.93</td>
+      <td>1.4</td>
+    </tr>
+    <tr>
+      <td>name</td>
+      <td>display_name</td>
+      <td>Nicholas A. Stuart</td>
+      <td>Nicholas</td>
+      <td>1.5</td>
+      <td>0.9</td>
+      <td>1.3</td>
+    </tr>
+    <tr>
+      <td>location</td>
+      <td>location</td>
+      <td>San Francisco, CA</td>
+      <td>San Francisco, CA</td>
+      <td>3.5</td>
+      <td>1.0</td>
+      <td>3.5</td>
+    </tr>
+    <tr>
+      <td>usernames</td>
+      <td>usernames</td>
+      <td>[“nicholasastuart”]</td>
+      <td>[“nicholas”]</td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>uncommon_domains</td>
+      <td>uncommon_domains</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>blog</td>
+      <td>website_url</td>
+      <td>https://github.com/NicholasAStuart</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>image_comparison</td>
+      <td>image_comparison</td>
+      <td>64519</td>
+      <td>52854</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>login</td>
+      <td>github_username</td>
+      <td>NicholasAStuart</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>twitter_username</td>
+      <td>twitter_username</td>
+      <td> </td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>GH Prop</th>
+      <th>SO Prop</th>
+      <th>GH Value</th>
+      <th>SO Value</th>
+      <th>Weight</th>
+      <th>Base Score</th>
+      <th>Weighted Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>login</td>
+      <td>display_name</td>
+      <td>lucciano</td>
+      <td>Luanne</td>
+      <td>1.5</td>
+      <td>0.78</td>
+      <td>1.2</td>
+    </tr>
+    <tr>
+      <td>name</td>
+      <td>display_name</td>
+      <td>Luciano Andrade</td>
+      <td>Luanne</td>
+      <td>1.5</td>
+      <td>0.76</td>
+      <td>1.1</td>
+    </tr>
+    <tr>
+      <td>location</td>
+      <td>location</td>
+      <td> </td>
+      <td>Mumbai, India</td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>usernames</td>
+      <td>usernames</td>
+      <td>[“lucciano”]</td>
+      <td>[“luanne”, “luannem”]</td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>uncommon_domains</td>
+      <td>uncommon_domains</td>
+      <td>[]</td>
+      <td>[“thought-bytes.blogspot.in”]</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>blog</td>
+      <td>website_url</td>
+      <td> </td>
+      <td>thought-bytes.blogspot.in</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>image_comparison</td>
+      <td>image_comparison</td>
+      <td>60299</td>
+      <td>53143</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>login</td>
+      <td>github_username</td>
+      <td>lucciano</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>twitter_username</td>
+      <td>twitter_username</td>
+      <td> </td>
+      <td>luannem</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>GH Prop</th>
+      <th>SO Prop</th>
+      <th>GH Value</th>
+      <th>SO Value</th>
+      <th>Weight</th>
+      <th>Base Score</th>
+      <th>Weighted Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>login</td>
+      <td>display_name</td>
+      <td>albertoperdomo</td>
+      <td>albertoperdomo</td>
+      <td>1.5</td>
+      <td>1.0</td>
+      <td>1.5</td>
+    </tr>
+    <tr>
+      <td>name</td>
+      <td>display_name</td>
+      <td>Alberto Perdomo</td>
+      <td>albertoperdomo</td>
+      <td>1.5</td>
+      <td>0.99</td>
+      <td>1.5</td>
+    </tr>
+    <tr>
+      <td>location</td>
+      <td>location</td>
+      <td>Las Palmas de Gran Canaria, Spain</td>
+      <td>Spain</td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>usernames</td>
+      <td>usernames</td>
+      <td>[“albertoperdomo”]</td>
+      <td>[“albertoperdomo”]</td>
+      <td>3.5</td>
+      <td>1.0</td>
+      <td>3.5</td>
+    </tr>
+    <tr>
+      <td>uncommon_domains</td>
+      <td>uncommon_domains</td>
+      <td>[“albertoperdomo.net”]</td>
+      <td>[“graphenedb.com”]</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>blog</td>
+      <td>website_url</td>
+      <td>http://albertoperdomo.net</td>
+      <td>graphenedb.com</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>image_comparison</td>
+      <td>image_comparison</td>
+      <td>62234</td>
+      <td>54027</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>login</td>
+      <td>github_username</td>
+      <td>albertoperdomo</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>twitter_username</td>
+      <td>twitter_username</td>
+      <td> </td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>GH Prop</th>
+      <th>SO Prop</th>
+      <th>GH Value</th>
+      <th>SO Value</th>
+      <th>Weight</th>
+      <th>Base Score</th>
+      <th>Weighted Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>login</td>
+      <td>display_name</td>
+      <td>johanlundberg</td>
+      <td>jjaderberg</td>
+      <td>1.5</td>
+      <td>0.77</td>
+      <td>1.1</td>
+    </tr>
+    <tr>
+      <td>name</td>
+      <td>display_name</td>
+      <td>Johan Lundberg</td>
+      <td>jjaderberg</td>
+      <td>1.5</td>
+      <td>0.75</td>
+      <td>1.1</td>
+    </tr>
+    <tr>
+      <td>location</td>
+      <td>location</td>
+      <td>Stockholm</td>
+      <td> </td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>usernames</td>
+      <td>usernames</td>
+      <td>[“johanlundberg”]</td>
+      <td>[“jjaderberg”]</td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>uncommon_domains</td>
+      <td>uncommon_domains</td>
+      <td>[“snakedesert.se”]</td>
+      <td>[“d.phil”]</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>blog</td>
+      <td>website_url</td>
+      <td>http://www.snakedesert.se</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>image_comparison</td>
+      <td>image_comparison</td>
+      <td>65150</td>
+      <td>55433</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>login</td>
+      <td>github_username</td>
+      <td>johanlundberg</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>twitter_username</td>
+      <td>twitter_username</td>
+      <td> </td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>GH Prop</th>
+      <th>SO Prop</th>
+      <th>GH Value</th>
+      <th>SO Value</th>
+      <th>Weight</th>
+      <th>Base Score</th>
+      <th>Weighted Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>login</td>
+      <td>display_name</td>
+      <td>maxdemarzi</td>
+      <td>Max De Marzi</td>
+      <td>1.5</td>
+      <td>0.96</td>
+      <td>1.4</td>
+    </tr>
+    <tr>
+      <td>name</td>
+      <td>display_name</td>
+      <td>Max De Marzi</td>
+      <td>Max De Marzi</td>
+      <td>1.5</td>
+      <td>1.0</td>
+      <td>1.5</td>
+    </tr>
+    <tr>
+      <td>location</td>
+      <td>location</td>
+      <td>60601</td>
+      <td>Chicago, IL</td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>usernames</td>
+      <td>usernames</td>
+      <td>[“maxdemarzi”]</td>
+      <td>[“max de marzi”]</td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>uncommon_domains</td>
+      <td>uncommon_domains</td>
+      <td>[“maxdemarzi.com”]</td>
+      <td>[“maxdemarzi.com”]</td>
+      <td>4.5</td>
+      <td>1.0</td>
+      <td>4.5</td>
+    </tr>
+    <tr>
+      <td>blog</td>
+      <td>website_url</td>
+      <td>maxdemarzi.com</td>
+      <td>maxdemarzi.com</td>
+      <td>4.5</td>
+      <td>1.0</td>
+      <td>4.5</td>
+    </tr>
+    <tr>
+      <td>image_comparison</td>
+      <td>image_comparison</td>
+      <td>60207</td>
+      <td>59296</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>login</td>
+      <td>github_username</td>
+      <td>maxdemarzi</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>twitter_username</td>
+      <td>twitter_username</td>
+      <td> </td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>GH Prop</th>
+      <th>SO Prop</th>
+      <th>GH Value</th>
+      <th>SO Value</th>
+      <th>Weight</th>
+      <th>Base Score</th>
+      <th>Weighted Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>login</td>
+      <td>display_name</td>
+      <td>tbaum</td>
+      <td>Thomas</td>
+      <td>1.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>name</td>
+      <td>display_name</td>
+      <td>Thomas Baum</td>
+      <td>Thomas</td>
+      <td>1.5</td>
+      <td>0.93</td>
+      <td>1.4</td>
+    </tr>
+    <tr>
+      <td>location</td>
+      <td>location</td>
+      <td>Germany / Dresden</td>
+      <td>Germany</td>
+      <td>3.5</td>
+      <td>0.88</td>
+      <td>3.1</td>
+    </tr>
+    <tr>
+      <td>usernames</td>
+      <td>usernames</td>
+      <td>[“tbaum”]</td>
+      <td>[“thomas”]</td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>uncommon_domains</td>
+      <td>uncommon_domains</td>
+      <td>[]</td>
+      <td>[“google.de”]</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>blog</td>
+      <td>website_url</td>
+      <td> </td>
+      <td>google.de</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>image_comparison</td>
+      <td>image_comparison</td>
+      <td>60777</td>
+      <td>52946</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>login</td>
+      <td>github_username</td>
+      <td>tbaum</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>twitter_username</td>
+      <td>twitter_username</td>
+      <td> </td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>GH Prop</th>
+      <th>SO Prop</th>
+      <th>GH Value</th>
+      <th>SO Value</th>
+      <th>Weight</th>
+      <th>Base Score</th>
+      <th>Weighted Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>login</td>
+      <td>display_name</td>
+      <td>sarmbruster</td>
+      <td>Stefan Armbruster</td>
+      <td>1.5</td>
+      <td>0.78</td>
+      <td>1.2</td>
+    </tr>
+    <tr>
+      <td>name</td>
+      <td>display_name</td>
+      <td>Stefan Armbruster</td>
+      <td>Stefan Armbruster</td>
+      <td>1.5</td>
+      <td>1.0</td>
+      <td>1.5</td>
+    </tr>
+    <tr>
+      <td>location</td>
+      <td>location</td>
+      <td>Munich, Germany</td>
+      <td>Munich, Germany</td>
+      <td>3.5</td>
+      <td>1.0</td>
+      <td>3.5</td>
+    </tr>
+    <tr>
+      <td>usernames</td>
+      <td>usernames</td>
+      <td>[“sarmbruster”]</td>
+      <td>[“stefan armbruster”]</td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>uncommon_domains</td>
+      <td>uncommon_domains</td>
+      <td>[“blog.armbruster-it.de”]</td>
+      <td>[“blog.armbruster-it.de”]</td>
+      <td>4.5</td>
+      <td>1.0</td>
+      <td>4.5</td>
+    </tr>
+    <tr>
+      <td>blog</td>
+      <td>website_url</td>
+      <td>http://blog.armbruster-it.de</td>
+      <td>blog.armbruster-it.de</td>
+      <td>4.5</td>
+      <td>0.77</td>
+      <td>3.5</td>
+    </tr>
+    <tr>
+      <td>image_comparison</td>
+      <td>image_comparison</td>
+      <td>60881</td>
+      <td>51506</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>login</td>
+      <td>github_username</td>
+      <td>sarmbruster</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>twitter_username</td>
+      <td>twitter_username</td>
+      <td> </td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>GH Prop</th>
+      <th>SO Prop</th>
+      <th>GH Value</th>
+      <th>SO Value</th>
+      <th>Weight</th>
+      <th>Base Score</th>
+      <th>Weighted Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>login</td>
+      <td>display_name</td>
+      <td>mneedham</td>
+      <td>Mark Needham</td>
+      <td>1.5</td>
+      <td>0.82</td>
+      <td>1.2</td>
+    </tr>
+    <tr>
+      <td>name</td>
+      <td>display_name</td>
+      <td>Mark Needham</td>
+      <td>Mark Needham</td>
+      <td>1.5</td>
+      <td>1.0</td>
+      <td>1.5</td>
+    </tr>
+    <tr>
+      <td>location</td>
+      <td>location</td>
+      <td>London, United Kingdom</td>
+      <td>United Kingdom</td>
+      <td>3.5</td>
+      <td>0.74</td>
+      <td>2.6</td>
+    </tr>
+    <tr>
+      <td>usernames</td>
+      <td>usernames</td>
+      <td>[“mneedham”]</td>
+      <td>[“mark needham”]</td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>uncommon_domains</td>
+      <td>uncommon_domains</td>
+      <td>[“markhneedham.com”]</td>
+      <td>[“markhneedham.com”]</td>
+      <td>4.5</td>
+      <td>1.0</td>
+      <td>4.5</td>
+    </tr>
+    <tr>
+      <td>blog</td>
+      <td>website_url</td>
+      <td>http://www.markhneedham.com/blog</td>
+      <td>markhneedham.com/blog</td>
+      <td>4.5</td>
+      <td>0.76</td>
+      <td>3.4</td>
+    </tr>
+    <tr>
+      <td>image_comparison</td>
+      <td>image_comparison</td>
+      <td>60963</td>
+      <td>53357</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>login</td>
+      <td>github_username</td>
+      <td>mneedham</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>twitter_username</td>
+      <td>twitter_username</td>
+      <td> </td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>GH Prop</th>
+      <th>SO Prop</th>
+      <th>GH Value</th>
+      <th>SO Value</th>
+      <th>Weight</th>
+      <th>Base Score</th>
+      <th>Weighted Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>login</td>
+      <td>display_name</td>
+      <td>pombredanne</td>
+      <td> </td>
+      <td>1.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>name</td>
+      <td>display_name</td>
+      <td>Philippe Ombredanne</td>
+      <td> </td>
+      <td>1.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>location</td>
+      <td>location</td>
+      <td> </td>
+      <td> </td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>usernames</td>
+      <td>usernames</td>
+      <td>[“pombredanne”]</td>
+      <td> </td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>uncommon_domains</td>
+      <td>uncommon_domains</td>
+      <td>[]</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>blog</td>
+      <td>website_url</td>
+      <td> </td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>image_comparison</td>
+      <td>image_comparison</td>
+      <td>61003</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>login</td>
+      <td>github_username</td>
+      <td>pombredanne</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>twitter_username</td>
+      <td>twitter_username</td>
+      <td> </td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>GH Prop</th>
+      <th>SO Prop</th>
+      <th>GH Value</th>
+      <th>SO Value</th>
+      <th>Weight</th>
+      <th>Base Score</th>
+      <th>Weighted Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>login</td>
+      <td>display_name</td>
+      <td>jexp</td>
+      <td>Michael Hunger</td>
+      <td>1.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>name</td>
+      <td>display_name</td>
+      <td>Michael Hunger</td>
+      <td>Michael Hunger</td>
+      <td>1.5</td>
+      <td>1.0</td>
+      <td>1.5</td>
+    </tr>
+    <tr>
+      <td>location</td>
+      <td>location</td>
+      <td>Dresden, Germany</td>
+      <td>Dresden, Germany</td>
+      <td>3.5</td>
+      <td>1.0</td>
+      <td>3.5</td>
+    </tr>
+    <tr>
+      <td>usernames</td>
+      <td>usernames</td>
+      <td>[“jexp”]</td>
+      <td>[“michael hunger”, “mesirii”, “jexp”]</td>
+      <td>3.5</td>
+      <td>1.0</td>
+      <td>3.5</td>
+    </tr>
+    <tr>
+      <td>uncommon_domains</td>
+      <td>uncommon_domains</td>
+      <td>[“jexp.de”]</td>
+      <td>[“spring.neo4j.org”, “die-buchbar.de”, “mg.mud.de”]</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>blog</td>
+      <td>website_url</td>
+      <td>http://jexp.de</td>
+      <td>neo4j.com</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>image_comparison</td>
+      <td>image_comparison</td>
+      <td>61063</td>
+      <td>51548</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>login</td>
+      <td>github_username</td>
+      <td>jexp</td>
+      <td>jexp</td>
+      <td>4.5</td>
+      <td>1.0</td>
+      <td>4.5</td>
+    </tr>
+    <tr>
+      <td>twitter_username</td>
+      <td>twitter_username</td>
+      <td> </td>
+      <td>mesirii</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>GH Prop</th>
+      <th>SO Prop</th>
+      <th>GH Value</th>
+      <th>SO Value</th>
+      <th>Weight</th>
+      <th>Base Score</th>
+      <th>Weighted Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>login</td>
+      <td>display_name</td>
+      <td>akollegger</td>
+      <td>akollegger</td>
+      <td>1.5</td>
+      <td>1.0</td>
+      <td>1.5</td>
+    </tr>
+    <tr>
+      <td>name</td>
+      <td>display_name</td>
+      <td>Andreas Kollegger</td>
+      <td>akollegger</td>
+      <td>1.5</td>
+      <td>0.75</td>
+      <td>1.1</td>
+    </tr>
+    <tr>
+      <td>location</td>
+      <td>location</td>
+      <td>San Francisco, CA</td>
+      <td>California</td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>usernames</td>
+      <td>usernames</td>
+      <td>[“akollegger”]</td>
+      <td>[“akollegger”]</td>
+      <td>3.5</td>
+      <td>1.0</td>
+      <td>3.5</td>
+    </tr>
+    <tr>
+      <td>uncommon_domains</td>
+      <td>uncommon_domains</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>blog</td>
+      <td>website_url</td>
+      <td>http://neo4j.com</td>
+      <td>neo4j.com</td>
+      <td>4.5</td>
+      <td>0.85</td>
+      <td>3.8</td>
+    </tr>
+    <tr>
+      <td>image_comparison</td>
+      <td>image_comparison</td>
+      <td>61069</td>
+      <td>58359</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>login</td>
+      <td>github_username</td>
+      <td>akollegger</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>twitter_username</td>
+      <td>twitter_username</td>
+      <td> </td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>GH Prop</th>
+      <th>SO Prop</th>
+      <th>GH Value</th>
+      <th>SO Value</th>
+      <th>Weight</th>
+      <th>Base Score</th>
+      <th>Weighted Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>login</td>
+      <td>display_name</td>
+      <td>simpsonjulian</td>
+      <td> </td>
+      <td>1.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>name</td>
+      <td>display_name</td>
+      <td>Julian Simpson</td>
+      <td> </td>
+      <td>1.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>location</td>
+      <td>location</td>
+      <td>Auckland, New Zealand</td>
+      <td> </td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>usernames</td>
+      <td>usernames</td>
+      <td>[“simpsonjulian”]</td>
+      <td> </td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>uncommon_domains</td>
+      <td>uncommon_domains</td>
+      <td>[“build-doctor.com”]</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>blog</td>
+      <td>website_url</td>
+      <td>http://www.build-doctor.com</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>image_comparison</td>
+      <td>image_comparison</td>
+      <td>61073</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>login</td>
+      <td>github_username</td>
+      <td>simpsonjulian</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>twitter_username</td>
+      <td>twitter_username</td>
+      <td> </td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>GH Prop</th>
+      <th>SO Prop</th>
+      <th>GH Value</th>
+      <th>SO Value</th>
+      <th>Weight</th>
+      <th>Base Score</th>
+      <th>Weighted Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>login</td>
+      <td>display_name</td>
+      <td>jakewins</td>
+      <td>jakewins</td>
+      <td>1.5</td>
+      <td>1.0</td>
+      <td>1.5</td>
+    </tr>
+    <tr>
+      <td>name</td>
+      <td>display_name</td>
+      <td>Jacob Hansson</td>
+      <td>jakewins</td>
+      <td>1.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>location</td>
+      <td>location</td>
+      <td>Sweden</td>
+      <td>Stockholm, Sweden</td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>usernames</td>
+      <td>usernames</td>
+      <td>[“jakewins”]</td>
+      <td>[“jakewins”]</td>
+      <td>3.5</td>
+      <td>1.0</td>
+      <td>3.5</td>
+    </tr>
+    <tr>
+      <td>uncommon_domains</td>
+      <td>uncommon_domains</td>
+      <td>[“voltvoodoo.com”]</td>
+      <td>[“jakewins.com”]</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>blog</td>
+      <td>website_url</td>
+      <td>http://voltvoodoo.com</td>
+      <td>jakewins.com</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>image_comparison</td>
+      <td>image_comparison</td>
+      <td>61077</td>
+      <td>57589</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>login</td>
+      <td>github_username</td>
+      <td>jakewins</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>twitter_username</td>
+      <td>twitter_username</td>
+      <td> </td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>GH Prop</th>
+      <th>SO Prop</th>
+      <th>GH Value</th>
+      <th>SO Value</th>
+      <th>Weight</th>
+      <th>Base Score</th>
+      <th>Weighted Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>login</td>
+      <td>display_name</td>
+      <td>peterneubauer</td>
+      <td>Peter Neubauer</td>
+      <td>1.5</td>
+      <td>0.98</td>
+      <td>1.5</td>
+    </tr>
+    <tr>
+      <td>name</td>
+      <td>display_name</td>
+      <td>Peter Neubauer</td>
+      <td>Peter Neubauer</td>
+      <td>1.5</td>
+      <td>1.0</td>
+      <td>1.5</td>
+    </tr>
+    <tr>
+      <td>location</td>
+      <td>location</td>
+      <td>Malmö, Sweden</td>
+      <td> </td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>usernames</td>
+      <td>usernames</td>
+      <td>[“peterneubauer”]</td>
+      <td>[“peter neubauer”, “peterneubauer”]</td>
+      <td>3.5</td>
+      <td>1.0</td>
+      <td>3.5</td>
+    </tr>
+    <tr>
+      <td>uncommon_domains</td>
+      <td>uncommon_domains</td>
+      <td>[]</td>
+      <td>[“mapillary.com”]</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>blog</td>
+      <td>website_url</td>
+      <td> </td>
+      <td>mapillary.com</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>image_comparison</td>
+      <td>image_comparison</td>
+      <td>61089</td>
+      <td>55637</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>login</td>
+      <td>github_username</td>
+      <td>peterneubauer</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>twitter_username</td>
+      <td>twitter_username</td>
+      <td> </td>
+      <td>peterneubauer</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>GH Prop</th>
+      <th>SO Prop</th>
+      <th>GH Value</th>
+      <th>SO Value</th>
+      <th>Weight</th>
+      <th>Base Score</th>
+      <th>Weighted Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>login</td>
+      <td>display_name</td>
+      <td>thobe</td>
+      <td> </td>
+      <td>1.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>name</td>
+      <td>display_name</td>
+      <td>Tobias Lindaaker</td>
+      <td> </td>
+      <td>1.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>location</td>
+      <td>location</td>
+      <td> </td>
+      <td> </td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>usernames</td>
+      <td>usernames</td>
+      <td>[“thobe”]</td>
+      <td> </td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>uncommon_domains</td>
+      <td>uncommon_domains</td>
+      <td>[“journal.thobe.org”]</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>blog</td>
+      <td>website_url</td>
+      <td>http://journal.thobe.org</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>image_comparison</td>
+      <td>image_comparison</td>
+      <td>61097</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>login</td>
+      <td>github_username</td>
+      <td>thobe</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>twitter_username</td>
+      <td>twitter_username</td>
+      <td> </td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>GH Prop</th>
+      <th>SO Prop</th>
+      <th>GH Value</th>
+      <th>SO Value</th>
+      <th>Weight</th>
+      <th>Base Score</th>
+      <th>Weighted Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>login</td>
+      <td>display_name</td>
+      <td>nawroth</td>
+      <td> </td>
+      <td>1.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>name</td>
+      <td>display_name</td>
+      <td>Anders Nawroth</td>
+      <td> </td>
+      <td>1.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>location</td>
+      <td>location</td>
+      <td>Skåne, Sweden</td>
+      <td> </td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>usernames</td>
+      <td>usernames</td>
+      <td>[“nawroth”]</td>
+      <td> </td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>uncommon_domains</td>
+      <td>uncommon_domains</td>
+      <td>[“anders.nawroth.se”]</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>blog</td>
+      <td>website_url</td>
+      <td>www.anders.nawroth.se</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>image_comparison</td>
+      <td>image_comparison</td>
+      <td>61099</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>login</td>
+      <td>github_username</td>
+      <td>nawroth</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>twitter_username</td>
+      <td>twitter_username</td>
+      <td> </td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>GH Prop</th>
+      <th>SO Prop</th>
+      <th>GH Value</th>
+      <th>SO Value</th>
+      <th>Weight</th>
+      <th>Base Score</th>
+      <th>Weighted Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>login</td>
+      <td>display_name</td>
+      <td>wfreeman</td>
+      <td>Wes Freeman</td>
+      <td>1.5</td>
+      <td>0.88</td>
+      <td>1.3</td>
+    </tr>
+    <tr>
+      <td>name</td>
+      <td>display_name</td>
+      <td>Wes Freeman</td>
+      <td>Wes Freeman</td>
+      <td>1.5</td>
+      <td>1.0</td>
+      <td>1.5</td>
+    </tr>
+    <tr>
+      <td>location</td>
+      <td>location</td>
+      <td>Fairfax, VA</td>
+      <td>Fairfax, VA</td>
+      <td>3.5</td>
+      <td>1.0</td>
+      <td>3.5</td>
+    </tr>
+    <tr>
+      <td>usernames</td>
+      <td>usernames</td>
+      <td>[“wfreeman”]</td>
+      <td>[“wes freeman”]</td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>uncommon_domains</td>
+      <td>uncommon_domains</td>
+      <td>[“wes.skeweredrook.com”]</td>
+      <td>[“wes.skeweredrook.com”]</td>
+      <td>4.5</td>
+      <td>1.0</td>
+      <td>4.5</td>
+    </tr>
+    <tr>
+      <td>blog</td>
+      <td>website_url</td>
+      <td>http://wes.skeweredrook.com</td>
+      <td>wes.skeweredrook.com</td>
+      <td>4.5</td>
+      <td>0.91</td>
+      <td>4.1</td>
+    </tr>
+    <tr>
+      <td>image_comparison</td>
+      <td>image_comparison</td>
+      <td>61111</td>
+      <td>53606</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>login</td>
+      <td>github_username</td>
+      <td>wfreeman</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>twitter_username</td>
+      <td>twitter_username</td>
+      <td> </td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>GH Prop</th>
+      <th>SO Prop</th>
+      <th>GH Value</th>
+      <th>SO Value</th>
+      <th>Weight</th>
+      <th>Base Score</th>
+      <th>Weighted Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>login</td>
+      <td>display_name</td>
+      <td>ikwattro</td>
+      <td> </td>
+      <td>1.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>name</td>
+      <td>display_name</td>
+      <td>Christophe Willemsen</td>
+      <td> </td>
+      <td>1.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>location</td>
+      <td>location</td>
+      <td>Belgium</td>
+      <td> </td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>usernames</td>
+      <td>usernames</td>
+      <td>[“ikwattro”]</td>
+      <td> </td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>uncommon_domains</td>
+      <td>uncommon_domains</td>
+      <td>[]</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>blog</td>
+      <td>website_url</td>
+      <td>https://twitter.com/#!/ikwattro</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>image_comparison</td>
+      <td>image_comparison</td>
+      <td>61128</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>login</td>
+      <td>github_username</td>
+      <td>ikwattro</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>twitter_username</td>
+      <td>twitter_username</td>
+      <td> </td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>GH Prop</th>
+      <th>SO Prop</th>
+      <th>GH Value</th>
+      <th>SO Value</th>
+      <th>Weight</th>
+      <th>Base Score</th>
+      <th>Weighted Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>login</td>
+      <td>display_name</td>
+      <td>subvertallchris</td>
+      <td>subvertallchris</td>
+      <td>1.5</td>
+      <td>1.0</td>
+      <td>1.5</td>
+    </tr>
+    <tr>
+      <td>name</td>
+      <td>display_name</td>
+      <td>Chris Grigg</td>
+      <td>subvertallchris</td>
+      <td>1.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>location</td>
+      <td>location</td>
+      <td>Brooklyn, NY</td>
+      <td>Brooklyn, NY</td>
+      <td>3.5</td>
+      <td>1.0</td>
+      <td>3.5</td>
+    </tr>
+    <tr>
+      <td>usernames</td>
+      <td>usernames</td>
+      <td>[“subvertallchris”, “subvertallmedia”]</td>
+      <td>[“subvertallchris”, “subvertallmedia”, “neo4jrb”]</td>
+      <td>3.5</td>
+      <td>2.0</td>
+      <td>7.0</td>
+    </tr>
+    <tr>
+      <td>uncommon_domains</td>
+      <td>uncommon_domains</td>
+      <td>[]</td>
+      <td>[“blog.subvertallmedia.com”]</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>blog</td>
+      <td>website_url</td>
+      <td>https://twitter.com/subvertallmedia</td>
+      <td>blog.subvertallmedia.com</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>image_comparison</td>
+      <td>image_comparison</td>
+      <td>61285</td>
+      <td>51540</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>login</td>
+      <td>github_username</td>
+      <td>subvertallchris</td>
+      <td>neo4jrb</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>twitter_username</td>
+      <td>twitter_username</td>
+      <td>subvertallmedia</td>
+      <td>subvertallmedia</td>
+      <td>4.5</td>
+      <td>1.0</td>
+      <td>4.5</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>GH Prop</th>
+      <th>SO Prop</th>
+      <th>GH Value</th>
+      <th>SO Value</th>
+      <th>Weight</th>
+      <th>Base Score</th>
+      <th>Weighted Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>login</td>
+      <td>display_name</td>
+      <td>cheerfulstoic</td>
+      <td>Brian Underwood</td>
+      <td>1.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>name</td>
+      <td>display_name</td>
+      <td>Brian Underwood</td>
+      <td>Brian Underwood</td>
+      <td>1.5</td>
+      <td>1.0</td>
+      <td>1.5</td>
+    </tr>
+    <tr>
+      <td>location</td>
+      <td>location</td>
+      <td>Travelling</td>
+      <td>Travelling</td>
+      <td>3.5</td>
+      <td>1.0</td>
+      <td>3.5</td>
+    </tr>
+    <tr>
+      <td>usernames</td>
+      <td>usernames</td>
+      <td>[“cheerfulstoic”]</td>
+      <td>[“brian underwood”, “cheerfulstoic”, “neo4jrb”]</td>
+      <td>3.5</td>
+      <td>1.0</td>
+      <td>3.5</td>
+    </tr>
+    <tr>
+      <td>uncommon_domains</td>
+      <td>uncommon_domains</td>
+      <td>[“brian-underwood.codes”]</td>
+      <td>[“grandadventures-householdchores.com”, “brian-underwood.codes”]</td>
+      <td>4.5</td>
+      <td>1.0</td>
+      <td>4.5</td>
+    </tr>
+    <tr>
+      <td>blog</td>
+      <td>website_url</td>
+      <td>http://www.brian-underwood.codes/</td>
+      <td>brian-underwood.codes</td>
+      <td>4.5</td>
+      <td>0.77</td>
+      <td>3.5</td>
+    </tr>
+    <tr>
+      <td>image_comparison</td>
+      <td>image_comparison</td>
+      <td>61327</td>
+      <td>51500</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>login</td>
+      <td>github_username</td>
+      <td>cheerfulstoic</td>
+      <td>neo4jrb</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>twitter_username</td>
+      <td>twitter_username</td>
+      <td> </td>
+      <td>cheerfulstoic</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>GH Prop</th>
+      <th>SO Prop</th>
+      <th>GH Value</th>
+      <th>SO Value</th>
+      <th>Weight</th>
+      <th>Base Score</th>
+      <th>Weighted Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>login</td>
+      <td>display_name</td>
+      <td>moxious</td>
+      <td> </td>
+      <td>1.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>name</td>
+      <td>display_name</td>
+      <td> </td>
+      <td> </td>
+      <td>1.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>location</td>
+      <td>location</td>
+      <td> </td>
+      <td> </td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>usernames</td>
+      <td>usernames</td>
+      <td>[“moxious”]</td>
+      <td> </td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>uncommon_domains</td>
+      <td>uncommon_domains</td>
+      <td>[]</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>blog</td>
+      <td>website_url</td>
+      <td> </td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>image_comparison</td>
+      <td>image_comparison</td>
+      <td>61948</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>login</td>
+      <td>github_username</td>
+      <td>moxious</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>twitter_username</td>
+      <td>twitter_username</td>
+      <td> </td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>GH Prop</th>
+      <th>SO Prop</th>
+      <th>GH Value</th>
+      <th>SO Value</th>
+      <th>Weight</th>
+      <th>Base Score</th>
+      <th>Weighted Score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>login</td>
+      <td>display_name</td>
+      <td>andreasronge</td>
+      <td>Andreas Ronge</td>
+      <td>1.5</td>
+      <td>0.99</td>
+      <td>1.5</td>
+    </tr>
+    <tr>
+      <td>name</td>
+      <td>display_name</td>
+      <td>Andreas Ronge</td>
+      <td>Andreas Ronge</td>
+      <td>1.5</td>
+      <td>1.0</td>
+      <td>1.5</td>
+    </tr>
+    <tr>
+      <td>location</td>
+      <td>location</td>
+      <td>Malmö, Sweden</td>
+      <td> </td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>usernames</td>
+      <td>usernames</td>
+      <td>[“andreasronge”, “ronge”]</td>
+      <td>[“andreas ronge”]</td>
+      <td>3.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>uncommon_domains</td>
+      <td>uncommon_domains</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>blog</td>
+      <td>website_url</td>
+      <td>http://twitter.com/ronge</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>image_comparison</td>
+      <td>image_comparison</td>
+      <td>62280</td>
+      <td>55831</td>
+      <td>4.5</td>
+      <td>0.73</td>
+      <td>3.3</td>
+    </tr>
+    <tr>
+      <td>login</td>
+      <td>github_username</td>
+      <td>andreasronge</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>twitter_username</td>
+      <td>twitter_username</td>
+      <td>ronge</td>
+      <td> </td>
+      <td>4.5</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+<ul class="taxonomy__index">
+  
+  
+    <li>
+      <a href="#2020">
+        <strong>2020</strong> <span class="taxonomy__count">2</span>
+      </a>
+    </li>
+  
+    <li>
+      <a href="#2015">
+        <strong>2015</strong> <span class="taxonomy__count">9</span>
+      </a>
+    </li>
+  
+    <li>
+      <a href="#2014">
+        <strong>2014</strong> <span class="taxonomy__count">5</span>
+      </a>
+    </li>
+  
+</ul>
+
+
+
+
+  <section id="2020" class="taxonomy__section">
+    <h2 class="archive__subtitle">2020</h2>
+    <div class="entries-list">
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/elixir/2020/07/17/structuring-an-elixir+phoenix-app" rel="permalink">Structuring an Elixir+Phoenix App
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">I’ve mix phx.new ed many applications and when doing so I often start with wondering how to organize my code. I love how Phoenix pushes you to think about th...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/elixir/2020/01/31/expecting-the-unexpected-in-elixir" rel="permalink">Expecting the Unexpected in Elixir
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+</p>
+  </article>
+</div>
+
+      
+    </div>
+    <a href="#page-title" class="back-to-top">Back to Top &uarr;</a>
+  </section>
+
+  <section id="2015" class="taxonomy__section">
+    <h2 class="archive__subtitle">2015</h2>
+    <div class="entries-list">
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/08/20/using_graph_structure_record_linkage_on_irish_census_data_with_neo4j" rel="permalink">Using Graph Structure Record Linkage on Irish Census Data with Neo4j
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">For just over a year I’ve been obsessed on-and-off with a project ever since I stayed in the town of Skibbereen, Ireland.  Taking data from the 1901 and 1911...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/06/03/analyzing_rubys_objectspace_with_neo4j" rel="permalink">Analyzing Ruby’s ObjectSpace with Neo4j
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+
+</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/05/14/master_data_management_scoring_examples" rel="permalink">Master Data Management Scoring Examples
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">A while ago my colleague Michael suggested to me that I draw out some examples of how my record linkage algorithm did it’s thing.  In order to do that, I’ve ...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/04/16/running_a_neo4j_intro_workshop" rel="permalink">Running a Neo4j Cypher Introduction Workshop
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">Last night I ran a very successful workshop at the Friends of Neo4j Stockholm meetup group.  The format was based on a workshop that I attended in San Franci...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/03/08/making_master_data_management_fun_with_neo4j_-_part_3" rel="permalink">Making Master Data Management Fun with Neo4j - Part 3
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">In my last two posts I covered the process of importing data from StackOverflow and GitHub for the purpose of creating a combined MDM database.  Now we get t...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/02/22/making_master_data_management_fun_with_neo4j_-_part_2" rel="permalink">Making Master Data Management Fun with Neo4j - Part 2
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">In my last post I said I would “bring in another data source, show how I linked the data together, and demonstrate the sort of bigger picture that one can ge...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/02/16/making_master_data_management_fun_with_neo4j_-_part_1" rel="permalink">Making Master Data Management Fun with Neo4j - Part 1
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">Joining multiple disparate data-sources, commonly dubbed Master Data Management (MDM), is usually not a fun exercise. I would like to show you how to use a g...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/ruby/rails/neo4j/announcements/2015/02/04/modeling_in_neo4j_sans_programming" rel="permalink">Modeling in Neo4j Sans Programming
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+  
+
+</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/sql/neo4j/neo4apis/activerecord/announcements/2015/01/08/loading_sql_to_neo4j_like_magic" rel="permalink">Loading SQL to Neo4j Like Magic
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">When using neo4j for the first time, most people want to import data from another database to start playing around.  There are a lot of options including LOA...</p>
+  </article>
+</div>
+
+      
+    </div>
+    <a href="#page-title" class="back-to-top">Back to Top &uarr;</a>
+  </section>
+
+  <section id="2014" class="taxonomy__section">
+    <h2 class="archive__subtitle">2014</h2>
+    <div class="entries-list">
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/ruby/rails/neo4j/announcements/2014/12/17/analyzing_twitter_with_neo4j_and_rails" rel="permalink">Analyzing Twitter with Neo4j and Rails
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/ruby/neo4j/announcements/neo4apis/2014/11/03/neo4apis" rel="permalink">neo4apis
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/investigations/neo4j/irish%20census/2014/10/26/matchmaking_irish_citizens" rel="permalink">Matchmaking Irish Citizens
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+  I am he as you are he as you are me and we are all together
+
+  – The Beatles
+
+
+</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/investigations/neo4j/irish%20census/2014/09/02/normalizing_religion_in_ireland" rel="permalink">Normalizing Religion in Ireland
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+  When I told the people of Northern Ireland that I was an atheist,
+a woman in the audience stood up and said, ‘Yes, but is it the God
+of the Catholics or t...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/investigations/philisophical%20language/2014/07/20/a_blog_post_towards_a_programatically_generated_philisophical_language" rel="permalink">A Blog Post Toward a Programatically Generated Philisophical Language
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+  “Wilkins!  Yes!  I’ve considered decorating these walls with some graffiti of my own,
+and writing it in the Universal Character.. but it is too depressing...</p>
+  </article>
+</div>
+
+      
+    </div>
+    <a href="#page-title" class="back-to-top">Back to Top &uarr;</a>
+  </section>
+
+
+  </div>
+</div>
+    </div>
+
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2021 brian-underwood.blogs. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  
+    <script src="/assets/prism.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

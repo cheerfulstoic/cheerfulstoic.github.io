@@ -1,0 +1,783 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.22.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>neo4apis - brian-underwood.blogs</title>
+<meta name="description" content="">
+
+
+  <meta name="author" content="Brian Underwood">
+  
+  <meta property="article:author" content="Brian Underwood">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="brian-underwood.blogs">
+<meta property="og:title" content="neo4apis">
+<meta property="og:url" content="http://www.brian-underwood.codes//ruby/neo4j/announcements/neo4apis/2014/11/03/neo4apis">
+
+
+  <meta property="og:description" content="">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2014-11-03T00:00:00+01:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://www.brian-underwood.codes//ruby/neo4j/announcements/neo4apis/2014/11/03/neo4apis">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://www.brian-underwood.codes//"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="brian-underwood.blogs Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+    <link rel="stylesheet" href="/assets/prism.css">
+
+  </head>
+
+  <body class="layout--posts">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          brian-underwood.blogs
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/tags/">Tags</a>
+            </li><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+        <img src="/assets/images/bio-photo.jpg" alt="Brian Underwood" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Brian Underwood</h3>
+    
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li itemprop="homeLocation" itemscope itemtype="https://schema.org/Place">
+          <i class="fas fa-fw fa-map-marker-alt" aria-hidden="true"></i> <span itemprop="name">Stockholm, Sweden</span>
+        </li>
+      
+
+      
+        
+          
+            <li><a href="http://www.brian-underwood.codes/" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-link" aria-hidden="true"></i><span class="label">brian-underwood.codes</span></a></li>
+          
+        
+          
+            <li><a href="https://twitter.com/cheerfulstoic" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i><span class="label">@cheerfulstoic</span></a></li>
+          
+        
+          
+            <li><a href="https://github.com/cheerfulstoic" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github-square" aria-hidden="true"></i><span class="label">@cheerfulstoic</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <div class="archive">
+    
+      <h1 id="page-title" class="page__title">neo4apis</h1>
+    
+    <p><img style="float: right; width: 350px; margin: 0.6em;" src="/assets/api-meme.jpg" /></p>
+
+<p>I’ve been reading a few interesting analyses of Twitter data recently such as <a href="https://medium.com/message/72-hours-of-gamergate-e00513f7cf5d">this #gamergate analysis by Andy Baio</a>.  I thought it would be nice to have a mechanism for people to quickly and easily import data from Twitter to Neo4j for research purposes.  Like a good programmer I had to go up at least one level of abstraction.  Thus was born the ruby gems <a href="https://github.com/neo4jrb/neo4apis">neo4apis</a> and <a href="https://github.com/neo4jrb/neo4apis-twitter">neo4apis-twitter</a> (and, incidentally, <a href="https://github.com/neo4jrb/neo4apis-github">neo4apis-github</a> just to prove it was repeatable).</p>
+
+<p>Using the <code class="language-plaintext highlighter-rouge">neo4apis-twitter</code> gem is easy and can be used either in your ruby code or from the command line.  <code class="language-plaintext highlighter-rouge">neo4apis</code> takes care of loading your data efficiently as well as creating database indexes so that you can query it effectively.</p>
+
+<h3 id="using-ruby">Using ruby</h3>
+
+<p>First you need to make an instance of <code class="language-plaintext highlighter-rouge">Neo4Apis::Twitter</code>.  Pass in a <code class="language-plaintext highlighter-rouge">Neo4j::Session</code> from the <code class="language-plaintext highlighter-rouge">neo4j-core</code> gem specify the database to import to:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>neo4japis_twitter = Neo4Apis::Twitter.new(Neo4j::Session.open,
+                                          import_retweets: true,
+                                          import_hashtags: true)
+</code></pre></div></div>
+
+<p>From there we can initialize a client from the <code class="language-plaintext highlighter-rouge">twitter</code> gem and import some data:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>twitter_client = Twitter::REST::Client.new ...
+
+neo4japis_twitter.batch do 
+  twitter_client.search('ebola', result_type: 'recent').take(100).each do |tweet|
+    neo4apis_client.import :Tweet, tweet
+  end
+end
+</code></pre></div></div>
+
+<p>This will perform a search using the <code class="language-plaintext highlighter-rouge">twitter</code> gem and for each tweet it imports:</p>
+
+<ul>
+  <li>The tweet</li>
+  <li>The tweeter</li>
+</ul>
+
+<p>Because we set the <code class="language-plaintext highlighter-rouge">import_retweets</code> and <code class="language-plaintext highlighter-rouge">import_hashtags</code> options to <code class="language-plaintext highlighter-rouge">true</code> above, it will also import:</p>
+
+<ul>
+  <li>The original tweet if a retweet</li>
+  <li>The tweeter for the original tweet</li>
+  <li>The hash tags from the tweet</li>
+</ul>
+
+<p>These are all loaded as nodes into the neo4j database and connected with relationships as appropriate.</p>
+
+<h3 id="using-the-command-line">Using the command line</h3>
+
+<p>If you don’t want to bother with writing the ruby code, some commands are provided for you!  After installing the gem and setting up the twitter authentication config file (see <a href="https://github.com/neo4jrb/neo4apis-twitter">the README</a>), you just need to perform your search:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>neo4apis twitter search "hugs and puppies" 50 --import-retweets --import-hashtags
+</code></pre></div></div>
+
+<p>That will import 50 tweets (and associated users, and retweets, and hashtags, etc…) for the “hugs and puppies” search into neo4j!  Note that you can see the documentation for the <code class="language-plaintext highlighter-rouge">search</code> command by typing:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>neo4apis twitter help search
+</code></pre></div></div>
+
+<p>There is also a command to stream tweets continuously:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>neo4apis twitter filter "ballooning etiquette"
+</code></pre></div></div>
+
+<p>Data will be continuously imported until you hit <code class="language-plaintext highlighter-rouge">Ctrl-C</code>.  Again, for help with this command you can type:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>neo4apis twitter help filter
+</code></pre></div></div>
+
+<p>That’s it!  You want data?  You’ve got data!  From there you can just jump right into the awesome Neo4j web console or use the also awesome <a href="https://github.com/neo4jrb/neo4j">neo4j</a> and <a href="https://github.com/neo4jrb/neo4j-core">neo4j-core</a> gems to start playing with the data!</p>
+
+
+<ul class="taxonomy__index">
+  
+  
+    <li>
+      <a href="#2020">
+        <strong>2020</strong> <span class="taxonomy__count">2</span>
+      </a>
+    </li>
+  
+    <li>
+      <a href="#2015">
+        <strong>2015</strong> <span class="taxonomy__count">9</span>
+      </a>
+    </li>
+  
+    <li>
+      <a href="#2014">
+        <strong>2014</strong> <span class="taxonomy__count">5</span>
+      </a>
+    </li>
+  
+</ul>
+
+
+
+
+  <section id="2020" class="taxonomy__section">
+    <h2 class="archive__subtitle">2020</h2>
+    <div class="entries-list">
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/elixir/2020/07/17/structuring-an-elixir+phoenix-app" rel="permalink">Structuring an Elixir+Phoenix App
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">I’ve mix phx.new ed many applications and when doing so I often start with wondering how to organize my code. I love how Phoenix pushes you to think about th...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/elixir/2020/01/31/expecting-the-unexpected-in-elixir" rel="permalink">Expecting the Unexpected in Elixir
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+</p>
+  </article>
+</div>
+
+      
+    </div>
+    <a href="#page-title" class="back-to-top">Back to Top &uarr;</a>
+  </section>
+
+  <section id="2015" class="taxonomy__section">
+    <h2 class="archive__subtitle">2015</h2>
+    <div class="entries-list">
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/08/20/using_graph_structure_record_linkage_on_irish_census_data_with_neo4j" rel="permalink">Using Graph Structure Record Linkage on Irish Census Data with Neo4j
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">For just over a year I’ve been obsessed on-and-off with a project ever since I stayed in the town of Skibbereen, Ireland.  Taking data from the 1901 and 1911...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/06/03/analyzing_rubys_objectspace_with_neo4j" rel="permalink">Analyzing Ruby’s ObjectSpace with Neo4j
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+
+</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/05/14/master_data_management_scoring_examples" rel="permalink">Master Data Management Scoring Examples
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">A while ago my colleague Michael suggested to me that I draw out some examples of how my record linkage algorithm did it’s thing.  In order to do that, I’ve ...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/04/16/running_a_neo4j_intro_workshop" rel="permalink">Running a Neo4j Cypher Introduction Workshop
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">Last night I ran a very successful workshop at the Friends of Neo4j Stockholm meetup group.  The format was based on a workshop that I attended in San Franci...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/03/08/making_master_data_management_fun_with_neo4j_-_part_3" rel="permalink">Making Master Data Management Fun with Neo4j - Part 3
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">In my last two posts I covered the process of importing data from StackOverflow and GitHub for the purpose of creating a combined MDM database.  Now we get t...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/02/22/making_master_data_management_fun_with_neo4j_-_part_2" rel="permalink">Making Master Data Management Fun with Neo4j - Part 2
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">In my last post I said I would “bring in another data source, show how I linked the data together, and demonstrate the sort of bigger picture that one can ge...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/2015/02/16/making_master_data_management_fun_with_neo4j_-_part_1" rel="permalink">Making Master Data Management Fun with Neo4j - Part 1
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">Joining multiple disparate data-sources, commonly dubbed Master Data Management (MDM), is usually not a fun exercise. I would like to show you how to use a g...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/ruby/rails/neo4j/announcements/2015/02/04/modeling_in_neo4j_sans_programming" rel="permalink">Modeling in Neo4j Sans Programming
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+  
+
+</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/sql/neo4j/neo4apis/activerecord/announcements/2015/01/08/loading_sql_to_neo4j_like_magic" rel="permalink">Loading SQL to Neo4j Like Magic
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">When using neo4j for the first time, most people want to import data from another database to start playing around.  There are a lot of options including LOA...</p>
+  </article>
+</div>
+
+      
+    </div>
+    <a href="#page-title" class="back-to-top">Back to Top &uarr;</a>
+  </section>
+
+  <section id="2014" class="taxonomy__section">
+    <h2 class="archive__subtitle">2014</h2>
+    <div class="entries-list">
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/ruby/rails/neo4j/announcements/2014/12/17/analyzing_twitter_with_neo4j_and_rails" rel="permalink">Analyzing Twitter with Neo4j and Rails
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/ruby/neo4j/announcements/neo4apis/2014/11/03/neo4apis" rel="permalink">neo4apis
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/investigations/neo4j/irish%20census/2014/10/26/matchmaking_irish_citizens" rel="permalink">Matchmaking Irish Citizens
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+  I am he as you are he as you are me and we are all together
+
+  – The Beatles
+
+
+</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/investigations/neo4j/irish%20census/2014/09/02/normalizing_religion_in_ireland" rel="permalink">Normalizing Religion in Ireland
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+  When I told the people of Northern Ireland that I was an atheist,
+a woman in the audience stood up and said, ‘Yes, but is it the God
+of the Catholics or t...</p>
+  </article>
+</div>
+
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/investigations/philisophical%20language/2014/07/20/a_blog_post_towards_a_programatically_generated_philisophical_language" rel="permalink">A Blog Post Toward a Programatically Generated Philisophical Language
+</a>
+      
+    </h2>
+    
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+  “Wilkins!  Yes!  I’ve considered decorating these walls with some graffiti of my own,
+and writing it in the Universal Character.. but it is too depressing...</p>
+  </article>
+</div>
+
+      
+    </div>
+    <a href="#page-title" class="back-to-top">Back to Top &uarr;</a>
+  </section>
+
+
+  </div>
+</div>
+    </div>
+
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2021 brian-underwood.blogs. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  
+    <script src="/assets/prism.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>
