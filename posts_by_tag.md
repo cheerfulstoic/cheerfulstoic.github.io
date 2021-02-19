@@ -34,6 +34,7 @@ permalink: /tags/
 <h2 class="archive__subtitle">{{ tag[0] }}</h2>
 <div class="entries-{{ entries_layout }}">
 {% for post in tag.last %}
+{% include archive-single.html type=entries_layout %}
 
 {% endfor %}
 </div>
