@@ -114,7 +114,7 @@ var store = [{
         "teaser": null
       },{
         "title": "Why I Love Lodash",
-        "excerpt":"I love lodash, but I’m not here to tell you to use lodash. It’s up to you to decide if a tool is useful for you or your project. It will come down to the needs of the project (file size, browser/Node.js, how much you use it, etc…). But my...","categories": ["javascript"],
+        "excerpt":"I love Lodash, but I’m not here to tell you to use Lodash. It’s up to you to decide if a tool is useful for you or your project. It will come down to the needs of the project (file size, browser/Node.js, how much you use it, etc…). But my...","categories": ["javascript"],
         "tags": ["javascript","lodash"],
         "url": "/javascript/2021/05/13/why-I-love-lodash",
         "teaser": null
