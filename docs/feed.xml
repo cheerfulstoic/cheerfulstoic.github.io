@@ -1,4 +1,179 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="http://www.brian-underwood.codes//feed.xml" rel="self" type="application/atom+xml" /><link href="http://www.brian-underwood.codes//" rel="alternate" type="text/html" /><updated>2021-02-19T20:47:52+01:00</updated><id>http://www.brian-underwood.codes//feed.xml</id><title type="html">brian-underwood.blogs</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><author><name>Brian Underwood</name></author><entry><title type="html">Structuring an Elixir+Phoenix App</title><link href="http://www.brian-underwood.codes//elixir/2020/07/17/structuring-an-elixir+phoenix-app" rel="alternate" type="text/html" title="Structuring an Elixir+Phoenix App" /><published>2020-07-17T00:00:00+02:00</published><updated>2020-07-17T00:00:00+02:00</updated><id>http://www.brian-underwood.codes//elixir/2020/07/17/structuring-an-elixir+phoenix-app</id><content type="html" xml:base="http://www.brian-underwood.codes//elixir/2020/07/17/structuring-an-elixir+phoenix-app">&lt;p&gt;I’ve &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mix phx.new&lt;/code&gt; ed many applications and when doing so I often start with wondering how to organize my code. I love how Phoenix pushes you to think about the different domains in your app via generators while at the same time I have the freedom to organize modules on my own. Ecto schemas make for a nice abstraction, but where should I put code related just to that table? It could be in the context, but I don’t want the context to become a “grab bag” of unorganized function calls.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="http://www.brian-underwood.codes//feed.xml" rel="self" type="application/atom+xml" /><link href="http://www.brian-underwood.codes//" rel="alternate" type="text/html" /><updated>2021-05-13T22:27:47+02:00</updated><id>http://www.brian-underwood.codes//feed.xml</id><title type="html">brian-underwood.blogs</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><author><name>Brian Underwood</name></author><entry><title type="html">Why I Love Lodash</title><link href="http://www.brian-underwood.codes//javascript/2021/05/13/why-I-love-lodash" rel="alternate" type="text/html" title="Why I Love Lodash" /><published>2021-05-13T22:26:00+02:00</published><updated>2021-05-13T22:26:00+02:00</updated><id>http://www.brian-underwood.codes//javascript/2021/05/13/why-I-love-lodash</id><content type="html" xml:base="http://www.brian-underwood.codes//javascript/2021/05/13/why-I-love-lodash">&lt;p&gt;I love &lt;a href=&quot;https://lodash.com/&quot;&gt;lodash&lt;/a&gt;, but I’m not here to tell you to use lodash.  It’s up to you to decide if a tool is useful for you or your project.  It will come down to the needs of the project (file size, browser/Node.js, how much you use it, etc…).  But my new team was surprised by my passion for it and so I wanted to share my thoughts.  Specifically: I want to focus in this post on those things which I like, including things which I think people often miss.&lt;/p&gt;
+
+&lt;h2 id=&quot;checking-types&quot;&gt;Checking types&lt;/h2&gt;
+
+&lt;p&gt;To start with something simple, let’s look at identifying variable types.  I’ll take the examples from &lt;a href=&quot;https://dev.to/jmitchell38488/it-s-time-to-let-go-of-lodash-221f&quot;&gt;this post&lt;/a&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;language-javascript highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;isArray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;foo&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;===&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;foo&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!==&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;typeof&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;foo&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;===&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;object&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;===&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{};&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;typeof&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;foo&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;===&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;boolean&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&apos;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;All of that works, technically, but it’s so inconsistent.  This is especially true of the third example checking if something is an object.  Such a check requires a deeper understanding of Javascript objects that not everybody has and it might not always be implemented correctly.&lt;/p&gt;
+
+&lt;p&gt;Also, regarding the last example for checking boolean, I should admit that I lied a bit: it isn’t from the post I linked to!  The example they gave was: &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Boolean(foo)&lt;/code&gt;, but in the comments somebody pointed out that truthy values like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Boolean(1)&lt;/code&gt; would return &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;true&lt;/code&gt;.  For me, all of this is more complex and error prone than just doing:&lt;/p&gt;
+
+&lt;div class=&quot;language-javascript highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nx&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;isArray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;isNull&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;isObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;isBoolean&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;With those, I’m a lot less likely to come back to my code later because of a bug due to my understanding of type checking.&lt;/p&gt;
+
+&lt;h2 id=&quot;chaining&quot;&gt;Chaining&lt;/h2&gt;
+
+&lt;p&gt;I very often have a need to transform a data structure in multiple steps:&lt;/p&gt;
+
+&lt;div class=&quot;language-javascript highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// Find adults, group by age (ten-year spans), and find if any in each group own a pet&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;people&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[{&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;Jane Doe&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;age&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;33&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;ownsPet&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;...]&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;adults&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;people&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;person&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;person&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;age&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;18&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;groupedAdults&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;adults&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;reduce&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;adult&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;groupingNumber&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Math&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;floor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;adult&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;age&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;groupingNumber&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;groupingNumber&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;nx&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;groupingNumber&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;push&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;adult&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{})&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;petExistsForGroup&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;groupedAdults&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;forEach&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;petExists&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;nx&quot;&gt;groupedAdults&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;forEach&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;adult&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;petExists&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;petExists&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;adult&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;ownsPet&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+
+  &lt;span class=&quot;nx&quot;&gt;petExistsForGroup&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;petExists&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Seem about what you expect from Javascript?  Maybe not the nicest bit of code in the world, but it does the job.  Good enough, right?  Let’s try using lodash chaining, along with other helpers:&lt;/p&gt;
+
+&lt;div class=&quot;language-javascript highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;people&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[{&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;Jane Doe&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;age&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;33&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;ownsPet&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;...]&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;petExistsForGroup&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;
+  &lt;span class=&quot;nx&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;people&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;person&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;person&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;age&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;18&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;groupBy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;adult&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Math&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;floor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;adult&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;age&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;mapValues&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;adults&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;some&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;adults&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;ownsPet&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;It’s another way of thinking, right?  Shorter for sure, but also higher-level and more declarative.  The mechanics drop away and we’re left with our code business logic.&lt;/p&gt;
+
+&lt;p&gt;This is one of the big things that I love about lodash.  If you take the time to learn it, it allows you to work at a higher level, not worrying about small details.  For that reason I enjoy just browsing through the documentation sometimes, like browsing an IKEA catalog and thinking to myself “oooh, that could be nice…”.  It’s good to know what’s there, even if you’re not sure why you would use it.  I’ve found &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;_.partition&lt;/code&gt; surprisingly useful!&lt;/p&gt;
+
+&lt;p&gt;Did I choose an example that plays to lodash’s strengths?  Absolutely!  But I challenge anybody to make the first example shorter while still being readable using pure Javascript.&lt;/p&gt;
+
+&lt;p&gt;It’s also worth mentioning that lodash has methods which basically just duplicate the functionality of their javascript counterparts (e.g. &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;_.concat&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;_.fill&lt;/code&gt;).  This maybe seems unnecessary to people who are skeptical of lodash, but remember that because lodash offers chaining it needs to provide all of the potential methods that you might use.&lt;/p&gt;
+
+&lt;h2 id=&quot;iteratee-shorthand&quot;&gt;Iteratee shorthand&lt;/h2&gt;
+
+&lt;p&gt;You may have noted the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;_.some(adults, &apos;ownsPet&apos;)&lt;/code&gt; bit above.  By passing in a string instead of a function, lodash automatically uses an identity function.  This would be the equivilent of: &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;_.some(adults, (adult) =&amp;gt; adult.ownPet)&lt;/code&gt;.  True the second version isn’t much longer, but the first is more at-a-glance readable.&lt;/p&gt;
+
+&lt;p&gt;But it doesn’t stop there!  You can use the string syntax for nested paths:&lt;/p&gt;
+
+&lt;div class=&quot;language-javascript highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;things&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[{&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;Car&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;owner&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;contactDetails&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;phoneNumber&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;123-456-7890&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;email&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;me@thingowner.com&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}}},&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;...]&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;things&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;owner.contactDetails.phoneNumber&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;find&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;things&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;owner.contactDetails.email&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;me@thingowner.com&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// ... more?&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Not only does it provide a simple syntax for going deep, but if any step along the way doesn’t exist (say, the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;contactDetails&lt;/code&gt; field is &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;null&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;undefined&lt;/code&gt;), it will simply return &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;undefined&lt;/code&gt;, similar to Javascript’s &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;?.&lt;/code&gt; operator.&lt;/p&gt;
+
+&lt;h2 id=&quot;javascript-as-the-write-it-yourself-language&quot;&gt;Javascript as the “write it yourself” language&lt;/h2&gt;
+
+&lt;p&gt;Having been a Ruby programmer for a long time, I will often search for a way to manipulate some data in Ruby and very often there will by either a simple function to call or a discussion on how to write something concise but readable.  Whenever I’m working with Javascript, however, the answer very often seems to be either “write it yourself” or “copy a solution”.  Here is a small selection that I gathered relatively quickly:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://stackoverflow.com/questions/45342155/how-to-subtract-one-array-from-another-element-wise-in-javascript&quot;&gt;How to subtract one array from another, element-wise, in javascript&lt;/a&gt; (&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;_.difference&lt;/code&gt;)&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://stackoverflow.com/questions/4550505/getting-a-random-value-from-a-javascript-array&quot;&gt;Getting a random value from a JavaScript array&lt;/a&gt; (&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;_.sample&lt;/code&gt;)&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://stackoverflow.com/questions/979256/sorting-an-array-of-objects-by-property-values&quot;&gt;Sorting an array of objects by property values&lt;/a&gt;(&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;_.sortBy&lt;/code&gt;)&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://stackoverflow.com/questions/22015684/how-do-i-zip-two-arrays-in-javascript&quot;&gt;How do I zip two arrays in JavaScript?&lt;/a&gt; (&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;_.zip&lt;/code&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Sometimes you’ll even get answers, like with &lt;a href=&quot;https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array&quot;&gt;How to randomize (shuffle) a JavaScript array?&lt;/a&gt; (&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;_.shuffle&lt;/code&gt;) which talks about the ideal algorithm (the “Fisher-Yates (aka Knuth) Shuffle” in this case).  Academically I enjoy learning about different algorithms, but when I’m trying to get higher-level done I just want something that works well.  I’m not sure if the performance of my sorting / shuffling algorithm has ever been a practical concern.&lt;/p&gt;
+
+&lt;p&gt;Some of these solutions are very complex, but some are pretty simple, even if they aren’t as simple as just calling a lodash function.  So what’s so bad about using pure Javascript to zip two arrays?&lt;/p&gt;
+
+&lt;div class=&quot;language-javascript highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]];&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The problem, as I see it, is that it:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;is not immediately obvious&lt;/li&gt;
+  &lt;li&gt;is a distraction from the task that you’re trying to accomplish&lt;/li&gt;
+  &lt;li&gt;leaves room for custom functions to be implemented in broken, odd, or inconsistent ways&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The more time that I’ve spent programming, the less I trust myself and the more I trust open source solutions which have been developed and vetted by a community.  Also, most of my experience in programming comes from working in teams.  When working in teams the goal is for code to be readable and maintainable.  If you scatter the codebase with versions of functions that have been implemented over and over again elsewhere (almost certainly in a better way), you’re generally just spending extra time and slowing others down.&lt;/p&gt;
+
+&lt;p&gt;Of course there’s nothing wrong with enjoying the challenge of writing your own algorithms!  I just think it’s much better done in https://exercism.io rather than your codebase.&lt;/p&gt;
+
+&lt;h2 id=&quot;being-fair-to-javascript&quot;&gt;Being fair to Javascript&lt;/h2&gt;
+
+&lt;p&gt;All of the above said, Javascript has come a long way in recent years.  Some examples:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;I love the fact that I can use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;{a: &apos;b&apos;, ...obj}&lt;/code&gt; instead of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;_.merge({a: &apos;b&apos;}, obj)&lt;/code&gt; (as long as it’s not part of a larger flow which works better as a lodash chain)&lt;/li&gt;
+  &lt;li&gt;I often want to return the unique items from an array, and so &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;[...new Set(array)]&lt;/code&gt; provides a reasonably readable solution (if only slightly more verbose and less obvious than &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;_.uniq(array)&lt;/code&gt;)&lt;/li&gt;
+  &lt;li&gt;In ES2019 arrays now have &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;flat()&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;flatMap()&lt;/code&gt; functions&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;summing-up&quot;&gt;Summing up&lt;/h2&gt;
+
+&lt;p&gt;Lodash is self-consistent and holistically designed.  “The principle of least astonishment” is a way to not get bogged down in details, be less prone to errors, and increase overall developer happiness.  When bringing in a new developer it’s easier for them to come up-to-speed quickly.&lt;/p&gt;
+
+&lt;p&gt;And my favorite response to “You Don’t Need Lodash”:&lt;/p&gt;
+
+&lt;blockquote class=&quot;twitter-tweet&quot;&gt;&lt;p lang=&quot;en&quot; dir=&quot;ltr&quot;&gt;I guess not, but I want it. &amp;quot;You don&amp;#39;t need Lodash/Underscore&amp;quot; &lt;a href=&quot;https://t.co/keLJ43U0pa&quot;&gt;https://t.co/keLJ43U0pa&lt;/a&gt;&lt;/p&gt;&amp;mdash; Tero Parviainen (@teropa) &lt;a href=&quot;https://twitter.com/teropa/status/692280179666898944?ref_src=twsrc%5Etfw&quot;&gt;January 27, 2016&lt;/a&gt;&lt;/blockquote&gt;
+&lt;script async=&quot;&quot; src=&quot;https://platform.twitter.com/widgets.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;</content><author><name>Brian Underwood</name></author><category term="javascript" /><category term="javascript" /><category term="lodash" /><summary type="html">I love lodash, but I’m not here to tell you to use lodash. It’s up to you to decide if a tool is useful for you or your project. It will come down to the needs of the project (file size, browser/Node.js, how much you use it, etc…). But my new team was surprised by my passion for it and so I wanted to share my thoughts. Specifically: I want to focus in this post on those things which I like, including things which I think people often miss.</summary></entry><entry><title type="html">Handling Errors… or not</title><link href="http://www.brian-underwood.codes//2021/02/20/handling-errors-or-not" rel="alternate" type="text/html" title="Handling Errors… or not" /><published>2021-02-20T00:00:00+01:00</published><updated>2021-02-20T00:00:00+01:00</updated><id>http://www.brian-underwood.codes//2021/02/20/handling-errors-or-not</id><content type="html" xml:base="http://www.brian-underwood.codes//2021/02/20/handling-errors-or-not">&lt;p&gt;This post is mainly about Javascript, but I believe that it is applicable to any language that has exceptions which can be thrown and handled.  I will try to keep the examples high-level.&lt;/p&gt;
+
+&lt;p&gt;You know that you should handle your exceptions, right.  Sometimes you remember to and sometimes you don’t.  When you don’t, do you feel a bit guilty that you’re not being a “good” or “professional” programmer?  What would it look like if you handled every single exception in your code?  It would probably be bloated and hard to maintain.  When and why should we handle exceptions?&lt;/p&gt;
+
+&lt;div class=&quot;language-javascript highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;JS NOTE: I thought at first that &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;catch&lt;/code&gt; would get the error but the promise chain would still allow other &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;catch&lt;/code&gt; calls.  It makes sense that it doesn’t, otherwise you wouldn’t be able to choose to either handle an error or let it bubble.&lt;/p&gt;
+
+&lt;p&gt;NOTE: Logging errors depends on the quality of the code doing the logging.  If somebody writes: &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;logger.error(&apos;call failed&apos;)&lt;/code&gt; you won’t see the error message to know &lt;em&gt;why&lt;/em&gt;.  If somebody writes &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;logger.error(&apos;service call error: &apos; + err.message)&lt;/code&gt;, that is better, but you don’t know &lt;em&gt;which&lt;/em&gt; service and you don’t have a stack trace.  This is why exception have the ability to “bubble”.  It is a standard way to pass all that information up so that it can be logged / sent off / etc… in a standard way.
+That doesn’t mean you  should just let errors happen.  Attaching your business logic’s context can be very useful in seeing immediately where an error came from.  Ideally you would do &lt;em&gt;that&lt;/em&gt; in a standard way to reduce the need to dig through the code to find where the error came from&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Logging is useful for debugging, but it isn’t in-your-face.  We’re not always looking at logs&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Exception tracking is better.  In-your-face.  Sends E-Mails/Slack message/etc…  Lets you organize your errors&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Hypothesis:
+    &lt;ul&gt;
+      &lt;li&gt;Functions at a “lower level” which handle their errors (and log, or just simply return a fake value) make errors hard to see&lt;/li&gt;
+      &lt;li&gt;Need to distinguish between something that you expect to happen and you’re OK with a default value, and something that you don’t expect and really need to know about&lt;/li&gt;
+      &lt;li&gt;Lat/long of 0,0 is rarely acceptable.  Don’t return 0/empty string/etc… if you don’t know what the value should be&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Discuss “Functional Core, Imperative Shell” (?)&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;https://github.com/kbilsted/Functional-core-imperative-shell/blob/master/README.md&lt;/li&gt;
+  &lt;li&gt;https://www.destroyallsoftware.com/screencasts/catalog/functional-core-imperative-shell&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Notes:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Investigate: https://jamesonzimmer.com/dynamic-footnotes-markdown-jekyll-no-plugin/&lt;/li&gt;
+  &lt;li&gt;Look again at Exceptional Ruby&lt;/li&gt;
+  &lt;li&gt;Catching errors early means that they can’t be caught and dealt with by higher, more general, logging / exception reporting handlers&lt;/li&gt;
+  &lt;li&gt;I wrote some stuff in my notebook&lt;/li&gt;
+  &lt;li&gt;Use multiple languages? or just pseudo code?&lt;/li&gt;
+&lt;/ul&gt;</content><author><name>Brian Underwood</name></author><category term="javascript" /><category term="opinion" /><summary type="html">This post is mainly about Javascript, but I believe that it is applicable to any language that has exceptions which can be thrown and handled. I will try to keep the examples high-level.</summary></entry><entry><title type="html">Structuring an Elixir+Phoenix App</title><link href="http://www.brian-underwood.codes//elixir/2020/07/11/structuring-an-elixir+phoenix-app" rel="alternate" type="text/html" title="Structuring an Elixir+Phoenix App" /><published>2020-07-11T00:00:00+02:00</published><updated>2020-07-11T00:00:00+02:00</updated><id>http://www.brian-underwood.codes//elixir/2020/07/11/structuring-an-elixir+phoenix-app</id><content type="html" xml:base="http://www.brian-underwood.codes//elixir/2020/07/11/structuring-an-elixir+phoenix-app">&lt;p&gt;I’ve &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mix phx.new&lt;/code&gt; ed many applications and when doing so I often start with wondering how to organize my code. I love how Phoenix pushes you to think about the different domains in your app via generators while at the same time I have the freedom to organize modules on my own. Ecto schemas make for a nice abstraction, but where should I put code related just to that table? It could be in the context, but I don’t want the context to become a “grab bag” of unorganized function calls.&lt;/p&gt;
 
 &lt;p&gt;In the past, I’ve searched for someone writing on the subject but haven’t come up with much. I’ve even done some cursory glancing into repositories to get a feeling for what they do, but I’ve never looked thoroughly at different options. In this post, I share what I have found from four different open source Phoenix+Ecto applications. And as the old joke goes, I’ll be asking four developers for their opinions and getting four different answers. In the end, I’ll summarize how I plan to move forward.&lt;/p&gt;
 
@@ -3914,371 +4089,4 @@ table, th, td {
 
 &lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
 
-&lt;p&gt;The workshop was a really fun way to get people using Neo4j really quickly.  It can feel a bit strange to simply give people some datasets and ask them to do something with it, but the freedom to be creative helped both the participants and me be really excited about working with Neo4j.  I look forward to doing more workshops again in the future!&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="neo4j" /><category term="advocacy" /><summary type="html">Last night I ran a very successful workshop at the Friends of Neo4j Stockholm meetup group. The format was based on a workshop that I attended in San Francisco while the World Cup was going on and was based around investigating a dataset of previous World Cup matches. Roughly the format was:</summary></entry><entry><title type="html">Making Master Data Management Fun with Neo4j - Part 3</title><link href="http://www.brian-underwood.codes//2015/03/08/making_master_data_management_fun_with_neo4j_-_part_3" rel="alternate" type="text/html" title="Making Master Data Management Fun with Neo4j - Part 3" /><published>2015-03-08T20:31:00+01:00</published><updated>2015-03-08T20:31:00+01:00</updated><id>http://www.brian-underwood.codes//2015/03/08/making_master_data_management_fun_with_neo4j_-_part_3</id><content type="html" xml:base="http://www.brian-underwood.codes//2015/03/08/making_master_data_management_fun_with_neo4j_-_part_3">&lt;p&gt;In my last two posts I covered the process of importing data from &lt;a href=&quot;/2015/02/16/making_master_data_management_fun_with_neo4j_-_part_1&quot;&gt;StackOverflow&lt;/a&gt; and &lt;a href=&quot;/2015/02/22/making_master_data_management_fun_with_neo4j_-_part_2&quot;&gt;GitHub&lt;/a&gt; for the purpose of creating a combined MDM database.  Now we get to the really fun stuff: today I show you how I tied the data together!&lt;/p&gt;
-
-&lt;h2 id=&quot;tying-the-data-together&quot;&gt;Tying the data together&lt;/h2&gt;
-
-&lt;p&gt;The most obvious entities to link between StackOverflow and GitHub is the user profiles.  Unfortuately users don’t always have two profiles, don’t fill out both profiles, or just don’t have perfectly matching information between the two.  To this end I built &lt;a href=&quot;http://en.wikipedia.org/wiki/Record_linkage&quot;&gt;record linkage&lt;/a&gt; tools which helped me make links between users.&lt;/p&gt;
-
-&lt;p&gt;My goal is to create a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Person&lt;/code&gt; label which ties together nodes from GitHub and StackOverflow (and potentially other sites) as seen below:&lt;/p&gt;
-
-&lt;div style=&quot;text-align: center&quot;&gt;
-  &lt;img src=&quot;/assets/neo4j-mdm/person_node.png&quot; /&gt;
-&lt;/div&gt;
-
-&lt;h3 id=&quot;standardization&quot;&gt;Standardization&lt;/h3&gt;
-
-&lt;p&gt;My first step to linking records is to standardize data as much as possible.  To this end I do a number of things:&lt;/p&gt;
-
-&lt;h4 id=&quot;stackoverflow-users&quot;&gt;StackOverflow users&lt;/h4&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;From the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;website_url&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;about_me&lt;/code&gt; properties:
-    &lt;ul&gt;
-      &lt;li&gt;Pull the Twitter username to a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;twitter_username&lt;/code&gt; property if there is a URL which points to twitter&lt;/li&gt;
-      &lt;li&gt;Pull the GitHub username to a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;github_username&lt;/code&gt; property if there is a URL which points to twitter&lt;/li&gt;
-      &lt;li&gt;Extract all URIs to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;uris&lt;/code&gt; property as an array (no URI protocol or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;www.&lt;/code&gt;)&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;Extract any E-Mail addresses from the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;about_me&lt;/code&gt; property to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;emails&lt;/code&gt; property&lt;/li&gt;
-  &lt;li&gt;Further reduce &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;uris&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;emails&lt;/code&gt; to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;domains&lt;/code&gt; property (no paths)&lt;/li&gt;
-  &lt;li&gt;Make a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;usernames&lt;/code&gt; property with the GitHub and Twitter usernames as well as the StackOverflow &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;display_name&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;github-users&quot;&gt;GitHub users&lt;/h4&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Extract the Twitter username from the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;blog&lt;/code&gt; property if it points to twitter&lt;/li&gt;
-  &lt;li&gt;Standardize the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;blog&lt;/code&gt; property to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;uris&lt;/code&gt; property as an array (no URL protocol or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;www.&lt;/code&gt;)&lt;/li&gt;
-  &lt;li&gt;Further reduce &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;uris&lt;/code&gt; to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;domains&lt;/code&gt; property (no paths)&lt;/li&gt;
-  &lt;li&gt;Make a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;usernames&lt;/code&gt; property with the GitHub and Twitter usernames&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;post-processing&quot;&gt;Post-processing&lt;/h4&gt;
-
-&lt;p&gt;All of the above generated properties get downcased, stripped of extra whitespace, and stored without duplicates.&lt;/p&gt;
-
-&lt;p&gt;After all domains have been looked for, I run the followed to extract any domains which have been used more than once to find and eliminate domains like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gmail.com&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;github.com&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;neo4j.com&lt;/code&gt;, etc…&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby line-numbers&quot;&gt;
-
-query.match(u: :User).unwind(domain: &apos;u.domains&apos;).
-  with(:domain, count: &apos;count(domain)&apos;).where(&apos;count &amp;gt; 1&apos;).
-  pluck(:domain)
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&quot;linkage&quot;&gt;Linkage&lt;/h3&gt;
-
-&lt;p&gt;With the data standardized we can now easily do record comparison and scoring.  Here I go through the millions of combinations of user pairings and give each of them a score.  For each pairing I want to create a relationship in the database so that I don’t need to calculate the score again.  Since I don’t want to have millions of relationships connecting every single user to every other user, I only create relationships above a score threshold.&lt;/p&gt;
-
-&lt;p&gt;I created a class called &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ObjectIdentifier&lt;/code&gt; which allows me to create rules for comparing and scoring records.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby line-numbers&quot;&gt;
-
-identifier = ObjectIdentifier.new do |config|
-  config.default_threshold = 0.8
-  config.default_weight = 1.0
-
-  config.add_matcher :name, :display_name, &amp;amp;fuzzy_string_matcher
-  config.add_matcher :login, :display_name, &amp;amp;fuzzy_string_matcher
-  config.add_matcher :blog, :website_url, &amp;amp;fuzzy_string_matcher
-  config.add_matcher :location, :location, &amp;amp;fuzzy_string_matcher
-
-  config.add_matcher :login, :github_username, weight: 2.0, &amp;amp;exact_string_matcher
-  config.add_matcher :twitter_username, :twitter_username, weight: 2.0, &amp;amp;exact_string_matcher
-
-  config.add_matcher :domains, :domains, threshold: 0.98, &amp;amp;array_fuzzy_string_matcher
-  config.add_matcher :usernames, :usernames, threshold: 0.98, &amp;amp;array_exact_string_matcher
-
-end
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;You can see that there are anonymous functions for both fuzzy and exact string matching.&lt;/p&gt;
-
-&lt;p&gt;With the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;identifier&lt;/code&gt; object I can call &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;identifier.classify_hash(ghu, sou)&lt;/code&gt; to get the following result:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby line-numbers&quot;&gt;
-
-{
-                    [ :name, :display_name ] =&amp;gt; 0.9769319492502884,
-                   [ :login, :display_name ] =&amp;gt; 0.9769319492502884,
-                     [ :blog, :website_url ] =&amp;gt; 0.0,
-                    [ :location, :location ] =&amp;gt; 1.0,
-                [ :login, :github_username ] =&amp;gt; 0.0,
-    [ :twitter_username, :twitter_username ] =&amp;gt; 0.0,
-                      [ :domains, :domains ] =&amp;gt; 0.0,
-                  [ :usernames, :usernames ] =&amp;gt; 0.0,
-}
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Using the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;identifier&lt;/code&gt; object, I then compare every combination of users between GitHub and StackOverflow.  With &lt;strong&gt;2,312&lt;/strong&gt; StackOverflow users and &lt;strong&gt;6,255&lt;/strong&gt; GitHub users there are &lt;strong&gt;14,461,560&lt;/strong&gt; potential pairs, which can take some time.&lt;/p&gt;
-
-&lt;p&gt;For each pairing my script gets the result hash and calculates a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;score&lt;/code&gt; as the sum of the Hash values.  If that score is above a threshold, it creates a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;COMPUTER_IDENTIFIED&lt;/code&gt; Neo4j relationship to represent a hit.  The relationship stores the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;score&lt;/code&gt; as well as a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hash&lt;/code&gt; property with a JSON representation of the result for debugging.&lt;/p&gt;
-
-&lt;h3 id=&quot;phash&quot;&gt;pHash&lt;/h3&gt;
-
-&lt;p&gt;While comparing strings to strings I realized there was another aspect of the profile that I was missing: The profile photo.&lt;/p&gt;
-
-&lt;p&gt;If I could do fuzzy comparisons against the user images I could narrow down the results even further.  Fortunately the &lt;a href=&quot;https://github.com/westonplatter/phashion&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;phashion&lt;/code&gt;&lt;/a&gt; gem provides an implementation of the &lt;a href=&quot;http://www.phash.org/&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pHash&lt;/code&gt;&lt;/a&gt; algorithm to do just that.  So I wrote a quick script to &lt;a href=&quot;https://github.com/neo4jrb/neo4j-mdm-linking/blob/master/image_download.rb&quot;&gt;download the profile photos&lt;/a&gt; locally and then another to &lt;a href=&quot;https://github.com/neo4jrb/neo4j-mdm-linking/blob/master/image_match.rb&quot;&gt;compare the millions of combinations&lt;/a&gt;.  With all of that downloading and pHashing, I found that I also needed to use the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;parallel&lt;/code&gt; gem to complete in a reasonable amount of time.&lt;/p&gt;
-
-&lt;p&gt;So that I didn’t need to compare photos during my &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ObjectIdentifier&lt;/code&gt; process, I simply created a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SIMILAR_IMAGE_TO&lt;/code&gt; relationship between users to store the result of the pHash (a value between 1 and 15 where 1 is the closest perceived match).&lt;/p&gt;
-
-&lt;p&gt;Using Neo4j I don’t need to worry about table structure or if I should create a collection or embed in existing objects.  I can create whatever links between users that I need as I play with algorithms that will work for my purpose.&lt;/p&gt;
-
-&lt;h2 id=&quot;man-vs-machine&quot;&gt;Man vs. Machine&lt;/h2&gt;
-
-&lt;p&gt;To help guide my algorithms I used the only thing that I had available to me that could do a reasonable comparison of profiles: me.  I turned my project into a Rails app which could show my two profiles side-by-side:&lt;/p&gt;
-
-&lt;p&gt;&lt;img style=&quot;width: 800px&quot; src=&quot;/assets/neo4j-mdm/profile_comparison.png&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;This view would show me a randomly chosen pair of users.  80% of the time those users were chosen because I had algorithmically determined some linkage between them.  20% of the time it would just show me a randomly chosen set of two users which hadn’t already been matched to acts as a control group.  I created five links along the top of the page (“Definitely not”, “Probably not”, “Don’t know”, “Probably”, and “Definitely”) and threw in a bit of CoffeeScript to let me choose them via arrow keys.&lt;/p&gt;
-
-&lt;p&gt;In making decisions on hundres of pairs of profiles, a number of questions occurred to me:&lt;/p&gt;
-
-&lt;dl&gt;
-&lt;dt&gt;How should do I choose between the five levels?&lt;/dt&gt;
-&lt;dd&gt;
-  I made some rules to describe how I evaluate the evidence.  By evidence I mean comparing name, location, photo, etc...
-
-  &lt;ul&gt;
-    &lt;li&gt;two pieces of matching evidence mean &quot;Probably&quot;&lt;/li&gt;
-    &lt;li&gt;three pieces of matching evidence mean &quot;Definitely&quot;&lt;/li&gt;
-    &lt;li&gt;two pieces of contradictory evidence means &quot;Probably not&quot;&lt;/li&gt;
-    &lt;li&gt;three pieces of contradictory evidence means &quot;Definitely not&quot;&lt;/li&gt;
-  &lt;/ul&gt;
-
-  While I placed &quot;Not sure&quot; in the middle, that was a special case which means that I don&apos;t have enough evidence.
-&lt;/dd&gt;
-
-&lt;dt&gt;Should I follow links and otherwise research the users?&lt;/dt&gt;
-&lt;dd&gt;No.  If I want to determine how well my matching algorithms work, I should use only same data that they have.&lt;/dd&gt;
-
-&lt;dt&gt;What about pictures?&lt;/dt&gt;
-&lt;dd&gt;I happen to be a human and humans are pretty good at comparing photos, particularly photos of people.  I was torn about this, but decided that if two photos were obviously not the same person, I should classify the profiles as different.&lt;/dd&gt;
-
-&lt;/dl&gt;
-
-&lt;h2 id=&quot;analyzing-the-result&quot;&gt;Analyzing the result&lt;/h2&gt;
-
-&lt;p&gt;To figure out how well my classification algorithm worked I turned, of course, to &lt;a href=&quot;http://www.r-project.org/&quot;&gt;R&lt;/a&gt;.  Using &lt;a href=&quot;https://github.com/nicolewhite/RNeo4j&quot;&gt;RNeo4j&lt;/a&gt; I run a query to get the human score (from &lt;strong&gt;-2&lt;/strong&gt; as ‘Definitely not’ and &lt;strong&gt;2&lt;/strong&gt; as ‘Definitely’) and the computer score (for the rules I specified this runs from &lt;strong&gt;0&lt;/strong&gt; to about &lt;strong&gt;6&lt;/strong&gt;):&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-r&quot;&gt;
-
-query &amp;lt;- &quot;MATCH
-          (ghu:User:GitHub)-[ci:COMPUTER_IDENTIFIED]-(u:User),
-          MATCH ghu-[i:IDENTIFIED]-u
-        RETURN ci.score, toInt(i.index)&quot;
-result &amp;lt;- cypher(graph, query)
-
-plot(result[[2]], result[[1]], xlab = &quot;Human Score&quot;, ylab = &quot;ObjectIdentifier score&quot;)
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;…and plot the results…&lt;/p&gt;
-
-&lt;div style=&quot;text-align: center&quot;&gt;
-  &lt;img src=&quot;/assets/neo4j-mdm/human_vs_computer.png&quot; /&gt;
-&lt;/div&gt;
-
-&lt;p&gt;This shows me that I should be able to relatively safely classify an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ObjectIdentifier&lt;/code&gt; score of around &lt;strong&gt;3&lt;/strong&gt; and up as the same user.  A score of &lt;strong&gt;2.5&lt;/strong&gt; and above looks promising, though looking in that range for users with a human classification of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Not sure&lt;/code&gt; there are some false positives.  I suspect I can improve the correlation between the two by adjusting the algorithm scoring/weights.&lt;/p&gt;
-
-&lt;p&gt;That’s plenty to digest for now, so next time I’ll show the sorts of queries that can be run on the linked database!  You can see all the code on the &lt;a href=&quot;https://github.com/neo4jrb/neo4j-mdm-linking&quot;&gt;GitHub repository&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;If you want to talk more in person, feel free to drop by one of my upcoming &lt;a href=&quot;/engagements&quot;&gt;speaking engagements&lt;/a&gt;!&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="neo4j" /><category term="master-data-management" /><category term="phash" /><category term="r" /><category term="stackoverflow" /><category term="github" /><summary type="html">In my last two posts I covered the process of importing data from StackOverflow and GitHub for the purpose of creating a combined MDM database. Now we get to the really fun stuff: today I show you how I tied the data together!</summary></entry><entry><title type="html">Making Master Data Management Fun with Neo4j - Part 2</title><link href="http://www.brian-underwood.codes//2015/02/22/making_master_data_management_fun_with_neo4j_-_part_2" rel="alternate" type="text/html" title="Making Master Data Management Fun with Neo4j - Part 2" /><published>2015-02-22T16:39:00+01:00</published><updated>2015-02-22T16:39:00+01:00</updated><id>http://www.brian-underwood.codes//2015/02/22/making_master_data_management_fun_with_neo4j_-_part_2</id><content type="html" xml:base="http://www.brian-underwood.codes//2015/02/22/making_master_data_management_fun_with_neo4j_-_part_2">&lt;p&gt;In my &lt;a href=&quot;/2015/02/16/making_master_data_management_fun_with_neo4j_-_part_1&quot;&gt;last post&lt;/a&gt; I said I would &lt;em&gt;“bring in another data source, show how I linked the data together, and demonstrate the sort of bigger picture that one can get from this approach”&lt;/em&gt;.  There’s a lot to talk about, so I’m going to break these each into different posts so that I can give them the proper attention.&lt;/p&gt;
-
-&lt;h2 id=&quot;adding-github&quot;&gt;Adding GitHub&lt;/h2&gt;
-
-&lt;p&gt;In doing an analysis of a software development community, GitHub is the peanut butter to StackOverflow’s jelly.  With thousands of projects on GitHub matching the search term &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;neo4j&lt;/code&gt;, there’s also a big chunk of data to chew on.&lt;/p&gt;
-
-&lt;h3 id=&quot;the-model&quot;&gt;The model&lt;/h3&gt;
-
-&lt;p&gt;The GitHub model that I imported is a bit more complex than the one for StackOveflow.&lt;/p&gt;
-
-&lt;p&gt;&lt;img style=&quot;width: 800px&quot; src=&quot;/assets/neo4j-mdm/github_model.png&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;One of my goals was to examine relationships between contributors, so it made sense to import all of the places where GitHub users could interact.  From the graph model you can see that this is on:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Repositories via ownership, contribution, or forking&lt;/li&gt;
-  &lt;li&gt;Issues via creation, assignment, or commenting&lt;/li&gt;
-  &lt;li&gt;Commits via authoring, committing, or commenting&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;To give you a taste, I have a cypher query which &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;UNION&lt;/code&gt;s together all the different places where users can collaborate in the model:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-cypher&quot;&gt;
-
-MATCH (u1:User:GitHub)--(:Repository)--(u2:User:GitHub) WHERE u1 &amp;lt;&amp;gt; u2
-RETURN u1.login, u2.login
-
-UNION
-
-MATCH (u1:User:GitHub)--(:Repository)-[:FORKED_FROM]-(:Repository)--(u2:User:GitHub) WHERE u1 &amp;lt;&amp;gt; u2
-RETURN u1.login, u2.login
-
-UNION
-
-MATCH (u1:User:GitHub)-[:HAS_ASSIGNEE|:HAS_USER|:COMMENTS_ON|:MADE_COMMENT*1..2]-(:Issue)-[:HAS_ASSIGNEE|:HAS_USER|:COMMENTS_ON|:MADE_COMMENT*1..2]-(u2:User:GitHub) WHERE u1 &amp;lt;&amp;gt; u2
-RETURN u1.login, u2.login
-
-UNION
-
-MATCH (u1:User:GitHub)-[:AUTHORED|:COMMITTED|:COMMENTS_ON|:MADE_COMMENT*1..2]-(:Commit)-[:AUTHORED|:COMMITTED|:COMMENTS_ON|:MADE_COMMENT*1..2]-(u2:User:GitHub) WHERE u1 &amp;lt;&amp;gt; u2
-RETURN u1.login, u2.login
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;After a bit of post-processing we get the following top 20 results:&lt;/p&gt;
-
-&lt;table&gt;
-  &lt;thead&gt;
-    &lt;tr&gt;
-      &lt;th&gt;login&lt;/th&gt;
-      &lt;th&gt;count&lt;/th&gt;
-      &lt;th&gt;        &lt;/th&gt;
-      &lt;th&gt;login&lt;/th&gt;
-      &lt;th&gt;count&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;td&gt;jexp&lt;/td&gt;
-      &lt;td&gt;2060&lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;wfreeman&lt;/td&gt;
-      &lt;td&gt;1087&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;peterneubauer&lt;/td&gt;
-      &lt;td&gt;1937&lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;rickardoberg&lt;/td&gt;
-      &lt;td&gt;1076&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;nawroth&lt;/td&gt;
-      &lt;td&gt;1345&lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;jakewins&lt;/td&gt;
-      &lt;td&gt;1064&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;systay&lt;/td&gt;
-      &lt;td&gt;1253&lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;tbaum&lt;/td&gt;
-      &lt;td&gt;1025&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;akollegger&lt;/td&gt;
-      &lt;td&gt;1248&lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;mneedham&lt;/td&gt;
-      &lt;td&gt;955&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;lassewesth&lt;/td&gt;
-      &lt;td&gt;1209&lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;jimwebber&lt;/td&gt;
-      &lt;td&gt;940&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;jotomo&lt;/td&gt;
-      &lt;td&gt;1188&lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;karabijavad&lt;/td&gt;
-      &lt;td&gt;939&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;dmontag&lt;/td&gt;
-      &lt;td&gt;1177&lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;nigelsmall&lt;/td&gt;
-      &lt;td&gt;924&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;maxdemarzi&lt;/td&gt;
-      &lt;td&gt;1155&lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;jadell&lt;/td&gt;
-      &lt;td&gt;913&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;simpsonjulian&lt;/td&gt;
-      &lt;td&gt;1115&lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;cleishm&lt;/td&gt;
-      &lt;td&gt;893&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;h3 id=&quot;neo4apis-github&quot;&gt;neo4apis-github&lt;/h3&gt;
-
-&lt;p&gt;Some time ago as part of creating the &lt;a href=&quot;/ruby/neo4j/announcements/neo4apis/2014/11/03/neo4apis&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;neo4apis&lt;/code&gt;&lt;/a&gt; gem I had created a gem to import data from GitHub.  With this project I had the opportunity to more fully use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;neo4apis-github&lt;/code&gt; and to flesh it out a bit more.  There were two changes which I introduced:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;In addition to supporting Repository, User, and Issue entities, it now supports Comment and Commit entities&lt;/li&gt;
-  &lt;li&gt;Instead of adding a common prefix to all labels, it now adds a second, common label.  So &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;User&lt;/code&gt; nodes will also now have a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GitHub&lt;/code&gt; label instead of having only a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GitHubUser&lt;/code&gt; label.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&quot;github-neo4j-community&quot;&gt;github-neo4j-community&lt;/h3&gt;
-
-&lt;p&gt;For this project I’ve made and released (&lt;a href=&quot;https://github.com/neo4jrb/github-neo4j-community&quot;&gt;on GitHub&lt;/a&gt; of course) the script which I used to import the data.&lt;/p&gt;
-
-&lt;p&gt;The script imports repositories found from searching for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;neo4j&lt;/code&gt; on the &lt;a href=&quot;https://developer.github.com/v3/search/#search-repositories&quot;&gt;GitHub API search endpoint&lt;/a&gt;.  Those repositories are passed into &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;neo4apis-github&lt;/code&gt;, and then for each repository it imports:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Contributors&lt;/li&gt;
-  &lt;li&gt;Forked repositories (recursively)&lt;/li&gt;
-  &lt;li&gt;Issues&lt;/li&gt;
-  &lt;li&gt;Comments for issues&lt;/li&gt;
-  &lt;li&gt;Comments on commits&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;neo4apis-github&lt;/code&gt; gem takes care of importing the immediately associated users for all of the above (such as the owner of a repository or the owner and assignee of an issue)&lt;/p&gt;
-
-&lt;h3 id=&quot;summary&quot;&gt;Summary&lt;/h3&gt;
-
-&lt;p&gt;All together I was able to import:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;6,337 repositories&lt;/li&gt;
-  &lt;li&gt;6,232 users&lt;/li&gt;
-  &lt;li&gt;11,011 issues&lt;/li&gt;
-  &lt;li&gt;474 commits&lt;/li&gt;
-  &lt;li&gt;22,676 comments&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;In my next post I’ll show the process of how I linked the orignal StackOveflow data with the new GitHub data.  Stay tuned for that, but in the meantime I’d also like to share the more technical details of what I did for those who are interested.&lt;/p&gt;
-
-&lt;h2 id=&quot;implementing-the-request-cache&quot;&gt;Implementing the request cache&lt;/h2&gt;
-
-&lt;p&gt;The biggest challenge in writing the script was finding a way to cache the GitHub API endpoints.  In developing the script it was useful to be able to build and run just one thing (e.g. just importing the repositories) and then build more on top of that.  By creating a cache of the API results I don’t need to re-request the repository endpoints when I run a new version of the script to import issues, commits, and comments.  Also, when my script failed half-way, as it did many times for many reasons, I can simply run it again and generally within 30 seconds it will have picked up where it left off.&lt;/p&gt;
-
-&lt;p&gt;The caching mechanism that I used was the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ActiveSupport::Cache::FileStore&lt;/code&gt; class.  The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;activesupport&lt;/code&gt; gem has a number of built-in caching stores with a common API so that they can be swapped out.  &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MemoryStore&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MemCacheStore&lt;/code&gt; are popular, but I went with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;FileStore&lt;/code&gt; for a persisted cache without needing to set up anything else.&lt;/p&gt;
-
-&lt;p&gt;My first attempt to use a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;FileStore&lt;/code&gt; could be considered somewhat clever, but in the end was too frustrating.  Such is the life of a programmer…&lt;/p&gt;
-
-&lt;p&gt;I wanted to take the results of the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;github_api&lt;/code&gt; gem and store them in the cache, but the gem uses method chaining like this:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;github_client.repos.list
-# or
-github_client.users.followers.list
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;So I created a class called &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GithubClientCache&lt;/code&gt; (&lt;a href=&quot;https://gist.github.com/cheerfulstoic/117ad8770aa5e5f165e2&quot;&gt;source code gist&lt;/a&gt;) which takes a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GithubClient&lt;/code&gt; object from the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;github_api&lt;/code&gt; gem at instantiation like so:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;github_client_cache = GithubClientCache.new(github_client)
-
-github_client_cache.repos.list # fetched from the API
-github_client_cache.repos.list # cached
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;It seemed like a simple enough solution to the problem and a good excuse to use Ruby’s &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;method_missing&lt;/code&gt;.  Unfortunately due to what I think is a bug in the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hashie&lt;/code&gt; gem which &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;github_api&lt;/code&gt; used to store responses, the cached request couldn’t be processed correctly and would throw an error.&lt;/p&gt;
-
-&lt;p&gt;After some research I found out that the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;faraday_middleware&lt;/code&gt; gem supports &lt;a href=&quot;https://github.com/lostisland/faraday_middleware/wiki/Caching&quot;&gt;just the sort of caching&lt;/a&gt; I wanted.  Also, according to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;github_api&lt;/code&gt; gem’s &lt;a href=&quot;https://github.com/peter-murach/github#22-advanced&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;README&lt;/code&gt;&lt;/a&gt;, one can add custom middleware.  Unfortunately that didn’t work!  After debugging for a while I decided, in the interest of getting something working quickly, to dig into the source code and engadge in some good ‘ol fashioned monkey patching.  You can see the result &lt;a href=&quot;https://github.com/neo4jrb/github-neo4j-community/blob/9550ceb007622180d38a813616d24cdc96dd14aa/run.rb#L15&quot;&gt;here&lt;/a&gt;.  It’s a wholesale copy/paste of the method in question which means it is vulnerable to breaking if the gem changes, but I was fine with the tradeoff for now.&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="neo4j" /><category term="master-data-management" /><category term="github" /><summary type="html">In my last post I said I would “bring in another data source, show how I linked the data together, and demonstrate the sort of bigger picture that one can get from this approach”. There’s a lot to talk about, so I’m going to break these each into different posts so that I can give them the proper attention.</summary></entry></feed>
+&lt;p&gt;The workshop was a really fun way to get people using Neo4j really quickly.  It can feel a bit strange to simply give people some datasets and ask them to do something with it, but the freedom to be creative helped both the participants and me be really excited about working with Neo4j.  I look forward to doing more workshops again in the future!&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="neo4j" /><category term="advocacy" /><summary type="html">Last night I ran a very successful workshop at the Friends of Neo4j Stockholm meetup group. The format was based on a workshop that I attended in San Francisco while the World Cup was going on and was based around investigating a dataset of previous World Cup matches. Roughly the format was:</summary></entry></feed>

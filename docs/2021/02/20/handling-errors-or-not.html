@@ -9,8 +9,8 @@
   <head>
     <meta charset="utf-8">
 
-<!-- begin _includes/seo.html --><title>Analyzing Ruby Code with Neo4j - brian-underwood.blogs</title>
-<meta name="description" content="">
+<!-- begin _includes/seo.html --><title>Handling Errors… or not - brian-underwood.blogs</title>
+<meta name="description" content="This post is mainly about Javascript, but I believe that it is applicable to any language that has exceptions which can be thrown and handled.  I will try to keep the examples high-level.">
 
 
   <meta name="author" content="Brian Underwood">
@@ -22,26 +22,26 @@
 <meta property="og:type" content="article">
 <meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="brian-underwood.blogs">
-<meta property="og:title" content="Analyzing Ruby Code with Neo4j">
-<meta property="og:url" content="http://www.brian-underwood.codes//ruby/rails/neo4j/2016/01/11/analyzing_ruby_code_with_Neo4j">
+<meta property="og:title" content="Handling Errors… or not">
+<meta property="og:url" content="http://www.brian-underwood.codes//2021/02/20/handling-errors-or-not">
 
 
-  <meta property="og:description" content="">
-
-
-
-
-
-
-
-  <meta property="article:published_time" content="2016-01-11T18:09:00+01:00">
+  <meta property="og:description" content="This post is mainly about Javascript, but I believe that it is applicable to any language that has exceptions which can be thrown and handled.  I will try to keep the examples high-level.">
 
 
 
 
 
 
-<link rel="canonical" href="http://www.brian-underwood.codes//ruby/rails/neo4j/2016/01/11/analyzing_ruby_code_with_Neo4j">
+
+  <meta property="article:published_time" content="2021-02-20T00:00:00+01:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://www.brian-underwood.codes//2021/02/20/handling-errors-or-not">
 
 
 
@@ -261,311 +261,47 @@
 
   <div class="archive">
     
-      <h1 id="page-title" class="page__title">Analyzing Ruby Code with Neo4j</h1>
+      <h1 id="page-title" class="page__title">Handling Errors... or not</h1>
     
-    <style>
-table {
-  border-collapse: collapse;
-}
-table, th, td {
-  border: 1px solid #CCC;
-  padding: 0.3em;
-}
+    <p>This post is mainly about Javascript, but I believe that it is applicable to any language that has exceptions which can be thrown and handled.  I will try to keep the examples high-level.</p>
 
-</style>
+<p>You know that you should handle your exceptions, right.  Sometimes you remember to and sometimes you don’t.  When you don’t, do you feel a bit guilty that you’re not being a “good” or “professional” programmer?  What would it look like if you handled every single exception in your code?  It would probably be bloated and hard to maintain.  When and why should we handle exceptions?</p>
 
-<p>For a long time I’ve been wanting to use Neo4j as a tool to analyze Ruby code.  Using Ruby for almost a decade, I have a lot of experience with effectively finding my way around Ruby code.  Still Ruby programs can by very dynamic and thus tools are always welcome.  As I’ve begun to use Neo4j I’ve been inspired by code analysis tools such as <a href="http://mlsec.org/joern/">joern</a> and <a href="http://jqassistant.org/">jQAssistant</a> as well as Aaron Patterson’s <a href="http://tenderlove.github.io/heap-analyzer/">heap-analyzer</a>.  In that spirit I’d like to announce a new project called <a href="https://github.com/neo4jrb/neolytics">Neolytics</a>.</p>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code></code></pre></div></div>
 
-<p>Neolytics is a Ruby gem which records the execution of a block of Ruby code in a Neo4j database.  There are three major things which it records:</p>
+<p>JS NOTE: I thought at first that <code class="language-plaintext highlighter-rouge">catch</code> would get the error but the promise chain would still allow other <code class="language-plaintext highlighter-rouge">catch</code> calls.  It makes sense that it doesn’t, otherwise you wouldn’t be able to choose to either handle an error or let it bubble.</p>
 
-<h3 id="each-step-of-the-execution">Each step of the execution</h3>
-
-<p>This is thanks to Ruby’s excellent <a href="http://ruby-doc.org/core-2.0.0/TracePoint.html">TracePoint</a> class.  TracePoint gives a hook into each execution step of Ruby code so that we can record line executions, method calls/returns, and raising of executions.</p>
-
-<p><img src="https://raw.githubusercontent.com/neo4jrb/neolytics/master/examples/model/trace_point_flow.png" alt="TracePoint flow model" /></p>
-
-<h3 id="objects-which-are-found-along-the-way">Objects which are found along the way</h3>
-
-<p>For each trace point Neolytics finds:</p>
+<p>NOTE: Logging errors depends on the quality of the code doing the logging.  If somebody writes: <code class="language-plaintext highlighter-rouge">logger.error('call failed')</code> you won’t see the error message to know <em>why</em>.  If somebody writes <code class="language-plaintext highlighter-rouge">logger.error('service call error: ' + err.message)</code>, that is better, but you don’t know <em>which</em> service and you don’t have a stack trace.  This is why exception have the ability to “bubble”.  It is a standard way to pass all that information up so that it can be logged / sent off / etc… in a standard way.
+That doesn’t mean you  should just let errors happen.  Attaching your business logic’s context can be very useful in seeing immediately where an error came from.  Ideally you would do <em>that</em> in a standard way to reduce the need to dig through the code to find where the error came from</p>
 
 <ul>
-  <li>the object which is the context of the TracePoint</li>
-  <li>objects which are passed as arguments (if a call)</li>
-  <li>objects which are returned (if a return)</li>
-  <li>objects which are referenced via variables</li>
+  <li>Logging is useful for debugging, but it isn’t in-your-face.  We’re not always looking at logs</li>
+  <li>
+    <p>Exception tracking is better.  In-your-face.  Sends E-Mails/Slack message/etc…  Lets you organize your errors</p>
+  </li>
+  <li>Hypothesis:
+    <ul>
+      <li>Functions at a “lower level” which handle their errors (and log, or just simply return a fake value) make errors hard to see</li>
+      <li>Need to distinguish between something that you expect to happen and you’re OK with a default value, and something that you don’t expect and really need to know about</li>
+      <li>Lat/long of 0,0 is rarely acceptable.  Don’t return 0/empty string/etc… if you don’t know what the value should be</li>
+    </ul>
+  </li>
 </ul>
 
-<p>For each object the class and module ancestry information is also recursively imported.</p>
+<p>Discuss “Functional Core, Imperative Shell” (?)</p>
+<ul>
+  <li>https://github.com/kbilsted/Functional-core-imperative-shell/blob/master/README.md</li>
+  <li>https://www.destroyallsoftware.com/screencasts/catalog/functional-core-imperative-shell</li>
+</ul>
 
-<p><img src="https://raw.githubusercontent.com/neo4jrb/neolytics/master/examples/model/trace_point_objects.png" alt="TracePoint objects" style="width: 49%; float: left" /></p>
-
-<p><img src="https://raw.githubusercontent.com/neo4jrb/neolytics/master/examples/model/object_relationships.png" alt="Object space model" style="width: 49%" /></p>
-
-<h3 id="abstract-syntax-trees-of-all-ruby-code-files-involved-in-the-execution">Abstract syntax trees of all Ruby code files involved in the execution</h3>
-
-<p>With thanks to the <a href="https://github.com/whitequark/parser">parser</a> gem!  Additionally method definitions in the AST are linked to their corresponding TracePoint.</p>
-
-<p><img src="https://raw.githubusercontent.com/neo4jrb/neolytics/master/examples/model/ast.png" alt="Abstract Syntax Tree model" style="width: 49%" />
-<img src="https://raw.githubusercontent.com/neo4jrb/neolytics/master/examples/model/trace_point_ast_nodes.png" alt="TracePoint AST Link" style="width: 49%; vertical-align: top" /></p>
-
-<p>To record the data, I used my <a href="https://github.com/neo4jrb/neo4apis">neo4apis</a> gem to send data to Neo4j efficiently without a lot of round trips to the database.</p>
-
-<p>Lastly, I’ve built a <a href="https://github.com/neo4j-examples/ruby_code_analytics">ruby_code_analytics</a> Rails application to give a UI to examine the results of the dump.  You can see an example running <a href="https://ruby-neo4j-code-analysis.herokuapp.com">on Heroku</a> which is a record of the following simple Ruby code:</p>
-
-<pre><code class="language-ruby">
-
-neo4j_session = Neo4j::Session.open(:server_db, neo4j_url)
-Neolytics.record_execution(neo4j_session) do
-  doc = Nokogiri::HTML(open('https://www.google.com').read)
-  doc.xpath('//form/input').map(&amp;:name)
-end
-
-</code></pre>
-
-<h2 id="querying-the-data">Querying the data</h2>
-
-<p>Let’s look at some examples of things that you can do with the data from neolytics!</p>
-
-<h3 id="examining-the-execution">Examining the execution</h3>
-
-<p>Let’s say that we want to know what goes on during the execution of a method.  With the following query we grab the first TracePoint which was a <code class="language-plaintext highlighter-rouge">call</code> event and find the entire series of TracePoints until the method is returned from:</p>
-
-<pre><code class="language-cypher">
-
-MATCH (call_tp:TracePoint {event: 'call'})
-WITH call_tp LIMIT 1
-MATCH path=shortestPath((call_tp)-[:NEXT*]-&gt;(return_tp:TracePoint {event: 'return'}))
-RETURN path
-
-</code></pre>
-
-<p>Visually we can see the query like this:</p>
-
-<div style="text-align: center">
-  <a href="/assets/neolytics/method_call_chain.png"><img src="/assets/neolytics/method_call_chain.png" style="width: 800px" /></a>
-</div>
-
-<p>In this case the method is the <code class="language-plaintext highlighter-rouge">#plural</code> method from the <code class="language-plaintext highlighter-rouge">active_support</code> gem which lets you pluralize strings.  You can compare the graph database model with the actual source code <a href="https://github.com/rails/rails/blob/v4.2.5/activesupport/lib/active_support/inflector/inflections.rb#L105">here on GitHub</a></p>
-
-<p>In the screenshot above, each node is displaying a TracePoint event (i.e. <code class="language-plaintext highlighter-rouge">call</code>, <code class="language-plaintext highlighter-rouge">line</code>, etc…), the class and method in question, and the line number.  Starting from the node on the left you can follow the <code class="language-plaintext highlighter-rouge">NEXT</code> relationships to see each point in the execution.  Note that every node has a <code class="language-plaintext highlighter-rouge">HAS_PARENT</code> relationship back to the <code class="language-plaintext highlighter-rouge">call</code> TracePoint, so we can see that this method didn’t make any further method calls (at least no Ruby calls.  We see some <code class="language-plaintext highlighter-rouge">c_call</code> events which TracePoint doesn’t expose).  Lastly note the <code class="language-plaintext highlighter-rouge">STARTED_AT</code> relationship from the <code class="language-plaintext highlighter-rouge">return</code> event to the <code class="language-plaintext highlighter-rouge">call</code> event which is there as a convenience for any query that need to get both nodes at once (e.g. if you need to get both the arguments and the return value of a method).</p>
-
-<p>For more details you can see <a href="https://github.com/neo4jrb/neolytics/blob/master/examples/output/plural_trace_points.csv">this example tabular output</a> of the tracepoints.</p>
-
-<h3 id="running-code-metrics">Running code metrics</h3>
-
-<p>Let’s run a query to evaluate the <a href="https://en.wikipedia.org/wiki/Cyclomatic_complexity">cyclomatic complexity</a> of our methods:</p>
-
-<pre><code class="language-cypher">
-
-MATCH (def:ASTNode {type: 'def'})
-OPTIONAL MATCH (def)&lt;-[:HAS_PARENT*]-(condition:ASTNode)
-WHERE condition.type IN ['begin', 'if', 'while', 'until', 'for', 'rescue', 'when', 'and', 'or']
-RETURN def.name, def.file_path, def.first_line, count(condition)
-ORDER BY count(condition) DESC
-LIMIT 10
-
-</code></pre>
-
-<p>This gives us a straightforward listing of methods, where to find them, and their complexity score, all ordered with the most complex methods at the top:</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>method</th>
-      <th>Path and line</th>
-      <th>complexity</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>initialize_pattern</td>
-      <td>…/rubies/ruby-2.2.3/lib/ruby/2.2.0/uri/rfc2396_parser.rb:342</td>
-      <td>85</td>
-    </tr>
-    <tr>
-      <td>validate</td>
-      <td>…/rubies/ruby-2.2.3/lib/ruby/2.2.0/rubygems/specification.rb:2453</td>
-      <td>65</td>
-    </tr>
-    <tr>
-      <td>perform_arguments</td>
-      <td>…/gems/ruby-2.2.3/gems/sass-3.4.20/lib/sass/tree/visitors/perform.rb:14</td>
-      <td>57</td>
-    </tr>
-    <tr>
-      <td>_next_token</td>
-      <td>…/gems/ruby-2.2.3/gems/nokogiri-1.6.7/lib/nokogiri/css/tokenizer.rb:55</td>
-      <td>56</td>
-    </tr>
-    <tr>
-      <td>parse</td>
-      <td>…/gems/ruby-2.2.3/gems/tzinfo-1.2.2/lib/tzinfo/zoneinfo_timezone_info.rb:95</td>
-      <td>55</td>
-    </tr>
-    <tr>
-      <td>pretty_print</td>
-      <td>…/rubies/ruby-2.2.3/lib/ruby/2.2.0/pp.rb:421</td>
-      <td>53</td>
-    </tr>
-    <tr>
-      <td>merge_final_ops</td>
-      <td>…/gems/ruby-2.2.3/gems/sass-3.4.20/lib/sass/selector/sequence.rb:342</td>
-      <td>52</td>
-    </tr>
-    <tr>
-      <td>call</td>
-      <td>…/gems/ruby-2.2.3/gems/sprockets-3.5.2/lib/sprockets/server.rb:22</td>
-      <td>48</td>
-    </tr>
-    <tr>
-      <td>convert_input</td>
-      <td>…/gems/ruby-2.2.3/gems/erubis-2.7.0/lib/erubis/converter.rb:127</td>
-      <td>43</td>
-    </tr>
-    <tr>
-      <td>visit_rule</td>
-      <td>…/gems/ruby-2.2.3/gems/sass-3.4.20/lib/sass/tree/visitors/to_css.rb:280</td>
-      <td>43</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>Now let’s extend this complexity metric by using the TracePoint data to see how long each method actually took:</p>
-
-<pre><code class="language-cypher">
-
-MATCH (tp:TracePoint)
-WITH sum(tp.execution_time) AS total_execution_time
-
-MATCH (node:ASTNode {type: 'def'})
-OPTIONAL MATCH (node)&lt;-[:HAS_PARENT*]-(condition:ASTNode)
-WHERE condition.type IN ['begin', 'if', 'while', 'until', 'for', 'rescue', 'when', 'and', 'or']
-WITH node, count(condition) AS complexity, total_execution_time
-
-MATCH (node)&lt;-[:HAS_AST_NODE]-(tp:TracePoint)&lt;-[:STARTED_AT]-(return_tp:TracePoint)
-
-WITH
-  complexity,
-  total_execution_time,
-  tp.path + ':' + tp.lineno + ' (' + return_tp.defined_class + '#' + return_tp.method_id + ')' AS method,
-  count(tp) AS executions,
-  sum(return_tp.execution_time) AS total_method_execution_time
-
-RETURN
-  method,
-  complexity AS cc,
-  executions AS execs,
-  total_method_execution_time AS total_time,
-  100.0 * (total_method_execution_time / total_execution_time) AS percentage_of_total_time,
-  total_method_execution_time / executions AS avg_exec
-
-ORDER BY total_method_execution_time DESC
-LIMIT 10
-
-</code></pre>
-
-<p>With this we get a nice table of methods which take the most time, along with the cyclomatic complexity.  We can sort by either metric or create a combined metric of our own in order to determine which methods might be ripe for refactoring.</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>method</th>
-      <th>cc</th>
-      <th>execs</th>
-      <th>total_time</th>
-      <th>% total time</th>
-      <th>avg_exec</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>…/rubies/ruby-2.2.3/lib/ruby/2.2.0/set.rb:289 <br /><strong>Set#add</strong></td>
-      <td>1</td>
-      <td>2343</td>
-      <td>11457</td>
-      <td>2.31</td>
-      <td>4.89</td>
-    </tr>
-    <tr>
-      <td>…/gems/ruby-2.2.3/gems/activesupport-4.2.5/lib/active_support/inflector/methods.rb:91 <br /><strong>ActiveSupport::Inflector#underscore</strong></td>
-      <td>6</td>
-      <td>237</td>
-      <td>5057</td>
-      <td>1.02</td>
-      <td>21.34</td>
-    </tr>
-    <tr>
-      <td>…/gems/ruby-2.2.3/gems/pry-0.10.3/lib/pry/command.rb:27 <br /><strong>#&lt;Class:Pry::Command&gt;#match</strong></td>
-      <td>4</td>
-      <td>810</td>
-      <td>4917</td>
-      <td>0.99</td>
-      <td>6.07</td>
-    </tr>
-    <tr>
-      <td>…/gems/ruby-2.2.3/gems/pry-0.10.3/lib/pry/command.rb:43 <br /><strong>#&lt;Class:Pry::Command&gt;#command_options</strong></td>
-      <td>2</td>
-      <td>641</td>
-      <td>3790</td>
-      <td>0.76</td>
-      <td>5.91</td>
-    </tr>
-    <tr>
-      <td>…/gems/ruby-2.2.3/gems/pry-0.10.3/lib/pry/command.rb:177 <br /><strong>#&lt;Class:Pry::Command&gt;#command_regex</strong></td>
-      <td>6</td>
-      <td>510</td>
-      <td>3722</td>
-      <td>0.75</td>
-      <td>7.30</td>
-    </tr>
-    <tr>
-      <td>…/gems/ruby-2.2.3/gems/pry-0.10.3/lib/pry/command.rb:185 <br /><strong>#&lt;Class:Pry::Command&gt;#convert_to_regex</strong></td>
-      <td>1</td>
-      <td>1020</td>
-      <td>3537</td>
-      <td>0.71</td>
-      <td>3.47</td>
-    </tr>
-    <tr>
-      <td>…/gems/ruby-2.2.3/gems/activesupport-4.2.5/lib/active_support/dependencies/autoload.rb:35 <br /><strong>ActiveSupport::Autoload#autoload</strong></td>
-      <td>4</td>
-      <td>233</td>
-      <td>3186</td>
-      <td>0.64</td>
-      <td>13.67</td>
-    </tr>
-    <tr>
-      <td>…/gems/ruby-2.2.3/gems/sprockets-3.5.2/lib/sprockets/utils.rb:33 <br /><strong>Sprockets::Utils#hash_reassoc1</strong></td>
-      <td>4</td>
-      <td>115</td>
-      <td>2366</td>
-      <td>0.48</td>
-      <td>20.57</td>
-    </tr>
-    <tr>
-      <td>…/gems/ruby-2.2.3/gems/activesupport-4.2.5/lib/active_support/core_ext/module/delegation.rb:151 <br /><strong>Module#delegate</strong></td>
-      <td>36</td>
-      <td>43</td>
-      <td>1164</td>
-      <td>0.23</td>
-      <td>27.07</td>
-    </tr>
-    <tr>
-      <td>…/gems/ruby-2.2.3/gems/pry-0.10.3/lib/pry/command.rb:37 <br /><strong>#&lt;Class:Pry::Command&gt;#description</strong></td>
-      <td>2</td>
-      <td>152</td>
-      <td>1158</td>
-      <td>0.23</td>
-      <td>7.62</td>
-    </tr>
-  </tbody>
-</table>
-
-<h2 id="more-options">More options</h2>
-
-<p>There are many ways to use this data model to debug and otherwise analyze our code.  I’ve provided some more sample queries in <a href="https://github.com/neo4jrb/neolytics">the README</a> for the neolytics gem.  I’ve also started <a href="https://github.com/neo4j-examples/ruby_code_analytics/labels/idea%20for%20query">a list of ideas</a> for new queries which could be made.  These could be used directly or perhaps built into a reporting feature of the <code class="language-plaintext highlighter-rouge">ruby_code_analytics</code> Rails application.  I’m excited to see where things could go!</p>
-
-<p>Analysis app running on Heroku: <a href="https://ruby-neo4j-code-analysis.herokuapp.com">https://ruby-neo4j-code-analysis.herokuapp.com</a></p>
+<p>Notes:</p>
+<ul>
+  <li>Investigate: https://jamesonzimmer.com/dynamic-footnotes-markdown-jekyll-no-plugin/</li>
+  <li>Look again at Exceptional Ruby</li>
+  <li>Catching errors early means that they can’t be caught and dealt with by higher, more general, logging / exception reporting handlers</li>
+  <li>I wrote some stuff in my notebook</li>
+  <li>Use multiple languages? or just pseudo code?</li>
+</ul>
 
 
 <ul class="taxonomy__index">

@@ -1,0 +1,525 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.22.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Why I Love Lodash - brian-underwood.blogs</title>
+<meta name="description" content="I love lodash, but I’m not here to tell you to use lodash.  It’s up to you to decide if a tool is useful for you or your project.  It will come down to the needs of the project (file size, browser/Node.js, how much you use it, etc…).  But my new team was surprised by my passion for it and so I wanted to share my thoughts.  Specifically: I want to focus in this post on those things which I like, including things which I think people often miss.">
+
+
+  <meta name="author" content="Brian Underwood">
+  
+  <meta property="article:author" content="Brian Underwood">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="brian-underwood.blogs">
+<meta property="og:title" content="Why I Love Lodash">
+<meta property="og:url" content="http://www.brian-underwood.codes//javascript/2021/05/13/why-I-love-lodash">
+
+
+  <meta property="og:description" content="I love lodash, but I’m not here to tell you to use lodash.  It’s up to you to decide if a tool is useful for you or your project.  It will come down to the needs of the project (file size, browser/Node.js, how much you use it, etc…).  But my new team was surprised by my passion for it and so I wanted to share my thoughts.  Specifically: I want to focus in this post on those things which I like, including things which I think people often miss.">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2021-05-13T22:26:00+02:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://www.brian-underwood.codes//javascript/2021/05/13/why-I-love-lodash">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://www.brian-underwood.codes//"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="brian-underwood.blogs Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+    <link rel="stylesheet" href="/assets/prism.css">
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          brian-underwood.blogs
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/tags/">Tags</a>
+            </li><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+        <img src="/assets/images/bio-photo.jpg" alt="Brian Underwood" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Brian Underwood</h3>
+    
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li itemprop="homeLocation" itemscope itemtype="https://schema.org/Place">
+          <i class="fas fa-fw fa-map-marker-alt" aria-hidden="true"></i> <span itemprop="name">Stockholm, Sweden</span>
+        </li>
+      
+
+      
+        
+          
+            <li><a href="http://www.brian-underwood.codes/" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-link" aria-hidden="true"></i><span class="label">brian-underwood.codes</span></a></li>
+          
+        
+          
+            <li><a href="https://twitter.com/cheerfulstoic" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i><span class="label">@cheerfulstoic</span></a></li>
+          
+        
+          
+            <li><a href="https://github.com/cheerfulstoic" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github-square" aria-hidden="true"></i><span class="label">@cheerfulstoic</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Why I Love Lodash">
+    <meta itemprop="description" content="I love lodash, but I’m not here to tell you to use lodash.  It’s up to you to decide if a tool is useful for you or your project.  It will come down to the needs of the project (file size, browser/Node.js, how much you use it, etc…).  But my new team was surprised by my passion for it and so I wanted to share my thoughts.  Specifically: I want to focus in this post on those things which I like, including things which I think people often miss.">
+    <meta itemprop="datePublished" content="2021-05-13T22:26:00+02:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Why I Love Lodash
+</h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right ">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-file-alt"></i> On this page</h4></header>
+              <ul class="toc__menu"><li><a href="#checking-types">Checking types</a></li><li><a href="#chaining">Chaining</a></li><li><a href="#iteratee-shorthand">Iteratee shorthand</a></li><li><a href="#javascript-as-the-write-it-yourself-language">Javascript as the “write it yourself” language</a></li><li><a href="#being-fair-to-javascript">Being fair to Javascript</a></li><li><a href="#summing-up">Summing up</a></li></ul>
+
+            </nav>
+          </aside>
+        
+        <p>I love <a href="https://lodash.com/">lodash</a>, but I’m not here to tell you to use lodash.  It’s up to you to decide if a tool is useful for you or your project.  It will come down to the needs of the project (file size, browser/Node.js, how much you use it, etc…).  But my new team was surprised by my passion for it and so I wanted to share my thoughts.  Specifically: I want to focus in this post on those things which I like, including things which I think people often miss.</p>
+
+<h2 id="checking-types">Checking types</h2>
+
+<p>To start with something simple, let’s look at identifying variable types.  I’ll take the examples from <a href="https://dev.to/jmitchell38488/it-s-time-to-let-go-of-lodash-221f">this post</a>:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">Array</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">foo</span><span class="p">);</span>
+
+<span class="nx">foo</span> <span class="o">===</span> <span class="kc">null</span><span class="p">;</span>
+
+<span class="nx">foo</span> <span class="o">!==</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">foo</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">object</span><span class="dl">"</span> <span class="o">&amp;&amp;</span> <span class="nb">Object</span><span class="p">(</span><span class="nx">foo</span><span class="p">)</span> <span class="o">===</span> <span class="p">{};</span>
+
+<span class="k">typeof</span> <span class="nx">foo</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">boolean</span><span class="dl">'</span>
+</code></pre></div></div>
+
+<p>All of that works, technically, but it’s so inconsistent.  This is especially true of the third example checking if something is an object.  Such a check requires a deeper understanding of Javascript objects that not everybody has and it might not always be implemented correctly.</p>
+
+<p>Also, regarding the last example for checking boolean, I should admit that I lied a bit: it isn’t from the post I linked to!  The example they gave was: <code class="language-plaintext highlighter-rouge">Boolean(foo)</code>, but in the comments somebody pointed out that truthy values like <code class="language-plaintext highlighter-rouge">Boolean(1)</code> would return <code class="language-plaintext highlighter-rouge">true</code>.  For me, all of this is more complex and error prone than just doing:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">foo</span><span class="p">);</span>
+<span class="nx">_</span><span class="p">.</span><span class="nx">isNull</span><span class="p">(</span><span class="nx">foo</span><span class="p">);</span>
+<span class="nx">_</span><span class="p">.</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">foo</span><span class="p">);</span>
+<span class="nx">_</span><span class="p">.</span><span class="nx">isBoolean</span><span class="p">(</span><span class="nx">foo</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>With those, I’m a lot less likely to come back to my code later because of a bug due to my understanding of type checking.</p>
+
+<h2 id="chaining">Chaining</h2>
+
+<p>I very often have a need to transform a data structure in multiple steps:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Find adults, group by age (ten-year spans), and find if any in each group own a pet</span>
+<span class="kd">let</span> <span class="nx">people</span> <span class="o">=</span> <span class="p">[{</span><span class="na">id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Jane Doe</span><span class="dl">'</span><span class="p">,</span> <span class="na">age</span><span class="p">:</span> <span class="mi">33</span><span class="p">,</span> <span class="na">ownsPet</span><span class="p">:</span> <span class="kc">true</span><span class="p">},</span> <span class="p">...]</span>
+
+<span class="kd">let</span> <span class="nx">adults</span> <span class="o">=</span> <span class="nx">people</span><span class="p">.</span><span class="nx">filter</span><span class="p">((</span><span class="nx">person</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">person</span><span class="p">.</span><span class="nx">age</span> <span class="o">&gt;=</span> <span class="mi">18</span><span class="p">)</span>
+<span class="kd">let</span> <span class="nx">groupedAdults</span> <span class="o">=</span> <span class="nx">adults</span><span class="p">.</span><span class="nx">reduce</span><span class="p">((</span><span class="nx">result</span><span class="p">,</span> <span class="nx">adult</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">let</span> <span class="nx">groupingNumber</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nx">adult</span><span class="p">.</span><span class="nx">age</span> <span class="o">/</span> <span class="mi">10</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">result</span><span class="p">[</span><span class="nx">groupingNumber</span><span class="p">]</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span> <span class="nx">result</span><span class="p">[</span><span class="nx">groupingNumber</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span> <span class="p">}</span>
+  <span class="nx">result</span><span class="p">[</span><span class="nx">groupingNumber</span><span class="p">].</span><span class="nx">push</span><span class="p">(</span><span class="nx">adult</span><span class="p">);</span>
+  <span class="k">return</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+<span class="p">},</span> <span class="p">{})</span>
+<span class="kd">let</span> <span class="nx">petExistsForGroup</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="nx">groupedAdults</span><span class="p">).</span><span class="nx">forEach</span><span class="p">((</span><span class="nx">key</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">let</span> <span class="nx">petExists</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+  <span class="nx">groupedAdults</span><span class="p">[</span><span class="nx">key</span><span class="p">].</span><span class="nx">forEach</span><span class="p">((</span><span class="nx">adult</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">petExists</span> <span class="o">=</span> <span class="nx">petExists</span> <span class="o">||</span> <span class="nx">adult</span><span class="p">.</span><span class="nx">ownsPet</span><span class="p">;</span>
+  <span class="p">})</span>
+
+  <span class="nx">petExistsForGroup</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">petExists</span><span class="p">;</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+<p>Seem about what you expect from Javascript?  Maybe not the nicest bit of code in the world, but it does the job.  Good enough, right?  Let’s try using lodash chaining, along with other helpers:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">people</span> <span class="o">=</span> <span class="p">[{</span><span class="na">id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Jane Doe</span><span class="dl">'</span><span class="p">,</span> <span class="na">age</span><span class="p">:</span> <span class="mi">33</span><span class="p">,</span> <span class="na">ownsPet</span><span class="p">:</span> <span class="kc">true</span><span class="p">},</span> <span class="p">...]</span>
+
+<span class="kd">let</span> <span class="nx">petExistsForGroup</span> <span class="o">=</span>
+  <span class="nx">_</span><span class="p">(</span><span class="nx">people</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">filter</span><span class="p">((</span><span class="nx">person</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">person</span><span class="p">.</span><span class="nx">age</span> <span class="o">&gt;=</span> <span class="mi">18</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">groupBy</span><span class="p">((</span><span class="nx">adult</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nx">adult</span><span class="p">.</span><span class="nx">age</span> <span class="o">/</span> <span class="mi">10</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">mapValues</span><span class="p">((</span><span class="nx">adults</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">some</span><span class="p">(</span><span class="nx">adults</span><span class="p">,</span> <span class="dl">'</span><span class="s1">ownsPet</span><span class="dl">'</span><span class="p">))</span>
+    <span class="p">.</span><span class="nx">value</span><span class="p">()</span>
+
+</code></pre></div></div>
+
+<p>It’s another way of thinking, right?  Shorter for sure, but also higher-level and more declarative.  The mechanics drop away and we’re left with our code business logic.</p>
+
+<p>This is one of the big things that I love about lodash.  If you take the time to learn it, it allows you to work at a higher level, not worrying about small details.  For that reason I enjoy just browsing through the documentation sometimes, like browsing an IKEA catalog and thinking to myself “oooh, that could be nice…”.  It’s good to know what’s there, even if you’re not sure why you would use it.  I’ve found <code class="language-plaintext highlighter-rouge">_.partition</code> surprisingly useful!</p>
+
+<p>Did I choose an example that plays to lodash’s strengths?  Absolutely!  But I challenge anybody to make the first example shorter while still being readable using pure Javascript.</p>
+
+<p>It’s also worth mentioning that lodash has methods which basically just duplicate the functionality of their javascript counterparts (e.g. <code class="language-plaintext highlighter-rouge">_.concat</code> or <code class="language-plaintext highlighter-rouge">_.fill</code>).  This maybe seems unnecessary to people who are skeptical of lodash, but remember that because lodash offers chaining it needs to provide all of the potential methods that you might use.</p>
+
+<h2 id="iteratee-shorthand">Iteratee shorthand</h2>
+
+<p>You may have noted the <code class="language-plaintext highlighter-rouge">_.some(adults, 'ownsPet')</code> bit above.  By passing in a string instead of a function, lodash automatically uses an identity function.  This would be the equivilent of: <code class="language-plaintext highlighter-rouge">_.some(adults, (adult) =&gt; adult.ownPet)</code>.  True the second version isn’t much longer, but the first is more at-a-glance readable.</p>
+
+<p>But it doesn’t stop there!  You can use the string syntax for nested paths:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">things</span> <span class="o">=</span> <span class="p">[{</span><span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Car</span><span class="dl">'</span><span class="p">,</span> <span class="na">owner</span><span class="p">:</span> <span class="p">{</span><span class="na">contactDetails</span><span class="p">:</span> <span class="p">{</span><span class="na">phoneNumber</span><span class="p">:</span> <span class="dl">'</span><span class="s1">123-456-7890</span><span class="dl">'</span><span class="p">,</span> <span class="na">email</span><span class="p">:</span> <span class="dl">'</span><span class="s1">me@thingowner.com</span><span class="dl">'</span><span class="p">}}},</span> <span class="p">...]</span>
+
+<span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">things</span><span class="p">,</span> <span class="dl">'</span><span class="s1">owner.contactDetails.phoneNumber</span><span class="dl">'</span><span class="p">)</span>
+<span class="nx">_</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">things</span><span class="p">,</span> <span class="p">[</span><span class="dl">'</span><span class="s1">owner.contactDetails.email</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">me@thingowner.com</span><span class="dl">'</span><span class="p">])</span>
+<span class="c1">// ... more?</span>
+</code></pre></div></div>
+
+<p>Not only does it provide a simple syntax for going deep, but if any step along the way doesn’t exist (say, the <code class="language-plaintext highlighter-rouge">contactDetails</code> field is <code class="language-plaintext highlighter-rouge">null</code> or <code class="language-plaintext highlighter-rouge">undefined</code>), it will simply return <code class="language-plaintext highlighter-rouge">undefined</code>, similar to Javascript’s <code class="language-plaintext highlighter-rouge">?.</code> operator.</p>
+
+<h2 id="javascript-as-the-write-it-yourself-language">Javascript as the “write it yourself” language</h2>
+
+<p>Having been a Ruby programmer for a long time, I will often search for a way to manipulate some data in Ruby and very often there will by either a simple function to call or a discussion on how to write something concise but readable.  Whenever I’m working with Javascript, however, the answer very often seems to be either “write it yourself” or “copy a solution”.  Here is a small selection that I gathered relatively quickly:</p>
+
+<ul>
+  <li><a href="https://stackoverflow.com/questions/45342155/how-to-subtract-one-array-from-another-element-wise-in-javascript">How to subtract one array from another, element-wise, in javascript</a> (<code class="language-plaintext highlighter-rouge">_.difference</code>)</li>
+  <li><a href="https://stackoverflow.com/questions/4550505/getting-a-random-value-from-a-javascript-array">Getting a random value from a JavaScript array</a> (<code class="language-plaintext highlighter-rouge">_.sample</code>)</li>
+  <li><a href="https://stackoverflow.com/questions/979256/sorting-an-array-of-objects-by-property-values">Sorting an array of objects by property values</a>(<code class="language-plaintext highlighter-rouge">_.sortBy</code>)</li>
+  <li><a href="https://stackoverflow.com/questions/22015684/how-do-i-zip-two-arrays-in-javascript">How do I zip two arrays in JavaScript?</a> (<code class="language-plaintext highlighter-rouge">_.zip</code>)</li>
+</ul>
+
+<p>Sometimes you’ll even get answers, like with <a href="https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array">How to randomize (shuffle) a JavaScript array?</a> (<code class="language-plaintext highlighter-rouge">_.shuffle</code>) which talks about the ideal algorithm (the “Fisher-Yates (aka Knuth) Shuffle” in this case).  Academically I enjoy learning about different algorithms, but when I’m trying to get higher-level done I just want something that works well.  I’m not sure if the performance of my sorting / shuffling algorithm has ever been a practical concern.</p>
+
+<p>Some of these solutions are very complex, but some are pretty simple, even if they aren’t as simple as just calling a lodash function.  So what’s so bad about using pure Javascript to zip two arrays?</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">a</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="p">[</span><span class="nx">e</span><span class="p">,</span> <span class="nx">b</span><span class="p">[</span><span class="nx">i</span><span class="p">]];</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>The problem, as I see it, is that it:</p>
+
+<ul>
+  <li>is not immediately obvious</li>
+  <li>is a distraction from the task that you’re trying to accomplish</li>
+  <li>leaves room for custom functions to be implemented in broken, odd, or inconsistent ways</li>
+</ul>
+
+<p>The more time that I’ve spent programming, the less I trust myself and the more I trust open source solutions which have been developed and vetted by a community.  Also, most of my experience in programming comes from working in teams.  When working in teams the goal is for code to be readable and maintainable.  If you scatter the codebase with versions of functions that have been implemented over and over again elsewhere (almost certainly in a better way), you’re generally just spending extra time and slowing others down.</p>
+
+<p>Of course there’s nothing wrong with enjoying the challenge of writing your own algorithms!  I just think it’s much better done in https://exercism.io rather than your codebase.</p>
+
+<h2 id="being-fair-to-javascript">Being fair to Javascript</h2>
+
+<p>All of the above said, Javascript has come a long way in recent years.  Some examples:</p>
+
+<ul>
+  <li>I love the fact that I can use <code class="language-plaintext highlighter-rouge">{a: 'b', ...obj}</code> instead of <code class="language-plaintext highlighter-rouge">_.merge({a: 'b'}, obj)</code> (as long as it’s not part of a larger flow which works better as a lodash chain)</li>
+  <li>I often want to return the unique items from an array, and so <code class="language-plaintext highlighter-rouge">[...new Set(array)]</code> provides a reasonably readable solution (if only slightly more verbose and less obvious than <code class="language-plaintext highlighter-rouge">_.uniq(array)</code>)</li>
+  <li>In ES2019 arrays now have <code class="language-plaintext highlighter-rouge">flat()</code> and <code class="language-plaintext highlighter-rouge">flatMap()</code> functions</li>
+</ul>
+
+<h2 id="summing-up">Summing up</h2>
+
+<p>Lodash is self-consistent and holistically designed.  “The principle of least astonishment” is a way to not get bogged down in details, be less prone to errors, and increase overall developer happiness.  When bringing in a new developer it’s easier for them to come up-to-speed quickly.</p>
+
+<p>And my favorite response to “You Don’t Need Lodash”:</p>
+
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">I guess not, but I want it. &quot;You don&#39;t need Lodash/Underscore&quot; <a href="https://t.co/keLJ43U0pa">https://t.co/keLJ43U0pa</a></p>&mdash; Tero Parviainen (@teropa) <a href="https://twitter.com/teropa/status/692280179666898944?ref_src=twsrc%5Etfw">January 27, 2016</a></blockquote>
+<script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        Foooo
+
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/tags/#javascript" class="page__taxonomy-item" rel="tag">javascript</a><span class="sep">, </span>
+    
+      <a href="/tags/#lodash" class="page__taxonomy-item" rel="tag">lodash</a>
+    
+    </span>
+  </p>
+
+
+
+
+
+        
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2021-05-13T22:26:00+02:00">May 13, 2021</time></p>
+
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/2021/02/20/handling-errors-or-not" class="pagination--pager" title="Handling Errors… or not
+">Previous</a>
+    
+    
+      <a href="#" class="pagination--pager disabled">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2021 brian-underwood.blogs. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  
+    <script src="/assets/prism.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>
