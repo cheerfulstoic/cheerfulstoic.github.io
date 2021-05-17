@@ -2,7 +2,7 @@
 title: Structuring an Elixir+Phoenix App
 layout: single
 toc: true
-date: 2020-07-17 00:00
+date: 2020-07-11 00:00
 categories:
 - elixir
 tags:
