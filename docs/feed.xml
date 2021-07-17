@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="http://www.brian-underwood.codes//feed.xml" rel="self" type="application/atom+xml" /><link href="http://www.brian-underwood.codes//" rel="alternate" type="text/html" /><updated>2021-05-13T22:31:40+02:00</updated><id>http://www.brian-underwood.codes//feed.xml</id><title type="html">brian-underwood.blogs</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><author><name>Brian Underwood</name></author><entry><title type="html">Why I Love Lodash</title><link href="http://www.brian-underwood.codes//javascript/2021/05/13/why-I-love-lodash" rel="alternate" type="text/html" title="Why I Love Lodash" /><published>2021-05-13T22:26:00+02:00</published><updated>2021-05-13T22:26:00+02:00</updated><id>http://www.brian-underwood.codes//javascript/2021/05/13/why-I-love-lodash</id><content type="html" xml:base="http://www.brian-underwood.codes//javascript/2021/05/13/why-I-love-lodash">&lt;p&gt;I love &lt;a href=&quot;https://lodash.com/&quot;&gt;Lodash&lt;/a&gt;, but I’m not here to tell you to use Lodash.  It’s up to you to decide if a tool is useful for you or your project.  It will come down to the needs of the project (file size, browser/Node.js, how much you use it, etc…).  But my new team was surprised by my passion for it and so I wanted to share my thoughts.  Specifically: I want to focus in this post on those things which I like, including things which I think people often miss.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="http://www.brian-underwood.codes//feed.xml" rel="self" type="application/atom+xml" /><link href="http://www.brian-underwood.codes//" rel="alternate" type="text/html" /><updated>2021-07-17T15:58:08+02:00</updated><id>http://www.brian-underwood.codes//feed.xml</id><title type="html">brian-underwood.blogs</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><author><name>Brian Underwood</name></author><entry><title type="html">Why I Love Lodash</title><link href="http://www.brian-underwood.codes//javascript/2021/05/13/why-I-love-lodash" rel="alternate" type="text/html" title="Why I Love Lodash" /><published>2021-05-13T22:26:00+02:00</published><updated>2021-05-13T22:26:00+02:00</updated><id>http://www.brian-underwood.codes//javascript/2021/05/13/why-I-love-lodash</id><content type="html" xml:base="http://www.brian-underwood.codes//javascript/2021/05/13/why-I-love-lodash">&lt;p&gt;I love &lt;a href=&quot;https://lodash.com/&quot;&gt;Lodash&lt;/a&gt;, but I’m not here to tell you to use Lodash.  It’s up to you to decide if a tool is useful for you or your project.  It will come down to the needs of the project (file size, browser/Node.js, how much you use it, etc…).  But my new team was surprised by my passion for it and so I wanted to share my thoughts.  Specifically: I want to focus in this post on those things which I like, including things which I think people often miss.&lt;/p&gt;
 
 &lt;h2 id=&quot;checking-types&quot;&gt;Checking types&lt;/h2&gt;
 
@@ -135,45 +135,7 @@
 &lt;p&gt;And my favorite response to “You Don’t Need Lodash”:&lt;/p&gt;
 
 &lt;blockquote class=&quot;twitter-tweet&quot;&gt;&lt;p lang=&quot;en&quot; dir=&quot;ltr&quot;&gt;I guess not, but I want it. &amp;quot;You don&amp;#39;t need Lodash/Underscore&amp;quot; &lt;a href=&quot;https://t.co/keLJ43U0pa&quot;&gt;https://t.co/keLJ43U0pa&lt;/a&gt;&lt;/p&gt;&amp;mdash; Tero Parviainen (@teropa) &lt;a href=&quot;https://twitter.com/teropa/status/692280179666898944?ref_src=twsrc%5Etfw&quot;&gt;January 27, 2016&lt;/a&gt;&lt;/blockquote&gt;
-&lt;script async=&quot;&quot; src=&quot;https://platform.twitter.com/widgets.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;</content><author><name>Brian Underwood</name></author><category term="javascript" /><category term="javascript" /><category term="lodash" /><summary type="html">I love Lodash, but I’m not here to tell you to use Lodash. It’s up to you to decide if a tool is useful for you or your project. It will come down to the needs of the project (file size, browser/Node.js, how much you use it, etc…). But my new team was surprised by my passion for it and so I wanted to share my thoughts. Specifically: I want to focus in this post on those things which I like, including things which I think people often miss.</summary></entry><entry><title type="html">Handling Errors… or not</title><link href="http://www.brian-underwood.codes//2021/02/20/handling-errors-or-not" rel="alternate" type="text/html" title="Handling Errors… or not" /><published>2021-02-20T00:00:00+01:00</published><updated>2021-02-20T00:00:00+01:00</updated><id>http://www.brian-underwood.codes//2021/02/20/handling-errors-or-not</id><content type="html" xml:base="http://www.brian-underwood.codes//2021/02/20/handling-errors-or-not">&lt;p&gt;This post is mainly about Javascript, but I believe that it is applicable to any language that has exceptions which can be thrown and handled.  I will try to keep the examples high-level.&lt;/p&gt;
-
-&lt;p&gt;You know that you should handle your exceptions, right.  Sometimes you remember to and sometimes you don’t.  When you don’t, do you feel a bit guilty that you’re not being a “good” or “professional” programmer?  What would it look like if you handled every single exception in your code?  It would probably be bloated and hard to maintain.  When and why should we handle exceptions?&lt;/p&gt;
-
-&lt;div class=&quot;language-javascript highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;JS NOTE: I thought at first that &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;catch&lt;/code&gt; would get the error but the promise chain would still allow other &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;catch&lt;/code&gt; calls.  It makes sense that it doesn’t, otherwise you wouldn’t be able to choose to either handle an error or let it bubble.&lt;/p&gt;
-
-&lt;p&gt;NOTE: Logging errors depends on the quality of the code doing the logging.  If somebody writes: &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;logger.error(&apos;call failed&apos;)&lt;/code&gt; you won’t see the error message to know &lt;em&gt;why&lt;/em&gt;.  If somebody writes &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;logger.error(&apos;service call error: &apos; + err.message)&lt;/code&gt;, that is better, but you don’t know &lt;em&gt;which&lt;/em&gt; service and you don’t have a stack trace.  This is why exception have the ability to “bubble”.  It is a standard way to pass all that information up so that it can be logged / sent off / etc… in a standard way.
-That doesn’t mean you  should just let errors happen.  Attaching your business logic’s context can be very useful in seeing immediately where an error came from.  Ideally you would do &lt;em&gt;that&lt;/em&gt; in a standard way to reduce the need to dig through the code to find where the error came from&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Logging is useful for debugging, but it isn’t in-your-face.  We’re not always looking at logs&lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Exception tracking is better.  In-your-face.  Sends E-Mails/Slack message/etc…  Lets you organize your errors&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;Hypothesis:
-    &lt;ul&gt;
-      &lt;li&gt;Functions at a “lower level” which handle their errors (and log, or just simply return a fake value) make errors hard to see&lt;/li&gt;
-      &lt;li&gt;Need to distinguish between something that you expect to happen and you’re OK with a default value, and something that you don’t expect and really need to know about&lt;/li&gt;
-      &lt;li&gt;Lat/long of 0,0 is rarely acceptable.  Don’t return 0/empty string/etc… if you don’t know what the value should be&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Discuss “Functional Core, Imperative Shell” (?)&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;https://github.com/kbilsted/Functional-core-imperative-shell/blob/master/README.md&lt;/li&gt;
-  &lt;li&gt;https://www.destroyallsoftware.com/screencasts/catalog/functional-core-imperative-shell&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Notes:&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;Investigate: https://jamesonzimmer.com/dynamic-footnotes-markdown-jekyll-no-plugin/&lt;/li&gt;
-  &lt;li&gt;Look again at Exceptional Ruby&lt;/li&gt;
-  &lt;li&gt;Catching errors early means that they can’t be caught and dealt with by higher, more general, logging / exception reporting handlers&lt;/li&gt;
-  &lt;li&gt;I wrote some stuff in my notebook&lt;/li&gt;
-  &lt;li&gt;Use multiple languages? or just pseudo code?&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>Brian Underwood</name></author><category term="javascript" /><category term="opinion" /><summary type="html">This post is mainly about Javascript, but I believe that it is applicable to any language that has exceptions which can be thrown and handled. I will try to keep the examples high-level.</summary></entry><entry><title type="html">Structuring an Elixir+Phoenix App</title><link href="http://www.brian-underwood.codes//elixir/2020/07/11/structuring-an-elixir+phoenix-app" rel="alternate" type="text/html" title="Structuring an Elixir+Phoenix App" /><published>2020-07-11T00:00:00+02:00</published><updated>2020-07-11T00:00:00+02:00</updated><id>http://www.brian-underwood.codes//elixir/2020/07/11/structuring-an-elixir+phoenix-app</id><content type="html" xml:base="http://www.brian-underwood.codes//elixir/2020/07/11/structuring-an-elixir+phoenix-app">&lt;p&gt;I’ve &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mix phx.new&lt;/code&gt; ed many applications and when doing so I often start with wondering how to organize my code. I love how Phoenix pushes you to think about the different domains in your app via generators while at the same time I have the freedom to organize modules on my own. Ecto schemas make for a nice abstraction, but where should I put code related just to that table? It could be in the context, but I don’t want the context to become a “grab bag” of unorganized function calls.&lt;/p&gt;
+&lt;script async=&quot;&quot; src=&quot;https://platform.twitter.com/widgets.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;</content><author><name>Brian Underwood</name></author><category term="javascript" /><category term="javascript" /><category term="lodash" /><summary type="html">I love Lodash, but I’m not here to tell you to use Lodash. It’s up to you to decide if a tool is useful for you or your project. It will come down to the needs of the project (file size, browser/Node.js, how much you use it, etc…). But my new team was surprised by my passion for it and so I wanted to share my thoughts. Specifically: I want to focus in this post on those things which I like, including things which I think people often miss.</summary></entry><entry><title type="html">Structuring an Elixir+Phoenix App</title><link href="http://www.brian-underwood.codes//elixir/2020/07/11/structuring-an-elixir+phoenix-app" rel="alternate" type="text/html" title="Structuring an Elixir+Phoenix App" /><published>2020-07-11T00:00:00+02:00</published><updated>2020-07-11T00:00:00+02:00</updated><id>http://www.brian-underwood.codes//elixir/2020/07/11/structuring-an-elixir+phoenix-app</id><content type="html" xml:base="http://www.brian-underwood.codes//elixir/2020/07/11/structuring-an-elixir+phoenix-app">&lt;p&gt;I’ve &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mix phx.new&lt;/code&gt; ed many applications and when doing so I often start with wondering how to organize my code. I love how Phoenix pushes you to think about the different domains in your app via generators while at the same time I have the freedom to organize modules on my own. Ecto schemas make for a nice abstraction, but where should I put code related just to that table? It could be in the context, but I don’t want the context to become a “grab bag” of unorganized function calls.&lt;/p&gt;
 
 &lt;p&gt;In the past, I’ve searched for someone writing on the subject but haven’t come up with much. I’ve even done some cursory glancing into repositories to get a feeling for what they do, but I’ve never looked thoroughly at different options. In this post, I share what I have found from four different open source Phoenix+Ecto applications. And as the old joke goes, I’ll be asking four developers for their opinions and getting four different answers. In the end, I’ll summarize how I plan to move forward.&lt;/p&gt;
 
@@ -4089,4 +4051,177 @@ table, th, td {
 
 &lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
 
-&lt;p&gt;The workshop was a really fun way to get people using Neo4j really quickly.  It can feel a bit strange to simply give people some datasets and ask them to do something with it, but the freedom to be creative helped both the participants and me be really excited about working with Neo4j.  I look forward to doing more workshops again in the future!&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="neo4j" /><category term="advocacy" /><summary type="html">Last night I ran a very successful workshop at the Friends of Neo4j Stockholm meetup group. The format was based on a workshop that I attended in San Francisco while the World Cup was going on and was based around investigating a dataset of previous World Cup matches. Roughly the format was:</summary></entry></feed>
+&lt;p&gt;The workshop was a really fun way to get people using Neo4j really quickly.  It can feel a bit strange to simply give people some datasets and ask them to do something with it, but the freedom to be creative helped both the participants and me be really excited about working with Neo4j.  I look forward to doing more workshops again in the future!&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="neo4j" /><category term="advocacy" /><summary type="html">Last night I ran a very successful workshop at the Friends of Neo4j Stockholm meetup group. The format was based on a workshop that I attended in San Francisco while the World Cup was going on and was based around investigating a dataset of previous World Cup matches. Roughly the format was:</summary></entry><entry><title type="html">Making Master Data Management Fun with Neo4j - Part 3</title><link href="http://www.brian-underwood.codes//2015/03/08/making_master_data_management_fun_with_neo4j_-_part_3" rel="alternate" type="text/html" title="Making Master Data Management Fun with Neo4j - Part 3" /><published>2015-03-08T20:31:00+01:00</published><updated>2015-03-08T20:31:00+01:00</updated><id>http://www.brian-underwood.codes//2015/03/08/making_master_data_management_fun_with_neo4j_-_part_3</id><content type="html" xml:base="http://www.brian-underwood.codes//2015/03/08/making_master_data_management_fun_with_neo4j_-_part_3">&lt;p&gt;In my last two posts I covered the process of importing data from &lt;a href=&quot;/2015/02/16/making_master_data_management_fun_with_neo4j_-_part_1&quot;&gt;StackOverflow&lt;/a&gt; and &lt;a href=&quot;/2015/02/22/making_master_data_management_fun_with_neo4j_-_part_2&quot;&gt;GitHub&lt;/a&gt; for the purpose of creating a combined MDM database.  Now we get to the really fun stuff: today I show you how I tied the data together!&lt;/p&gt;
+
+&lt;h2 id=&quot;tying-the-data-together&quot;&gt;Tying the data together&lt;/h2&gt;
+
+&lt;p&gt;The most obvious entities to link between StackOverflow and GitHub is the user profiles.  Unfortuately users don’t always have two profiles, don’t fill out both profiles, or just don’t have perfectly matching information between the two.  To this end I built &lt;a href=&quot;http://en.wikipedia.org/wiki/Record_linkage&quot;&gt;record linkage&lt;/a&gt; tools which helped me make links between users.&lt;/p&gt;
+
+&lt;p&gt;My goal is to create a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Person&lt;/code&gt; label which ties together nodes from GitHub and StackOverflow (and potentially other sites) as seen below:&lt;/p&gt;
+
+&lt;div style=&quot;text-align: center&quot;&gt;
+  &lt;img src=&quot;/assets/neo4j-mdm/person_node.png&quot; /&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;standardization&quot;&gt;Standardization&lt;/h3&gt;
+
+&lt;p&gt;My first step to linking records is to standardize data as much as possible.  To this end I do a number of things:&lt;/p&gt;
+
+&lt;h4 id=&quot;stackoverflow-users&quot;&gt;StackOverflow users&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;From the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;website_url&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;about_me&lt;/code&gt; properties:
+    &lt;ul&gt;
+      &lt;li&gt;Pull the Twitter username to a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;twitter_username&lt;/code&gt; property if there is a URL which points to twitter&lt;/li&gt;
+      &lt;li&gt;Pull the GitHub username to a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;github_username&lt;/code&gt; property if there is a URL which points to twitter&lt;/li&gt;
+      &lt;li&gt;Extract all URIs to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;uris&lt;/code&gt; property as an array (no URI protocol or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;www.&lt;/code&gt;)&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Extract any E-Mail addresses from the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;about_me&lt;/code&gt; property to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;emails&lt;/code&gt; property&lt;/li&gt;
+  &lt;li&gt;Further reduce &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;uris&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;emails&lt;/code&gt; to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;domains&lt;/code&gt; property (no paths)&lt;/li&gt;
+  &lt;li&gt;Make a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;usernames&lt;/code&gt; property with the GitHub and Twitter usernames as well as the StackOverflow &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;display_name&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;github-users&quot;&gt;GitHub users&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Extract the Twitter username from the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;blog&lt;/code&gt; property if it points to twitter&lt;/li&gt;
+  &lt;li&gt;Standardize the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;blog&lt;/code&gt; property to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;uris&lt;/code&gt; property as an array (no URL protocol or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;www.&lt;/code&gt;)&lt;/li&gt;
+  &lt;li&gt;Further reduce &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;uris&lt;/code&gt; to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;domains&lt;/code&gt; property (no paths)&lt;/li&gt;
+  &lt;li&gt;Make a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;usernames&lt;/code&gt; property with the GitHub and Twitter usernames&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;post-processing&quot;&gt;Post-processing&lt;/h4&gt;
+
+&lt;p&gt;All of the above generated properties get downcased, stripped of extra whitespace, and stored without duplicates.&lt;/p&gt;
+
+&lt;p&gt;After all domains have been looked for, I run the followed to extract any domains which have been used more than once to find and eliminate domains like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gmail.com&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;github.com&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;neo4j.com&lt;/code&gt;, etc…&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby line-numbers&quot;&gt;
+
+query.match(u: :User).unwind(domain: &apos;u.domains&apos;).
+  with(:domain, count: &apos;count(domain)&apos;).where(&apos;count &amp;gt; 1&apos;).
+  pluck(:domain)
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;linkage&quot;&gt;Linkage&lt;/h3&gt;
+
+&lt;p&gt;With the data standardized we can now easily do record comparison and scoring.  Here I go through the millions of combinations of user pairings and give each of them a score.  For each pairing I want to create a relationship in the database so that I don’t need to calculate the score again.  Since I don’t want to have millions of relationships connecting every single user to every other user, I only create relationships above a score threshold.&lt;/p&gt;
+
+&lt;p&gt;I created a class called &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ObjectIdentifier&lt;/code&gt; which allows me to create rules for comparing and scoring records.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby line-numbers&quot;&gt;
+
+identifier = ObjectIdentifier.new do |config|
+  config.default_threshold = 0.8
+  config.default_weight = 1.0
+
+  config.add_matcher :name, :display_name, &amp;amp;fuzzy_string_matcher
+  config.add_matcher :login, :display_name, &amp;amp;fuzzy_string_matcher
+  config.add_matcher :blog, :website_url, &amp;amp;fuzzy_string_matcher
+  config.add_matcher :location, :location, &amp;amp;fuzzy_string_matcher
+
+  config.add_matcher :login, :github_username, weight: 2.0, &amp;amp;exact_string_matcher
+  config.add_matcher :twitter_username, :twitter_username, weight: 2.0, &amp;amp;exact_string_matcher
+
+  config.add_matcher :domains, :domains, threshold: 0.98, &amp;amp;array_fuzzy_string_matcher
+  config.add_matcher :usernames, :usernames, threshold: 0.98, &amp;amp;array_exact_string_matcher
+
+end
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You can see that there are anonymous functions for both fuzzy and exact string matching.&lt;/p&gt;
+
+&lt;p&gt;With the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;identifier&lt;/code&gt; object I can call &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;identifier.classify_hash(ghu, sou)&lt;/code&gt; to get the following result:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby line-numbers&quot;&gt;
+
+{
+                    [ :name, :display_name ] =&amp;gt; 0.9769319492502884,
+                   [ :login, :display_name ] =&amp;gt; 0.9769319492502884,
+                     [ :blog, :website_url ] =&amp;gt; 0.0,
+                    [ :location, :location ] =&amp;gt; 1.0,
+                [ :login, :github_username ] =&amp;gt; 0.0,
+    [ :twitter_username, :twitter_username ] =&amp;gt; 0.0,
+                      [ :domains, :domains ] =&amp;gt; 0.0,
+                  [ :usernames, :usernames ] =&amp;gt; 0.0,
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Using the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;identifier&lt;/code&gt; object, I then compare every combination of users between GitHub and StackOverflow.  With &lt;strong&gt;2,312&lt;/strong&gt; StackOverflow users and &lt;strong&gt;6,255&lt;/strong&gt; GitHub users there are &lt;strong&gt;14,461,560&lt;/strong&gt; potential pairs, which can take some time.&lt;/p&gt;
+
+&lt;p&gt;For each pairing my script gets the result hash and calculates a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;score&lt;/code&gt; as the sum of the Hash values.  If that score is above a threshold, it creates a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;COMPUTER_IDENTIFIED&lt;/code&gt; Neo4j relationship to represent a hit.  The relationship stores the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;score&lt;/code&gt; as well as a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hash&lt;/code&gt; property with a JSON representation of the result for debugging.&lt;/p&gt;
+
+&lt;h3 id=&quot;phash&quot;&gt;pHash&lt;/h3&gt;
+
+&lt;p&gt;While comparing strings to strings I realized there was another aspect of the profile that I was missing: The profile photo.&lt;/p&gt;
+
+&lt;p&gt;If I could do fuzzy comparisons against the user images I could narrow down the results even further.  Fortunately the &lt;a href=&quot;https://github.com/westonplatter/phashion&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;phashion&lt;/code&gt;&lt;/a&gt; gem provides an implementation of the &lt;a href=&quot;http://www.phash.org/&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pHash&lt;/code&gt;&lt;/a&gt; algorithm to do just that.  So I wrote a quick script to &lt;a href=&quot;https://github.com/neo4jrb/neo4j-mdm-linking/blob/master/image_download.rb&quot;&gt;download the profile photos&lt;/a&gt; locally and then another to &lt;a href=&quot;https://github.com/neo4jrb/neo4j-mdm-linking/blob/master/image_match.rb&quot;&gt;compare the millions of combinations&lt;/a&gt;.  With all of that downloading and pHashing, I found that I also needed to use the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;parallel&lt;/code&gt; gem to complete in a reasonable amount of time.&lt;/p&gt;
+
+&lt;p&gt;So that I didn’t need to compare photos during my &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ObjectIdentifier&lt;/code&gt; process, I simply created a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SIMILAR_IMAGE_TO&lt;/code&gt; relationship between users to store the result of the pHash (a value between 1 and 15 where 1 is the closest perceived match).&lt;/p&gt;
+
+&lt;p&gt;Using Neo4j I don’t need to worry about table structure or if I should create a collection or embed in existing objects.  I can create whatever links between users that I need as I play with algorithms that will work for my purpose.&lt;/p&gt;
+
+&lt;h2 id=&quot;man-vs-machine&quot;&gt;Man vs. Machine&lt;/h2&gt;
+
+&lt;p&gt;To help guide my algorithms I used the only thing that I had available to me that could do a reasonable comparison of profiles: me.  I turned my project into a Rails app which could show my two profiles side-by-side:&lt;/p&gt;
+
+&lt;p&gt;&lt;img style=&quot;width: 800px&quot; src=&quot;/assets/neo4j-mdm/profile_comparison.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This view would show me a randomly chosen pair of users.  80% of the time those users were chosen because I had algorithmically determined some linkage between them.  20% of the time it would just show me a randomly chosen set of two users which hadn’t already been matched to acts as a control group.  I created five links along the top of the page (“Definitely not”, “Probably not”, “Don’t know”, “Probably”, and “Definitely”) and threw in a bit of CoffeeScript to let me choose them via arrow keys.&lt;/p&gt;
+
+&lt;p&gt;In making decisions on hundres of pairs of profiles, a number of questions occurred to me:&lt;/p&gt;
+
+&lt;dl&gt;
+&lt;dt&gt;How should do I choose between the five levels?&lt;/dt&gt;
+&lt;dd&gt;
+  I made some rules to describe how I evaluate the evidence.  By evidence I mean comparing name, location, photo, etc...
+
+  &lt;ul&gt;
+    &lt;li&gt;two pieces of matching evidence mean &quot;Probably&quot;&lt;/li&gt;
+    &lt;li&gt;three pieces of matching evidence mean &quot;Definitely&quot;&lt;/li&gt;
+    &lt;li&gt;two pieces of contradictory evidence means &quot;Probably not&quot;&lt;/li&gt;
+    &lt;li&gt;three pieces of contradictory evidence means &quot;Definitely not&quot;&lt;/li&gt;
+  &lt;/ul&gt;
+
+  While I placed &quot;Not sure&quot; in the middle, that was a special case which means that I don&apos;t have enough evidence.
+&lt;/dd&gt;
+
+&lt;dt&gt;Should I follow links and otherwise research the users?&lt;/dt&gt;
+&lt;dd&gt;No.  If I want to determine how well my matching algorithms work, I should use only same data that they have.&lt;/dd&gt;
+
+&lt;dt&gt;What about pictures?&lt;/dt&gt;
+&lt;dd&gt;I happen to be a human and humans are pretty good at comparing photos, particularly photos of people.  I was torn about this, but decided that if two photos were obviously not the same person, I should classify the profiles as different.&lt;/dd&gt;
+
+&lt;/dl&gt;
+
+&lt;h2 id=&quot;analyzing-the-result&quot;&gt;Analyzing the result&lt;/h2&gt;
+
+&lt;p&gt;To figure out how well my classification algorithm worked I turned, of course, to &lt;a href=&quot;http://www.r-project.org/&quot;&gt;R&lt;/a&gt;.  Using &lt;a href=&quot;https://github.com/nicolewhite/RNeo4j&quot;&gt;RNeo4j&lt;/a&gt; I run a query to get the human score (from &lt;strong&gt;-2&lt;/strong&gt; as ‘Definitely not’ and &lt;strong&gt;2&lt;/strong&gt; as ‘Definitely’) and the computer score (for the rules I specified this runs from &lt;strong&gt;0&lt;/strong&gt; to about &lt;strong&gt;6&lt;/strong&gt;):&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-r&quot;&gt;
+
+query &amp;lt;- &quot;MATCH
+          (ghu:User:GitHub)-[ci:COMPUTER_IDENTIFIED]-(u:User),
+          MATCH ghu-[i:IDENTIFIED]-u
+        RETURN ci.score, toInt(i.index)&quot;
+result &amp;lt;- cypher(graph, query)
+
+plot(result[[2]], result[[1]], xlab = &quot;Human Score&quot;, ylab = &quot;ObjectIdentifier score&quot;)
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;…and plot the results…&lt;/p&gt;
+
+&lt;div style=&quot;text-align: center&quot;&gt;
+  &lt;img src=&quot;/assets/neo4j-mdm/human_vs_computer.png&quot; /&gt;
+&lt;/div&gt;
+
+&lt;p&gt;This shows me that I should be able to relatively safely classify an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ObjectIdentifier&lt;/code&gt; score of around &lt;strong&gt;3&lt;/strong&gt; and up as the same user.  A score of &lt;strong&gt;2.5&lt;/strong&gt; and above looks promising, though looking in that range for users with a human classification of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Not sure&lt;/code&gt; there are some false positives.  I suspect I can improve the correlation between the two by adjusting the algorithm scoring/weights.&lt;/p&gt;
+
+&lt;p&gt;That’s plenty to digest for now, so next time I’ll show the sorts of queries that can be run on the linked database!  You can see all the code on the &lt;a href=&quot;https://github.com/neo4jrb/neo4j-mdm-linking&quot;&gt;GitHub repository&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;If you want to talk more in person, feel free to drop by one of my upcoming &lt;a href=&quot;/engagements&quot;&gt;speaking engagements&lt;/a&gt;!&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="neo4j" /><category term="master-data-management" /><category term="phash" /><category term="r" /><category term="stackoverflow" /><category term="github" /><summary type="html">In my last two posts I covered the process of importing data from StackOverflow and GitHub for the purpose of creating a combined MDM database. Now we get to the really fun stuff: today I show you how I tied the data together!</summary></entry></feed>

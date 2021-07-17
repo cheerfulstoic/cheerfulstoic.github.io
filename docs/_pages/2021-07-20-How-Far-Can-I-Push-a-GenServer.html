@@ -1,0 +1,702 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.22.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>How Far Can I Push a GenServer? - brian-underwood.blogs</title>
+<meta name="description" content="Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.">
+
+
+  <meta name="author" content="Brian Underwood">
+  
+  <meta property="article:author" content="Brian Underwood">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="brian-underwood.blogs">
+<meta property="og:title" content="How Far Can I Push a GenServer?">
+<meta property="og:url" content="http://www.brian-underwood.codes//_pages/2021-07-20-How-Far-Can-I-Push-a-GenServer">
+
+
+  <meta property="og:description" content="Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2021-07-10T00:00:00+02:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://www.brian-underwood.codes//_pages/2021-07-20-How-Far-Can-I-Push-a-GenServer">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://www.brian-underwood.codes//"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="brian-underwood.blogs Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+    <link rel="stylesheet" href="/assets/css/custom.css">
+<link rel="stylesheet" href="/assets/prism.css">
+
+<script defer src="/assets/js/alpine-3.2.1.min.js"></script>
+
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          brian-underwood.blogs
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/tags/">Tags</a>
+            </li><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+        <img src="/assets/images/bio-photo.jpg" alt="Brian Underwood" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Brian Underwood</h3>
+    
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li itemprop="homeLocation" itemscope itemtype="https://schema.org/Place">
+          <i class="fas fa-fw fa-map-marker-alt" aria-hidden="true"></i> <span itemprop="name">Stockholm, Sweden</span>
+        </li>
+      
+
+      
+        
+          
+            <li><a href="http://www.brian-underwood.codes/" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-link" aria-hidden="true"></i><span class="label">brian-underwood.codes</span></a></li>
+          
+        
+          
+            <li><a href="https://twitter.com/cheerfulstoic" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i><span class="label">@cheerfulstoic</span></a></li>
+          
+        
+          
+            <li><a href="https://github.com/cheerfulstoic" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github-square" aria-hidden="true"></i><span class="label">@cheerfulstoic</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="How Far Can I Push a GenServer?">
+    
+    <meta itemprop="datePublished" content="2021-07-10T00:00:00+02:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">How Far Can I Push a GenServer?
+</h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>I’ve been using Elixir for a while and I’ve implemented a number of GenServers.  But while I think I mostly understand the purpose of them, I’ve not gotten the chance to push them to their limits, scale one up, and find ways to address it’s bottlenecks.  I thought that it would be fun to create something for which I could confidently hand out the URL when giving a presentation and have some confidence that it would be able to handle all the users who connected to it.  So recently I implemented a simple game grid using Phoenix LiveView and emojis as indicators of player and objects.  If you would like to learn about my journey, read on!  But note that you’ll probably want to have at least a basic understanding of GenServers first.  You might start by <a href="https://elixir-lang.org/getting-started/mix-otp/genserver.html">reading this</a> and/or <a href="https://elixircasts.io/intro-to-genserver">watching this</a>.</p>
+
+<p>If you would like to look at the source code for this project you can see it <a href="https://github.com/cheerfulstoic/emoji_game">on GitHub</a>.</p>
+
+<h1 id="overview-of-the-project">Overview of the Project</h1>
+
+<p>
+  <div>
+    <a href="/assets/images/how-far-can-i-push-a-genserver/game-grid.png">
+      <img src="/assets/images/how-far-can-i-push-a-genserver/game-grid.png" style="max-width: 500px" />
+    </a>
+  </div>
+
+  <div><em>The Game Grid</em></div>
+</p>
+
+<p>It is an Elixir Phoenix app which starts up a <code class="language-plaintext highlighter-rouge">GenServer</code> process as the game server which:</p>
+
+<ul>
+  <li>Keeps track of a 1000x1000 square game grid, populated with random objects (trees, to start)</li>
+  <li>Allows clients (other processes) to make moves</li>
+  <li>Keeps track of the current position of clients, indexed by their process ID (PID)</li>
+</ul>
+
+<p>There will then also be two kinds of “client”s of the game server:</p>
+<ul>
+  <li>A LiveView UI which handle the player’s session and key presses</li>
+  <li>A set of <code class="language-plaintext highlighter-rouge">GenServer</code>s (the “actors”) which will move randomly every second.</li>
+</ul>
+
+<h1 id="the-move-message">The <code class="language-plaintext highlighter-rouge">move</code> Message</h1>
+
+<p>To implement moves I started out with a simple <code class="language-plaintext highlighter-rouge">move</code> message which clients can send to the game server with the new position the client would like to move to.  The LiveView process sends this once at startup to establish a starting position and then again each time the player presses an arrow key.  The actor processes simply send a <code class="language-plaintext highlighter-rouge">move</code> message once every second to move randomly.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">move</code> message itself worked fine, but a player wouldn’t see any movement from actor processes until they (the player) moved.  While this was obviously a big usability problem I didn’t deal with it right away.  See the “Sending Map Updates Asyncronously” section below.</p>
+
+<h1 id="linking-clients">Linking Clients</h1>
+
+<p>One thing that I discovered quickly was that sometimes as a player the game would crash and the I would end up with a “dead” copy of myself left behind on the board.  It turns out that this would happen whenever I pressed any non-arrow key (including modifier keys like alt/option).  This is because I was handling key presses with a <code class="language-plaintext highlighter-rouge">case</code> statement without accounting for anything other than the four arrow keys.  When another key was pressed a <code class="language-plaintext highlighter-rouge">CaseClauseError</code> error would be raised and crash the LiveView process.  LiveView handled this great by automagically creating a new process for the session, but my game server would still think that the old process was around and thus the old avatar was still there.  My fix: the game server calls <code class="language-plaintext highlighter-rouge">Process.link</code> to link itself to each client and then traps exits to clean up the information it has about that client’s PID.</p>
+
+<details class="nitty-gritty">
+  <summary>Nitty-gritty detail</summary>
+
+  
+<p>I initially called <code class="language-plaintext highlighter-rouge">Process.link</code> whenever a client sent a <code class="language-plaintext highlighter-rouge">move</code> message.  The documentation says “If such a link exists already, this function does nothing”, so it wasn’t a problem.  But the more elegant way would be to just do it once.</p>
+
+<p>Also: I started with <code class="language-plaintext highlighter-rouge">handle_cast</code>, but it doesn’t give you a PID.  So I couldn’t just have clients send a move without getting a response because the game server needs to track clients by their PID.  So I used <code class="language-plaintext highlighter-rouge">handle_call</code>, but that will probably be needed in the long run anyway since clients will eventually need feedback to know if their moves are invalid (i.e. something is there which can’t occupy the same space at the same time)</p>
+
+</details>
+
+<h1 id="registering">Registering</h1>
+
+<p>I had a couple of small reasons coming together making me think I should create a new kind of message that clients send to the game server to register themselves:</p>
+
+<ul>
+  <li>Only calling <code class="language-plaintext highlighter-rouge">Process.link</code> once</li>
+  <li>Simplifying the code to handle <code class="language-plaintext highlighter-rouge">move</code> messages (no need to check if the PID already exsits)</li>
+  <li>Allowing for the game server to send the map section right away</li>
+</ul>
+
+<p>It will also later turn out to be a useful opportunity for the client to send configuration options to the server (keep reading for more!)</p>
+
+<h1 id="measuring">Measuring</h1>
+
+<p>With that done I wanted to optimize the process so that I could handle more clients.  But before optimizing my code I wanted to add some metrics tracking because you can’t optimize what you can’t see!  Thanks to <code class="language-plaintext highlighter-rouge">telemetry</code> being included with Phoenix I was able to quickly add metrics for the game server’s queue size and the response time of the <code class="language-plaintext highlighter-rouge">move</code> message (as seen from the actors).  Shortly thereafter I was able to see those metrics in the Phoneix LiveDashboard.  Since LiveDashboard only shows recent values I also used the <code class="language-plaintext highlighter-rouge">telemetry_metrics_statsd</code> library to send the metrics to a local statsd server with graphite for visualization (using the <code class="language-plaintext highlighter-rouge">graphiteapp/graphite-statsd</code> docker image).</p>
+
+<details class="tabbed-git-gist">
+  <summary>See the code</summary>
+
+  <div x-data="{data : {files: []}, current_tab: 'benchmark.exs'}" x-init="data = await (await fetch('https://api.github.com/gists/9498a7f262ffc5a12b5ec87be8db2590')).json(); current_tab = Object.keys(data.files)[0]">
+    <nav>
+      <template x-for="filename in Object.keys(data.files)" x-bind:key="filename">
+        <div class="tab" x-bind:class="{ 'active': current_tab === filename }" x-on:click.prevent="current_tab = filename; window.location.hash = filename" x-text="filename" href="#"></div>
+      </template>
+    </nav>
+
+    <div class="tabs-body">
+      <template x-for="filename in Object.keys(data.files)" x-bind:key="filename">
+        <iframe x-show="current_tab === filename" x-bind:srcdoc="`&lt;script src='https://gist.github.com/9498a7f262ffc5a12b5ec87be8db2590.js?file=${filename}'&gt;&lt;/script&gt;`">
+        </iframe>
+      </template>
+    </div>
+
+  </div>
+
+  <style>
+    iframe {
+      border: 0;
+      width: 100%;
+      height: 307px;
+    }
+
+    .tab {
+      display: inline-block;
+      border: 1px solid black;
+      border-bottom: 0;
+      background-color: white;
+      padding: 0.4em;
+    }
+    .tab.active {
+      position: relative;
+      top: 1px;
+      background-color: #ddd;
+    }
+    .tabs-body {
+      background-color: #ddd;
+      border: 1px solid black;
+    }
+  </style>
+</details>
+
+<p>
+  <div>
+    <a href="/assets/images/how-far-can-i-push-a-genserver/livedashboard.png">
+      <img src="/assets/images/how-far-can-i-push-a-genserver/livedashboard.png" style="max-width: 100%" />
+    </a>
+  </div>
+
+  <div><em>LiveDashboard</em></div>
+</p>
+
+<p>
+  <div>
+    <a href="/assets/images/how-far-can-i-push-a-genserver/graphite.png">
+      <img src="/assets/images/how-far-can-i-push-a-genserver/graphite.png" style="max-width: 100%" />
+    </a>
+  </div>
+
+  <div><em>Graphite (via statsd)</em></div>
+</p>
+
+<p>I started out with 20 actors which worked fine and I was seeing response times between 5 and 65ms.  I then raised the count by 20 each time.  Getting up to 60 went fine overall with occasional increases in queue size / response time.  But when I got up to 80 it took some time before after startup before the queue went down to zero.  Going up a bit to 90 led to the queue rarely going down to zero and response times of between 250 and 450ms, which I considered to be around the breaking point.</p>
+
+<h1 id="reducing-the-move-message-response-size">Reducing The <code class="language-plaintext highlighter-rouge">move</code> Message Response Size</h1>
+
+<p>My first idea for allowing me to handle more simultaneous clients was to change my default map response from being a List-of-Lists to a Map.</p>
+
+<details class="show-the-code">
+  <summary>Show me the code!</summary>
+
+  
+<p>What this means is that, instead of the server returning this to clients:</p>
+
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[[</span><span class="no">nil</span><span class="p">,</span> <span class="no">nil</span><span class="p">,</span> <span class="ss">:tree</span><span class="p">],</span>
+ <span class="p">[</span><span class="ss">:actor</span><span class="p">,</span> <span class="no">nil</span><span class="p">,</span> <span class="no">nil</span><span class="p">],</span>
+ <span class="p">[</span><span class="ss">:actor</span><span class="p">,</span> <span class="ss">:tree</span><span class="p">,</span> <span class="no">nil</span><span class="p">]]</span>
+</code></pre></div></div>
+
+<p>It would return this:</p>
+
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">%{</span>
+  <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">}</span> <span class="o">=&gt;</span> <span class="ss">:tree</span><span class="p">,</span>
+  <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">}</span> <span class="o">=&gt;</span> <span class="ss">:actor</span><span class="p">,</span>
+  <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">}</span> <span class="o">=&gt;</span> <span class="ss">:actor</span><span class="p">,</span>
+  <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">}</span> <span class="o">=&gt;</span> <span class="ss">:tree</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>While that isn’t much sparser in those examples, my hope was that with a larger map section with trees and actors spread out that this would be less to send.</p>
+
+</details>
+
+<p>Unfortunately it didn’t seem to actually help much.  Thinking about this later, I realized one reason could be that I was starting all of the actors in the same place on the map, meaning that the “sparse” format wasn’t making much of a difference in the case that I was testing.</p>
+
+<p>While this didn’t help, I still kept the change as I felt that it was a better solution and because I didn’t have any reason to think it would perform worse 😊</p>
+
+<h1 id="sending-map-updates-asyncronously">Sending Map Updates Asyncronously</h1>
+
+<p>The next thing that I tried was simply returning <code class="language-plaintext highlighter-rouge">true</code> when handling <code class="language-plaintext highlighter-rouge">move</code> messages but sending a map update to clients asyncronously.  While this didn’t help with scaling, I was able to fix the above problem where players only see updates when they move.   I also felt that it was a good way to setup the messages as it is the same way that LiveView works (incoming messages update the state and LiveView sends outgoing websocket messages to all clients whenever there is a need for them to know about state changes).</p>
+
+<h1 id="reducing-the-map-section-size-returned">Reducing the Map Section Size Returned</h1>
+
+<p>My next experiment was to reduce the size of the map section which is returned to clients.  Originally I returned a 27x27 section of the map which I reduced to a 17x17 section.  This means that the number of potential squares returned is 289 instead of 729.  This helped me have up to 130 actors at once, which was definitely a good jump!  This was an easy change to make because I didn’t have a specific purpose for the game yet, but if this is an actual game that I wanted to release I would want to think as the “game designer” what map size is important.  Overall, though, this would be much less important given the next thing that I tried…</p>
+
+<h1 id="allow-clients-to-ask-for-map-updates">Allow Clients to Ask For Map Updates</h1>
+
+<p>If we have, for example, 100 clients which are moving once every second and each client gets an update whenever another client moves, the game server will need to send around 10,000 messages every second!  While the LiveView clients which connect to the game need to these map updates from the game server, the actor clients which are just moving randomly didn’t use that information. This means that we can avoid sending many of these messages!  So my next idea: allow a client to specify if they want updates (or not) when they register.</p>
+
+<p>Since there was already a <code class="language-plaintext highlighter-rouge">register</code> message that clients send on startup, I was easily able to add an <code class="language-plaintext highlighter-rouge">options</code> argument which can have a <code class="language-plaintext highlighter-rouge">return_view_update</code> key.  By having actors specify that they didn’t want updates I was able to spin up 1,000 actors.  Big progress!</p>
+
+<h1 id="scale-back-the-rate-of-updates">Scale back the rate of updates</h1>
+
+<p>Increasing the number of actors by 770% is great, but even though our <code class="language-plaintext highlighter-rouge">LiveView</code> process is the only one receiving updates it is still getting 1,000 updates every second!  A human eye only sees updates on the order of 60 frames per second.  Fortunately it’s easy to use <code class="language-plaintext highlighter-rouge">Process.send_after</code> to have our game server send itself a message on a regular basis.  Using this I started with having the game server update clients around once every 200ms, which means five frames per second.</p>
+
+<p>This was a bit sluggish, but I realized that the most important thing is for a player to see their <em>own</em> updates quickly.  If there is a 200-300ms delay between an actor moving and the player seeing it then probably players won’t notice.  So I simply send a message back to just the client every time they move (if they want updates).  This means that they get an update as fast as possible without worrying about updating other clients immediately.</p>
+
+<p>Overall this worked quite well, allowing me to have around 6000 actors at once!  Since making updates to players now happens asyncronously this change was super easy!</p>
+
+<h1 id="scaling-too-high">Scaling Too High</h1>
+
+<p>I wrote above that I had scaled to around 6000 actors, but for a little while I was scaling up and up and up until I got to around 50,000 actors thinking that I had stumbled onto something amazing!  It was then that my skepticism kicked in and I realized I was just changing the number of trees generated on the board, and so when I thought I was able to handle 50,000 clients, it was really 50,000 trees.  So, while not as useful, I guess at least I know I can have at least 50,000 trees in my fake game.</p>
+
+<p>(also, to be completely open: I end up making the above mistake one more time later on 🤦‍♂️)</p>
+
+<h1 id="time-out">Time Out!</h1>
+
+<p>It was about this point that I was starting to see timeouts from the actors during startup.  There are a couple of twists here, so I’ll try to lead you carefully along this path:</p>
+
+<p>Since early in the development of the game server the actors have been started up in a <code class="language-plaintext highlighter-rouge">handle_continue</code>.  The <code class="language-plaintext highlighter-rouge">handle_continue</code> callback exists to continue the work of the <code class="language-plaintext highlighter-rouge">init</code> callback, both of which are for running code when the process first starts up.  During <code class="language-plaintext highlighter-rouge">init</code>, though, messages can’t arrive in the processes’ mailbox while they can during <code class="language-plaintext highlighter-rouge">handle_continue</code>.  Since starting up actors isn’t critical to getting a game server running, I put the login inside of <code class="language-plaintext highlighter-rouge">handle_continue</code></p>
+
+<p>My worry was that the actor startup was taking too long.  The default timeout for <code class="language-plaintext highlighter-rouge">GenServer</code> messages is 5000ms, so even if the mailbox can receive messages during the running of <code class="language-plaintext highlighter-rouge">handle_continue</code>, if <code class="language-plaintext highlighter-rouge">handle_continue</code> takes too long some messages may time out while waiting.  If the message times out then the actor crashes.  So maybe starting up more and more actors was keeping the game server from getting down to it’s job quickly enough?</p>
+
+<p>What’s one thing to try in Elixir when you’ve got a problem?  Create another process! <a href="##" title="just kidding... mostly"><sup>1</sup></a>  I thought to use a <code class="language-plaintext highlighter-rouge">Task</code> (specifically <code class="language-plaintext highlighter-rouge">Task.Supervisor.async_nolink</code>) to startup a temporary process which just has the job of starting up all of the actors.</p>
+
+<p>That was maybe a good idea, in a way, but it didn’t actually help with the timeouts!  After some tracing and debugging I found that it actually started up the actors quite quickly!  It seemed that the <code class="language-plaintext highlighter-rouge">register</code> and <code class="language-plaintext highlighter-rouge">move</code> messages were just coming at the server so quickly at first that it struggled to keep up.  After a certain number of clients it couldn’t respond to messages within the 5000ms timeout.</p>
+
+<p>So, ok, the timeout is just a default, so increase the timeout, right?  That certainly works!  But:</p>
+
+<ul>
+  <li>Since it’s the default I didn’t want to change it without a good reason</li>
+  <li>If I change the timeout I could’t compare my previous results to my future results</li>
+</ul>
+
+<p>So, with increasing timeouts as a tool in my pocket, I moved on!</p>
+
+<h1 id="trying-mapupdate">Trying <code class="language-plaintext highlighter-rouge">Map.update!</code></h1>
+
+<p>Another small improvement I tried: Using <code class="language-plaintext highlighter-rouge">Map.update</code> instead of <code class="language-plaintext highlighter-rouge">Map.update!</code>.  My thought was that <code class="language-plaintext highlighter-rouge">Map.update</code> was probably doing some sort of <code class="language-plaintext highlighter-rouge">if</code> check and that not having that (but letting an exception be raised instead which I would catch) would improve things.  That turned out to be very <em>not</em> true, and with the help of the <code class="language-plaintext highlighter-rouge">benchee</code> library I was able to see how they compared in cases where the key in question existed or not.</p>
+
+<p>You can see the results of that benchmark in the snippets below.  But regardless of which version I tried it didn’t make a difference to how many actors I could create.  It was great to learn something about Elixir, but this was not a bottleneck.</p>
+
+<details class="tabbed-git-gist">
+  <summary>See the code</summary>
+
+  <div x-data="{data : {files: []}, current_tab: 'benchmark.exs'}" x-init="data = await (await fetch('https://api.github.com/gists/e00bb6f451f4eed32e96fd481880a920')).json(); current_tab = Object.keys(data.files)[0]">
+    <nav>
+      <template x-for="filename in Object.keys(data.files)" x-bind:key="filename">
+        <div class="tab" x-bind:class="{ 'active': current_tab === filename }" x-on:click.prevent="current_tab = filename; window.location.hash = filename" x-text="filename" href="#"></div>
+      </template>
+    </nav>
+
+    <div class="tabs-body">
+      <template x-for="filename in Object.keys(data.files)" x-bind:key="filename">
+        <iframe x-show="current_tab === filename" x-bind:srcdoc="`&lt;script src='https://gist.github.com/e00bb6f451f4eed32e96fd481880a920.js?file=${filename}'&gt;&lt;/script&gt;`">
+        </iframe>
+      </template>
+    </div>
+
+  </div>
+
+  <style>
+    iframe {
+      border: 0;
+      width: 100%;
+      height: 307px;
+    }
+
+    .tab {
+      display: inline-block;
+      border: 1px solid black;
+      border-bottom: 0;
+      background-color: white;
+      padding: 0.4em;
+    }
+    .tab.active {
+      position: relative;
+      top: 1px;
+      background-color: #ddd;
+    }
+    .tabs-body {
+      background-color: #ddd;
+      border: 1px solid black;
+    }
+  </style>
+</details>
+
+<h1 id="move_and_update-a-very-specific-solution"><code class="language-plaintext highlighter-rouge">move_and_update</code>: A Very Specific Solution</h1>
+
+<p>I had the thought that the <code class="language-plaintext highlighter-rouge">if</code> to see if a client wants map updates could be a place to improve.  I though that instead of registering to request updates at the beginning, clients could send a <code class="language-plaintext highlighter-rouge">move_and_update</code> message when they want and update after a move.  It did seem to help a bit (allowing me to go from around 8,000 actors to around 9,000), but I didn’t really like the solution, so I decdided the improvement wasn’t worth it.  I like the simplicity of just having the <code class="language-plaintext highlighter-rouge">move</code> message, but if it made a big difference or if it helped me to meet the requirements of the application I’m building I would try this again.</p>
+
+<h1 id="having-actors-wait-on-startup">Having Actors Wait on Startup</h1>
+
+<p>Since I was getting timeouts while starting up actors, and since I had independent control of how long actors wait before sending their first message (via the process startup) versus how long between subsequent messages (via the repeating <code class="language-plaintext highlighter-rouge">handle_info</code>), that I would try waiting for 3000ms just at startup.  This helped a bit: again allowing me to go from around 8,000 actors to around 9,000.  Since I’m OK with the actors taking a bit more time to move I left this one in.</p>
+
+<h1 id="a-discovery">A Discovery!</h1>
+
+<p>Then I came to a big discovery.  During client registration the server was still sending back the map section as a response, even if the player hadn’t asked for updates!  Since registration happens just once while the <code class="language-plaintext highlighter-rouge">move</code> message happens a lot this might not seem like a big deal, but when the game tried to start up many, many actors it is just the sort of thing that could cause it get behind in processing it’s queue and…. have timeouts!</p>
+
+<p>So I simply had the response from <code class="language-plaintext highlighter-rouge">register</code> be a <code class="language-plaintext highlighter-rouge">true</code> and I called the same function that I already had to queue up a map update message for the client (if they’ve asked for one).  With that change I was then able to start up around 13,000 actors, making for a 44% increase!</p>
+
+<h1 id="a-step-backward">A Step Backward</h1>
+
+<p>I was pretty sure that this wouldn’t make things better, but it turned out to make things much worse: When the server was handling a <code class="language-plaintext highlighter-rouge">register</code> or <code class="language-plaintext highlighter-rouge">move</code>, I tried extracting out the logic of sending the map update message back to the client into a <code class="language-plaintext highlighter-rouge">handle_continue</code> (you can have code which executes after a message is handled, just like after <code class="language-plaintext highlighter-rouge">init</code>).  This didn’t allow me to scale any more, but also had the effect that responsiveness to player moves were slower, especially when the game server had high queue lengths</p>
+
+<p>I thought maybe this is because using “continue” meant the server sending a message to itself and that the message goes to back of the queue.  That would mean that the map update message has to wait to be sent instead of being sent right away.  I’m not 100% sure about this though.  When “continue” is used during init of a GenServer it is guarunteed to be processed before other messages, but when it’s used in a <code class="language-plaintext highlighter-rouge">handle_call</code> where other messages have already been queued up that may not be the same</p>
+
+<p>Anyway, I removed that change :)</p>
+
+<h1 id="sleep-to-scale">Sleep to Scale</h1>
+
+<p>Even with the reduction in work when handling <code class="language-plaintext highlighter-rouge">register</code> messages, I would still, at some point, get timeouts.  I thought perhaps that if I put a delay (say 10ms) between startup of each of my actors I could avoid that or at least push it back further.  This stretches out the time it would take to start up all of the actors to at least a couple of minutes.  If I were still doing the work directly in the <code class="language-plaintext highlighter-rouge">handle_continue</code> this would be a problem as the game server wouldn’t be able to respond to messages during that time.  Fortunately I was still using <code class="language-plaintext highlighter-rouge">Task.Supervisor.async_nolink</code> so the the game server gets down to handling messages just as soon as it’s handed off the task of starting up actors to the <code class="language-plaintext highlighter-rouge">Task</code>.</p>
+
+<p>Overall it helped some!  I was able to startup around 15,000 actors and the server was pretty stable and responsive (though at that point the queue generally wasn’t getting worked down and <code class="language-plaintext highlighter-rouge">move</code> response time can be between 1000 and 2000ms).  But as an unexpected benefit: by starting up the actors slowly I was able to more easily see the point at which the metrics show things becoming unstable.</p>
+
+<h1 id="other-notes--learnings">Other Notes / Learnings</h1>
+
+<h2 id="visualizing-possibilites">Visualizing Possibilites</h2>
+
+<p>I found it fascinating to watch the actors spread out from a single point.  Since the actors move randomly one space at a time, the most likely thing for them to do would be to stay in one spot.  If I spawned 1,000 actors then I could see some making it out of the central mass, giving a viseral sense of how far actors could go in the rare cases.  It’s was a sort-of live 2D histogram of potential end positions after X number of moves.</p>
+
+<h2 id="livedashboard">LiveDashboard</h2>
+
+<p>LiveDashboard and <code class="language-plaintext highlighter-rouge">telemetry</code> were amazing for getting up-and-running very quickly, but it was sometimes frustrating to only see the recent values.  Also, sometimes when I would refresh the metrics would change dramatically, giving me the feeling that something wasn’t updating correctly.  Sending the metrics to statsd/graphite was slower and had less resolution, but felt more reliable.  I’m super glad that <code class="language-plaintext highlighter-rouge">telemetry</code> allows for both options (and more) to exist!</p>
+
+<h1 id="other-potential-improvements">Other Potential Improvements</h1>
+
+<p>At this point I had made a lot of progress and learned a lot of things.  If or when I would actually want to use this for a real project there are some other things that I could investigate improving:</p>
+
+<h2 id="using-an-ets-table">Using an ETS Table</h2>
+
+<p>An ETS table which only the game server writes to could allow client processes to retrieve a map state by querying the table, reducing the load of the game server and maybe allowing for better scaling.</p>
+
+<h2 id="reducing-actor-movements">Reducing Actor Movements</h2>
+
+<p>If the actors moved less often then the game server would have fewer messages / second, allowing it to support more clients at once.  Having actors wait a random amount of time between movements could preserve a feeling of realism for the player.</p>
+
+<h1 id="potential-challenges-for-building-a-game">Potential Challenges for Building a Game</h1>
+
+<p>I also have some ideas for what I might do to actually turn this into a real game (at least something which people might want to play for a bit as a demo)</p>
+
+<h2 id="testing-real-player-load">Testing Real Player Load</h2>
+
+<p>I’ve pushed the limit for how many actors which can be run at once, but they don’t need the map updates.  Adding (or simulating) many real players would be different and might require a strategy like having an ETS table.</p>
+
+<h2 id="enforcing-game-rules">Enforcing Game Rules</h2>
+
+<p>There will probably be a need to implement some game rules.  For a start I might implement a rule like “players/actors cannot be in the same spot as a tree”.</p>
+
+<h2 id="other-kinds-of-actors">Other Kinds of Actors</h2>
+
+<p>While having just one kind of actor made benchmarking straightforward, it would be great to make the world more interesting by adding other kinds of actors.  One example I can imagine would be bacteria emoji which grow and die with rules similar to <a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life">Conway’s Game of Life</a>.</p>
+
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        Foooo
+
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/tags/#elixir" class="page__taxonomy-item" rel="tag">elixir</a>
+    
+    </span>
+  </p>
+
+
+
+
+
+        
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2021-07-10T00:00:00+02:00">July 10, 2021</time></p>
+
+
+      </footer>
+
+      
+
+      
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2021 brian-underwood.blogs. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  
+    <script src="/assets/prism.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

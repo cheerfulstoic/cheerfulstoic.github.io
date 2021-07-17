@@ -107,12 +107,6 @@ var store = [{
         "url": "/elixir/2020/07/11/structuring-an-elixir+phoenix-app",
         "teaser": null
       },{
-        "title": "Handling Errors... or not",
-        "excerpt":"This post is mainly about Javascript, but I believe that it is applicable to any language that has exceptions which can be thrown and handled. I will try to keep the examples high-level. You know that you should handle your exceptions, right. Sometimes you remember to and sometimes you don’t....","categories": [],
-        "tags": ["javascript","opinion"],
-        "url": "/2021/02/20/handling-errors-or-not",
-        "teaser": null
-      },{
         "title": "Why I Love Lodash",
         "excerpt":"I love Lodash, but I’m not here to tell you to use Lodash. It’s up to you to decide if a tool is useful for you or your project. It will come down to the needs of the project (file size, browser/Node.js, how much you use it, etc…). But my...","categories": ["javascript"],
         "tags": ["javascript","lodash"],
