@@ -1,0 +1,11 @@
+
+<p>
+  <div>
+    <a href="/assets/images/{{ include.path }}">
+      <img src="/assets/images/{{ include.path }}" style="max-width: {{ include.max_width | default: '100%' }}" />
+    </a>
+  </div>
+
+  <div><em>{{ include.caption }}</em></div>
+</p>
+

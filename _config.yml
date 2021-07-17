@@ -62,7 +62,6 @@ defaults:
       comments: true
       share: true
       related: true
-  # _pages
   - scope:
       path: "_pages"
       type: pages
@@ -89,6 +88,8 @@ plugins:
   - jekyll-feed
 
 destination: ./docs/
+
+include: ["_pages"]
 
 # Exclude from processing.
 # The following items will not be processed, by default.

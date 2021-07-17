@@ -1,0 +1,40 @@
+
+p:last-child {
+  margin-bottom: auto;
+}
+
+.page__content:last-child p {
+  margin: 0 0 1.3em;
+}
+
+details {
+  font-size: 0.7em;
+  padding: 0.7em;
+  margin-bottom: 1em;
+}
+details summary {
+  font-weight: bold;
+}
+details.nitty-gritty {
+  background-color: #ffffcc;
+  border-left: 6px solid #ffeb3b;
+}
+details.show-the-code {
+  background-color: #ddffdd;
+  border-left: 6px solid #04AA6D;
+}
+details.tabbed-git-gist {
+  background-color: #ddffdd;
+  border-left: 6px solid #04AA6D;
+}
+
+div.note
+{
+  background-color: #ffffcc;
+  border-left: 6px solid #ffeb3b;
+
+  line-height: 18px;
+  mc-auto-number-format: '{b}Note: {/b}';
+  overflow: hidden;
+  padding: 12px;
+}
