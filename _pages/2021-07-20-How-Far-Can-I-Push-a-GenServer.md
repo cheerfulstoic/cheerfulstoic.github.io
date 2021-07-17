@@ -1,4 +1,5 @@
 ---
+permalink: /preview
 hidden: true
 title: How Far Can I Push a GenServer?
 layout: single
