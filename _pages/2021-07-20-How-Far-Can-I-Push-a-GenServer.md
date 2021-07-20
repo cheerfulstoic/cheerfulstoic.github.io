@@ -22,7 +22,7 @@ Overview of the Project
 It is an Elixir Phoenix app which starts up a `GenServer` process as the game server which:
 
  * Keeps track of a 1000x1000 square game grid, populated with random objects (trees, to start)
- * Allows clients (other processes) to make moves
+ * Allows clients (other Elixir processes, players + actors) to make moves
  * Keeps track of the current position of clients, indexed by their process ID (PID)
 
 There will then also be two kinds of "client"s of the game server:
