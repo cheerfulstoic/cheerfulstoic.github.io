@@ -1,4 +1,343 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="http://www.brian-underwood.codes//feed.xml" rel="self" type="application/atom+xml" /><link href="http://www.brian-underwood.codes//" rel="alternate" type="text/html" /><updated>2021-07-20T21:24:33+02:00</updated><id>http://www.brian-underwood.codes//feed.xml</id><title type="html">brian-underwood.blogs</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><author><name>Brian Underwood</name></author><entry><title type="html">Why I Love Lodash</title><link href="http://www.brian-underwood.codes//javascript/2021/05/13/why-I-love-lodash" rel="alternate" type="text/html" title="Why I Love Lodash" /><published>2021-05-13T22:26:00+02:00</published><updated>2021-05-13T22:26:00+02:00</updated><id>http://www.brian-underwood.codes//javascript/2021/05/13/why-I-love-lodash</id><content type="html" xml:base="http://www.brian-underwood.codes//javascript/2021/05/13/why-I-love-lodash">&lt;p&gt;I love &lt;a href=&quot;https://lodash.com/&quot;&gt;Lodash&lt;/a&gt;, but I’m not here to tell you to use Lodash.  It’s up to you to decide if a tool is useful for you or your project.  It will come down to the needs of the project (file size, browser/Node.js, how much you use it, etc…).  But my new team was surprised by my passion for it and so I wanted to share my thoughts.  Specifically: I want to focus in this post on those things which I like, including things which I think people often miss.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="http://www.brian-underwood.codes//feed.xml" rel="self" type="application/atom+xml" /><link href="http://www.brian-underwood.codes//" rel="alternate" type="text/html" /><updated>2021-07-23T17:13:56+02:00</updated><id>http://www.brian-underwood.codes//feed.xml</id><title type="html">brian-underwood.blogs</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><author><name>Brian Underwood</name></author><entry><title type="html">How Far Can I Push a GenServer?</title><link href="http://www.brian-underwood.codes//elixir/2021/07/23/How-Far-Can-I-Push-a-GenServer" rel="alternate" type="text/html" title="How Far Can I Push a GenServer?" /><published>2021-07-23T00:00:00+02:00</published><updated>2021-07-23T00:00:00+02:00</updated><id>http://www.brian-underwood.codes//elixir/2021/07/23/How-Far-Can-I-Push-a-GenServer</id><content type="html" xml:base="http://www.brian-underwood.codes//elixir/2021/07/23/How-Far-Can-I-Push-a-GenServer">&lt;p&gt;I’ve been using Elixir for a while and I’ve implemented a number of GenServers.  But while I think I mostly understand the purpose of them, I’ve not gotten the chance to push one it’s limits, scale it up, and find ways to address it’s bottlenecks.  I thought that it would be fun to create something to which I could give the URL as part of a presentation and have some confidence that it would be able to handle all the users who connected to it.  So recently I implemented a simple game grid using Phoenix LiveView and emojis as indicators of player and objects.  If you would like to learn about my journey, read on!  But note that you’ll probably want to have at least a basic understanding of GenServers first.  You might start by &lt;a href=&quot;https://elixir-lang.org/getting-started/mix-otp/genserver.html&quot;&gt;reading this&lt;/a&gt; and/or &lt;a href=&quot;https://elixircasts.io/intro-to-genserver&quot;&gt;watching this&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;If you would like to look at the source code for this project you can see it &lt;a href=&quot;https://github.com/cheerfulstoic/emoji_game&quot;&gt;on GitHub&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h1 id=&quot;overview-of-the-project&quot;&gt;Overview of the Project&lt;/h1&gt;
+
+&lt;p&gt;
+  &lt;div&gt;
+    &lt;a href=&quot;/assets/images/how-far-can-i-push-a-genserver/game-grid.png&quot;&gt;
+      &lt;img src=&quot;/assets/images/how-far-can-i-push-a-genserver/game-grid.png&quot; style=&quot;max-width: 500px&quot; /&gt;
+    &lt;/a&gt;
+  &lt;/div&gt;
+
+  &lt;div&gt;&lt;em&gt;The Game Grid&lt;/em&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;It is an Elixir Phoenix app which starts up a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GenServer&lt;/code&gt; process as the game server which:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Keeps track of a 1000x1000 square game grid, populated with random objects (trees, to start)&lt;/li&gt;
+  &lt;li&gt;Allows clients (other Elixir processes, players + actors) to make moves&lt;/li&gt;
+  &lt;li&gt;Keeps track of the current position of clients, indexed by their process ID (PID)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;There will then also be two kinds of “client”s of the game server:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;A LiveView UI which handle the player’s session and key presses&lt;/li&gt;
+  &lt;li&gt;A set of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GenServer&lt;/code&gt;s (the “actors”) which will move randomly every second.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;the-move-message&quot;&gt;The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;move&lt;/code&gt; Message&lt;/h1&gt;
+
+&lt;p&gt;To implement moves I started out with a simple &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;move&lt;/code&gt; message. Clients can send this message to the game server with their new position.  An LiveView process sends this once at startup to establish a starting position and then again each time the player presses an arrow key.  An actor processes simply sends a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;move&lt;/code&gt; message once every second to move randomly.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;move&lt;/code&gt; message itself worked fine, but a player wouldn’t see any movement from actor processes until they (the player) moved.  I dealt with this problem later, so see the “Sending Map Updates Asyncronously” section below for my solution.&lt;/p&gt;
+
+&lt;h1 id=&quot;linking-clients&quot;&gt;Linking Clients&lt;/h1&gt;
+
+&lt;p&gt;One thing that I discovered early on was that the game would sometimes crash and the player would end up with a extra “dead” copy of themself on the board.  It turns out that this would happen whenever the player pressed any non-arrow key (including modifier keys like alt/option).  This is because I was handling key presses with a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;case&lt;/code&gt; statement without accounting for anything other than the four arrow keys.  When another key was pressed a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CaseClauseError&lt;/code&gt; error would be raised and crash the LiveView process.  LiveView handled this great by automagically creating a new process for the session, but my game server would still think that the old process was around and thus the old avatar was still there.  My fix: the game server calls &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Process.link&lt;/code&gt; to link itself to each client and then traps exits to clean up the information it has about that client’s PID.&lt;/p&gt;
+
+&lt;details class=&quot;nitty-gritty&quot;&gt;
+  &lt;summary&gt;Nitty-gritty detail&lt;/summary&gt;
+
+  
+&lt;p&gt;I initially called &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Process.link&lt;/code&gt; whenever a client sent a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;move&lt;/code&gt; message.  The documentation says “If such a link exists already, this function does nothing”, so it wasn’t a problem.  But the more elegant way would be to just do it once.&lt;/p&gt;
+
+&lt;p&gt;Also: I started with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;handle_cast&lt;/code&gt;, but it doesn’t give you a PID.  So I couldn’t just have clients send a move without getting a response because the game server needs to track clients by their PID.  So I used &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;handle_call&lt;/code&gt;, but that will probably be needed in the long run anyway since clients will eventually need feedback to know if their moves are invalid (i.e. something is there which can’t occupy the same space at the same time)&lt;/p&gt;
+
+&lt;/details&gt;
+
+&lt;h1 id=&quot;registering&quot;&gt;Registering&lt;/h1&gt;
+
+&lt;p&gt;I was beginning to have various reasons for thinking I should create a new kind of message that clients send to the game server to register themselves:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Process.link&lt;/code&gt; could be called only once once&lt;/li&gt;
+  &lt;li&gt;It would simplify the code to handle &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;move&lt;/code&gt; messages (no need to check if the PID already exsits)&lt;/li&gt;
+  &lt;li&gt;It would allow for the game server to send the map section right away&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;It will also later turn out to be a useful opportunity for the client to send configuration options to the server (keep reading for more!)&lt;/p&gt;
+
+&lt;h1 id=&quot;measuring&quot;&gt;Measuring&lt;/h1&gt;
+
+&lt;p&gt;With that done I wanted to optimize the process so that I could handle more clients.  But, before optimizing my code, I wanted to add some metrics tracking because you can’t optimize what you can’t see!  Thanks to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;telemetry&lt;/code&gt; being included with Phoenix I was able to quickly add metrics for the game server’s queue size and the response time of the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;move&lt;/code&gt; message (as seen from the actors).  From there on I was able to see those metrics in the Phoneix LiveDashboard.  Since LiveDashboard only shows recent values, I also used the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;telemetry_metrics_statsd&lt;/code&gt; library to send the metrics to a local statsd server with graphite for visualization (using the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;graphiteapp/graphite-statsd&lt;/code&gt; docker image).&lt;/p&gt;
+
+&lt;details class=&quot;tabbed-git-gist&quot;&gt;
+  &lt;summary&gt;See the code&lt;/summary&gt;
+
+  &lt;div x-data=&quot;{data : {files: []}, current_tab: &apos;benchmark.exs&apos;}&quot; x-init=&quot;data = await (await fetch(&apos;https://api.github.com/gists/9498a7f262ffc5a12b5ec87be8db2590&apos;)).json(); current_tab = Object.keys(data.files)[0]&quot;&gt;
+    &lt;nav&gt;
+      &lt;template x-for=&quot;filename in Object.keys(data.files)&quot; x-bind:key=&quot;filename&quot;&gt;
+        &lt;div class=&quot;tab&quot; x-bind:class=&quot;{ &apos;active&apos;: current_tab === filename }&quot; x-on:click.prevent=&quot;current_tab = filename; window.location.hash = filename&quot; x-text=&quot;filename&quot; href=&quot;#&quot;&gt;&lt;/div&gt;
+      &lt;/template&gt;
+    &lt;/nav&gt;
+
+    &lt;div class=&quot;tabs-body&quot;&gt;
+      &lt;template x-for=&quot;filename in Object.keys(data.files)&quot; x-bind:key=&quot;filename&quot;&gt;
+        &lt;iframe x-show=&quot;current_tab === filename&quot; x-bind:srcdoc=&quot;`&amp;lt;script src=&apos;https://gist.github.com/9498a7f262ffc5a12b5ec87be8db2590.js?file=${filename}&apos;&amp;gt;&amp;lt;/script&amp;gt;`&quot;&gt;
+        &lt;/iframe&gt;
+      &lt;/template&gt;
+    &lt;/div&gt;
+
+  &lt;/div&gt;
+
+  &lt;style&gt;
+    iframe {
+      border: 0;
+      width: 100%;
+      height: 307px;
+    }
+
+    .tab {
+      display: inline-block;
+      border: 1px solid black;
+      border-bottom: 0;
+      background-color: white;
+      padding: 0.4em;
+    }
+    .tab.active {
+      position: relative;
+      top: 1px;
+      background-color: #ddd;
+    }
+    .tabs-body {
+      background-color: #ddd;
+      border: 1px solid black;
+    }
+  &lt;/style&gt;
+&lt;/details&gt;
+
+&lt;p&gt;
+  &lt;div&gt;
+    &lt;a href=&quot;/assets/images/how-far-can-i-push-a-genserver/livedashboard.png&quot;&gt;
+      &lt;img src=&quot;/assets/images/how-far-can-i-push-a-genserver/livedashboard.png&quot; style=&quot;max-width: 100%&quot; /&gt;
+    &lt;/a&gt;
+  &lt;/div&gt;
+
+  &lt;div&gt;&lt;em&gt;LiveDashboard&lt;/em&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;
+  &lt;div&gt;
+    &lt;a href=&quot;/assets/images/how-far-can-i-push-a-genserver/graphite.png&quot;&gt;
+      &lt;img src=&quot;/assets/images/how-far-can-i-push-a-genserver/graphite.png&quot; style=&quot;max-width: 100%&quot; /&gt;
+    &lt;/a&gt;
+  &lt;/div&gt;
+
+  &lt;div&gt;&lt;em&gt;Graphite (via statsd)&lt;/em&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;I started out with 20 actors.  This worked fine, and I was seeing response times between 5 and 65ms.  I then raised the count by 20 each time.  Getting up to 60 went fine overall with occasional increases in queue size / response time.  But, when I got up to 80, it took some time before after startup before the queue went down to zero.  Going up a bit to 90 led to the queue rarely going down to zero and response times of between 250 and 450ms, which I considered to be around the breaking point.&lt;/p&gt;
+
+&lt;h1 id=&quot;reducing-the-move-message-response-size&quot;&gt;Reducing The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;move&lt;/code&gt; Message Response Size&lt;/h1&gt;
+
+&lt;p&gt;My first idea for allowing me to handle more simultaneous clients was to change my default map response from being a List-of-Lists to a Map.&lt;/p&gt;
+
+&lt;details class=&quot;show-the-code&quot;&gt;
+  &lt;summary&gt;Show me the code!&lt;/summary&gt;
+
+  
+&lt;p&gt;What this means is that, instead of the server returning this to clients:&lt;/p&gt;
+
+&lt;div class=&quot;language-elixir highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;[[&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;nil&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;nil&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:tree&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;
+ &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:actor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;nil&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;nil&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;
+ &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:actor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:tree&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;nil&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;It would return this:&lt;/p&gt;
+
+&lt;div class=&quot;language-elixir highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;%{&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:tree&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:actor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:actor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:tree&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;While that isn’t much sparser in those examples, my hope was that with a larger map section with trees and actors spread out that this would be less to send.&lt;/p&gt;
+
+&lt;/details&gt;
+
+&lt;p&gt;Unfortunately, it didn’t seem to actually help much.  Thinking about this later, I realized one reason could be that I was starting all of the actors in the same place on the map, meaning that the “sparse” format wasn’t making much of a difference in the case that I was testing.&lt;/p&gt;
+
+&lt;p&gt;While this didn’t help, I still kept the change as I felt that it was a better solution and because I didn’t have any reason to think it would perform worse 😊&lt;/p&gt;
+
+&lt;h1 id=&quot;sending-map-updates-asyncronously&quot;&gt;Sending Map Updates Asyncronously&lt;/h1&gt;
+
+&lt;p&gt;The next thing that I tried was simply returning &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;true&lt;/code&gt; when handling &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;move&lt;/code&gt; messages but sending a map update to clients asyncronously.  While this didn’t help with scaling, I was able to fix the above problem where players only see updates when they move.   I also felt that it was a good way to setup the messages as it is the same way that LiveView works (incoming messages update the state and LiveView sends outgoing websocket messages to all clients whenever there is a need for them to know about state changes).&lt;/p&gt;
+
+&lt;h1 id=&quot;reducing-the-map-section-size-returned&quot;&gt;Reducing the Map Section Size Returned&lt;/h1&gt;
+
+&lt;p&gt;My next experiment was to reduce the size of the map section which is returned to clients.  Originally I returned a 27x27 section of the map which I reduced to a 17x17 section.  This means that the number of potential squares returned is 289 instead of 729.  This helped me have up to 130 actors at once, which was definitely a good jump!  This was an easy change to make because I didn’t have a specific purpose for the game yet, but if this is an actual game that I wanted to release I would want to think as the “game designer” what map size is important.  Overall, though, this would be much less important given the next thing that I tried…&lt;/p&gt;
+
+&lt;h1 id=&quot;allow-clients-to-ask-for-map-updates&quot;&gt;Allow Clients to Ask For Map Updates&lt;/h1&gt;
+
+&lt;p&gt;If we have, for example, 100 clients which are moving once every second and each client gets an update whenever another client moves, the game server will need to send around 10,000 messages every second!  While the LiveView clients which connect to the game need to these map updates from the game server, the actor clients which are just moving randomly didn’t use that information. This means that we can avoid sending many of these messages!  So my next idea: allow a client to specify if they want updates (or not) when they register.&lt;/p&gt;
+
+&lt;p&gt;Since there was already a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;register&lt;/code&gt; message that clients send on startup, I was easily able to add an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;options&lt;/code&gt; argument which can have a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;return_view_update&lt;/code&gt; key.  By having actors specify that they didn’t want updates I was able to spin up 1,000 actors.  Big progress!&lt;/p&gt;
+
+&lt;h1 id=&quot;scale-back-the-rate-of-updates&quot;&gt;Scale back the rate of updates&lt;/h1&gt;
+
+&lt;p&gt;Increasing the number of actors by 770% is great, but even though our &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;LiveView&lt;/code&gt; process is the only one receiving updates it is still getting 1,000 updates every second!  A human eye only sees updates on the order of 60 frames per second.  Fortunately it’s easy to use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Process.send_after&lt;/code&gt; to have our game server send itself a message on a regular basis.  Using this, I started with having the game server update clients around once every 200ms. This meant five frames per second.&lt;/p&gt;
+
+&lt;p&gt;This was a bit sluggish, but I realized that the most important thing is for a player to see their &lt;em&gt;own&lt;/em&gt; updates quickly.  If there is a 200-300ms delay between an actor moving and the player seeing it then probably players won’t notice.  So, I simply send a message back to just the client every time they move (if they’ve set &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;return_view_update&lt;/code&gt;).  This means that they get an update as fast as possible without worrying about updating other clients immediately.&lt;/p&gt;
+
+&lt;p&gt;Overall this worked quite well, allowing me to have around 6000 actors at once!  Since making updates to players now happens asyncronously this change was super easy!&lt;/p&gt;
+
+&lt;h1 id=&quot;scaling-too-high&quot;&gt;Scaling Too High&lt;/h1&gt;
+
+&lt;p&gt;I wrote above that I had scaled to around 6000 actors, but for a little while I was scaling up and up and up until I got to around 50,000 actors thinking that I had stumbled onto something amazing!  It was then that my skepticism kicked in, and I realized I was just changing the number of trees generated on the board. When I thought I was able to handle 50,000 clients, it was really 50,000 trees.  So, while not as useful, I guess at least I know I can have at least 50,000 trees in my fake game.&lt;/p&gt;
+
+&lt;p&gt;(Also, to be completely open: I end up making the above mistake one more time later on. 🤦‍♂️)&lt;/p&gt;
+
+&lt;h1 id=&quot;time-out&quot;&gt;Time Out!&lt;/h1&gt;
+
+&lt;p&gt;It was about this point that I was starting to see timeouts from the actors during startup.  There are a couple of twists here, so I’ll try to lead you carefully along this path:&lt;/p&gt;
+
+&lt;p&gt;Since early in the development of the game server the actors have been started up in a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;handle_continue&lt;/code&gt;.  The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;handle_continue&lt;/code&gt; callback exists to continue the work of the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;init&lt;/code&gt; callback, both of which are for running code when the process first starts up.  During &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;init&lt;/code&gt;, though, messages can’t arrive in the processes’ mailbox while they can during &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;handle_continue&lt;/code&gt;.  Since starting up actors isn’t critical to getting a game server running, I put the login inside of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;handle_continue&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;My worry was that the actor startup was taking too long.  The default timeout for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GenServer&lt;/code&gt; messages is 5000ms, so even if the mailbox can receive messages during the running of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;handle_continue&lt;/code&gt;, if &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;handle_continue&lt;/code&gt; takes too long some messages may time out while waiting.  If the message times out, then the actor crashes.  Perhaps starting up more and more actors was keeping the game server from getting down to it’s job quickly enough?&lt;/p&gt;
+
+&lt;p&gt;What’s one thing to try in Elixir when you’ve got a problem?  Create another process! &lt;a href=&quot;##&quot; title=&quot;just kidding... mostly&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt;  I thought to use a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Task&lt;/code&gt; (specifically &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Task.Supervisor.async_nolink&lt;/code&gt;) to startup a temporary process which just has the job of starting up all of the actors.&lt;/p&gt;
+
+&lt;p&gt;That was maybe a good idea, in a way, but it didn’t actually help with the timeouts!  After some tracing and debugging I found that it actually started up the actors quite quickly!  It seemed that the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;register&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;move&lt;/code&gt; messages were just coming at the server so quickly at first that it struggled to keep up.  After a certain number of clients, it couldn’t respond to messages within the 5000ms timeout.&lt;/p&gt;
+
+&lt;p&gt;So, ok, the timeout is just a default, so increase the timeout, right?  That certainly works!  But:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Since it’s the default, I didn’t want to change it without a good reason&lt;/li&gt;
+  &lt;li&gt;If I change the timeout, I couldn’t compare my previous results to my future results&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;So, with increasing timeouts as a tool in my pocket, I moved on!&lt;/p&gt;
+
+&lt;h1 id=&quot;trying-mapupdate&quot;&gt;Trying &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Map.update!&lt;/code&gt;&lt;/h1&gt;
+
+&lt;p&gt;Another small improvement I tried: Using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Map.update&lt;/code&gt; instead of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Map.update!&lt;/code&gt;.  My thought was that &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Map.update&lt;/code&gt; was probably doing some sort of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;if&lt;/code&gt; check for the key.  Perhaps without that and depending on an exception be raised/caught would improve things?  That turned out to be very &lt;em&gt;not&lt;/em&gt; true, and with the help of the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;benchee&lt;/code&gt; library I was able to see how they compared in cases where the key in question existed or not.&lt;/p&gt;
+
+&lt;p&gt;You can see the results of that benchmark in the snippets below.  But, regardless of which version, I tried it didn’t make a difference to how many actors I could create.  It was great to learn something about Elixir, but this was not a bottleneck.&lt;/p&gt;
+
+&lt;details class=&quot;tabbed-git-gist&quot;&gt;
+  &lt;summary&gt;See the code&lt;/summary&gt;
+
+  &lt;div x-data=&quot;{data : {files: []}, current_tab: &apos;benchmark.exs&apos;}&quot; x-init=&quot;data = await (await fetch(&apos;https://api.github.com/gists/e00bb6f451f4eed32e96fd481880a920&apos;)).json(); current_tab = Object.keys(data.files)[0]&quot;&gt;
+    &lt;nav&gt;
+      &lt;template x-for=&quot;filename in Object.keys(data.files)&quot; x-bind:key=&quot;filename&quot;&gt;
+        &lt;div class=&quot;tab&quot; x-bind:class=&quot;{ &apos;active&apos;: current_tab === filename }&quot; x-on:click.prevent=&quot;current_tab = filename; window.location.hash = filename&quot; x-text=&quot;filename&quot; href=&quot;#&quot;&gt;&lt;/div&gt;
+      &lt;/template&gt;
+    &lt;/nav&gt;
+
+    &lt;div class=&quot;tabs-body&quot;&gt;
+      &lt;template x-for=&quot;filename in Object.keys(data.files)&quot; x-bind:key=&quot;filename&quot;&gt;
+        &lt;iframe x-show=&quot;current_tab === filename&quot; x-bind:srcdoc=&quot;`&amp;lt;script src=&apos;https://gist.github.com/e00bb6f451f4eed32e96fd481880a920.js?file=${filename}&apos;&amp;gt;&amp;lt;/script&amp;gt;`&quot;&gt;
+        &lt;/iframe&gt;
+      &lt;/template&gt;
+    &lt;/div&gt;
+
+  &lt;/div&gt;
+
+  &lt;style&gt;
+    iframe {
+      border: 0;
+      width: 100%;
+      height: 307px;
+    }
+
+    .tab {
+      display: inline-block;
+      border: 1px solid black;
+      border-bottom: 0;
+      background-color: white;
+      padding: 0.4em;
+    }
+    .tab.active {
+      position: relative;
+      top: 1px;
+      background-color: #ddd;
+    }
+    .tabs-body {
+      background-color: #ddd;
+      border: 1px solid black;
+    }
+  &lt;/style&gt;
+&lt;/details&gt;
+
+&lt;h1 id=&quot;move_and_update-a-very-specific-solution&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;move_and_update&lt;/code&gt;: A Very Specific Solution&lt;/h1&gt;
+
+&lt;p&gt;I thought perhaps that the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;if&lt;/code&gt; check for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;return_view_update&lt;/code&gt; could be a place to improve.  Perhaps instead of registering to request updates during registration, clients could send a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;move_and_update&lt;/code&gt; message instead of a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;move&lt;/code&gt; when they want an update afterward.  It did seem to help a bit (allowing me to go from around 8,000 actors to around 9,000), but I didn’t really like the solution, so I decided the improvement wasn’t worth it.  I like the simplicity of just having the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;move&lt;/code&gt; message overall.  If using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;move_and_update&lt;/code&gt; made a big difference or if it helped me to meet the requirements of the application I’m building I would revisit this.&lt;/p&gt;
+
+&lt;h1 id=&quot;having-actors-wait-on-startup&quot;&gt;Having Actors Wait on Startup&lt;/h1&gt;
+
+&lt;p&gt;I thought about how I could independently control:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;how long actors wait before sending their first message (via process startup)&lt;/li&gt;
+  &lt;li&gt;how long an actor waits between moves (via the repeating &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;handle_info&lt;/code&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Since I was still getting timesouts, I decided to try waiting 3000ms at startup while leaving the time between moves as 1000ms.  It helped a bit: again allowing me to go from around 8,000 actors to around 9,000.  Since I’m OK with the actors taking a bit more time to move, I left this one in.&lt;/p&gt;
+
+&lt;h1 id=&quot;a-discovery&quot;&gt;A Discovery!&lt;/h1&gt;
+
+&lt;p&gt;Then I came to a big discovery.  During client registration the server was still sending back the map section as a response, even if the player hadn’t asked for updates!  Since registration happens just once, while the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;move&lt;/code&gt; message happens a lot, this might not seem like a big deal.  However, when the game tried to start up many, many actors, it is just the sort of thing that could cause it get behind in processing it’s queue and…. create timeouts!&lt;/p&gt;
+
+&lt;p&gt;So I simply had the response from &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;register&lt;/code&gt; be a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;true&lt;/code&gt;.  Then I could just call the same function that I already had to queue up a map update message for the client (if they’ve set &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;return_view_update&lt;/code&gt;).  With that change, I was then able to start up around 13,000 actors, making for a 44% increase!&lt;/p&gt;
+
+&lt;h1 id=&quot;a-step-backward&quot;&gt;A Step Backward&lt;/h1&gt;
+
+&lt;p&gt;I was pretty sure that this wouldn’t make things better, but it turned out to make things much worse:&lt;/p&gt;
+
+&lt;p&gt;I tried putting the logic of sending map updates during &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;register&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;move&lt;/code&gt; in a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;handle_continue&lt;/code&gt;.  This is for code which executes after a message is handled, just like after &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;init&lt;/code&gt;.  This didn’t allow me to scale any more, but it also had the effect that responsiveness to player moves were slower, especially when the game server had high queue lengths.&lt;/p&gt;
+
+&lt;p&gt;Maybe using “continue” meant the server sending a message to itself and that the message goes to back of the queue?  That would mean that the map update message had to wait to be sent instead of being sent right away.  I’m not 100% sure about this though.  When “continue” is used during init of a GenServer it is guarunteed to be processed before other messages, but when it’s used in a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;handle_call&lt;/code&gt; where other messages have already been queued up that may not be the same&lt;/p&gt;
+
+&lt;p&gt;Anyway, I removed that change :)&lt;/p&gt;
+
+&lt;h1 id=&quot;sleep-to-scale&quot;&gt;Sleep to Scale&lt;/h1&gt;
+
+&lt;p&gt;Even with the reduction in work when handling &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;register&lt;/code&gt; messages, I would still, at some point, get timeouts.  I thought perhaps that if I put a delay (say 10ms) between startup of each of my actors I could avoid that or at least push it back further.  This stretches out the time it would take to start up all of the actors to at least a couple of minutes.  If I were still doing the work directly in the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;handle_continue&lt;/code&gt; this would be a problem as the game server wouldn’t be able to respond to messages during that time.  Fortunately I was still using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Task.Supervisor.async_nolink&lt;/code&gt; so the the game server gets down to handling messages just as soon as it’s handed off the task of starting up actors to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Task&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Overall it helped some!  I was able to startup around 15,000 actors and the server was pretty stable and responsive (though at that point the queue generally wasn’t getting worked down and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;move&lt;/code&gt; response time can be between 1000 and 2000ms).  But as an unexpected benefit: by starting up the actors slowly I was able to more easily see the point at which the metrics show things becoming unstable.&lt;/p&gt;
+
+&lt;h1 id=&quot;other-notes--learnings&quot;&gt;Other Notes / Learnings&lt;/h1&gt;
+
+&lt;h2 id=&quot;visualizing-possibilites&quot;&gt;Visualizing Possibilites&lt;/h2&gt;
+
+&lt;p&gt;I found it fascinating to watch the actors spread out from a single point.  Since the actors move randomly one space at a time, the most likely thing for them to do would be to stay in one spot.  If I spawned 1,000 actors then I could see some making it out of the central mass, giving a viseral sense of how far actors could go in the rare cases.  It’s was a sort-of live 2D histogram of potential end positions after X number of moves.&lt;/p&gt;
+
+&lt;h2 id=&quot;livedashboard&quot;&gt;LiveDashboard&lt;/h2&gt;
+
+&lt;p&gt;LiveDashboard and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;telemetry&lt;/code&gt; were amazing for getting up-and-running very quickly, but it was sometimes frustrating to only see the recent values.  Also, sometimes when I would refresh the metrics would change dramatically, giving me the feeling that something wasn’t updating correctly.  Sending the metrics to statsd/graphite was slower and had less resolution, but felt more reliable.  I’m super glad that &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;telemetry&lt;/code&gt; allows for both options (and more) to exist!&lt;/p&gt;
+
+&lt;h1 id=&quot;other-potential-improvements&quot;&gt;Other Potential Improvements&lt;/h1&gt;
+
+&lt;p&gt;At this point I had made a lot of progress and learned a lot of things.  If I would actually want to use this for a real project, there are some other things that I could investigate improving:&lt;/p&gt;
+
+&lt;h2 id=&quot;using-an-ets-table&quot;&gt;Using an ETS Table&lt;/h2&gt;
+
+&lt;p&gt;If I used an ETS table that only the game server writes to, it could allow client processes to retrieve a map state by querying the table.  This could reduce the load of the game server and maybe allowing for better scaling.&lt;/p&gt;
+
+&lt;h2 id=&quot;reducing-actor-movements&quot;&gt;Reducing Actor Movements&lt;/h2&gt;
+
+&lt;p&gt;If the actors moved less often then the game server would have fewer messages / second, allowing it to support more clients at once.  Having actors wait a random amount of time between movements could preserve a feeling of realism for the player.&lt;/p&gt;
+
+&lt;h1 id=&quot;potential-challenges-for-building-a-game&quot;&gt;Potential Challenges for Building a Game&lt;/h1&gt;
+
+&lt;p&gt;I also have some ideas for what I might do to actually turn this into a real game (at least something which people might want to play for a bit as a demo)&lt;/p&gt;
+
+&lt;h2 id=&quot;testing-real-player-load&quot;&gt;Testing Real Player Load&lt;/h2&gt;
+
+&lt;p&gt;I’ve pushed the limit for how many actors which can be run at once, but they don’t need the map updates.  Adding (or simulating) many real players would be different and might require a strategy like having an ETS table.&lt;/p&gt;
+
+&lt;h2 id=&quot;enforcing-game-rules&quot;&gt;Enforcing Game Rules&lt;/h2&gt;
+
+&lt;p&gt;There will probably be a need to implement some game rules.  For a start I might implement a rule like “players/actors cannot be in the same spot as a tree”.&lt;/p&gt;
+
+&lt;h2 id=&quot;other-kinds-of-actors&quot;&gt;Other Kinds of Actors&lt;/h2&gt;
+
+&lt;p&gt;While having just one kind of actor made benchmarking straightforward, it would be great to make the world more interesting by adding other kinds of actors.  One example I can imagine would be bacteria emoji which grow and die with rules similar to &lt;a href=&quot;https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life&quot;&gt;Conway’s Game of Life&lt;/a&gt;.&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="elixir" /><category term="elixir" /><summary type="html">I’ve been using Elixir for a while and I’ve implemented a number of GenServers. But while I think I mostly understand the purpose of them, I’ve not gotten the chance to push one it’s limits, scale it up, and find ways to address it’s bottlenecks. I thought that it would be fun to create something to which I could give the URL as part of a presentation and have some confidence that it would be able to handle all the users who connected to it. So recently I implemented a simple game grid using Phoenix LiveView and emojis as indicators of player and objects. If you would like to learn about my journey, read on! But note that you’ll probably want to have at least a basic understanding of GenServers first. You might start by reading this and/or watching this.</summary></entry><entry><title type="html">Why I Love Lodash</title><link href="http://www.brian-underwood.codes//javascript/2021/05/13/why-I-love-lodash" rel="alternate" type="text/html" title="Why I Love Lodash" /><published>2021-05-13T22:26:00+02:00</published><updated>2021-05-13T22:26:00+02:00</updated><id>http://www.brian-underwood.codes//javascript/2021/05/13/why-I-love-lodash</id><content type="html" xml:base="http://www.brian-underwood.codes//javascript/2021/05/13/why-I-love-lodash">&lt;p&gt;I love &lt;a href=&quot;https://lodash.com/&quot;&gt;Lodash&lt;/a&gt;, but I’m not here to tell you to use Lodash.  It’s up to you to decide if a tool is useful for you or your project.  It will come down to the needs of the project (file size, browser/Node.js, how much you use it, etc…).  But my new team was surprised by my passion for it and so I wanted to share my thoughts.  Specifically: I want to focus in this post on those things which I like, including things which I think people often miss.&lt;/p&gt;
 
 &lt;h2 id=&quot;checking-types&quot;&gt;Checking types&lt;/h2&gt;
 
@@ -4051,177 +4390,4 @@ table, th, td {
 
 &lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
 
-&lt;p&gt;The workshop was a really fun way to get people using Neo4j really quickly.  It can feel a bit strange to simply give people some datasets and ask them to do something with it, but the freedom to be creative helped both the participants and me be really excited about working with Neo4j.  I look forward to doing more workshops again in the future!&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="neo4j" /><category term="advocacy" /><summary type="html">Last night I ran a very successful workshop at the Friends of Neo4j Stockholm meetup group. The format was based on a workshop that I attended in San Francisco while the World Cup was going on and was based around investigating a dataset of previous World Cup matches. Roughly the format was:</summary></entry><entry><title type="html">Making Master Data Management Fun with Neo4j - Part 3</title><link href="http://www.brian-underwood.codes//2015/03/08/making_master_data_management_fun_with_neo4j_-_part_3" rel="alternate" type="text/html" title="Making Master Data Management Fun with Neo4j - Part 3" /><published>2015-03-08T20:31:00+01:00</published><updated>2015-03-08T20:31:00+01:00</updated><id>http://www.brian-underwood.codes//2015/03/08/making_master_data_management_fun_with_neo4j_-_part_3</id><content type="html" xml:base="http://www.brian-underwood.codes//2015/03/08/making_master_data_management_fun_with_neo4j_-_part_3">&lt;p&gt;In my last two posts I covered the process of importing data from &lt;a href=&quot;/2015/02/16/making_master_data_management_fun_with_neo4j_-_part_1&quot;&gt;StackOverflow&lt;/a&gt; and &lt;a href=&quot;/2015/02/22/making_master_data_management_fun_with_neo4j_-_part_2&quot;&gt;GitHub&lt;/a&gt; for the purpose of creating a combined MDM database.  Now we get to the really fun stuff: today I show you how I tied the data together!&lt;/p&gt;
-
-&lt;h2 id=&quot;tying-the-data-together&quot;&gt;Tying the data together&lt;/h2&gt;
-
-&lt;p&gt;The most obvious entities to link between StackOverflow and GitHub is the user profiles.  Unfortuately users don’t always have two profiles, don’t fill out both profiles, or just don’t have perfectly matching information between the two.  To this end I built &lt;a href=&quot;http://en.wikipedia.org/wiki/Record_linkage&quot;&gt;record linkage&lt;/a&gt; tools which helped me make links between users.&lt;/p&gt;
-
-&lt;p&gt;My goal is to create a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Person&lt;/code&gt; label which ties together nodes from GitHub and StackOverflow (and potentially other sites) as seen below:&lt;/p&gt;
-
-&lt;div style=&quot;text-align: center&quot;&gt;
-  &lt;img src=&quot;/assets/neo4j-mdm/person_node.png&quot; /&gt;
-&lt;/div&gt;
-
-&lt;h3 id=&quot;standardization&quot;&gt;Standardization&lt;/h3&gt;
-
-&lt;p&gt;My first step to linking records is to standardize data as much as possible.  To this end I do a number of things:&lt;/p&gt;
-
-&lt;h4 id=&quot;stackoverflow-users&quot;&gt;StackOverflow users&lt;/h4&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;From the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;website_url&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;about_me&lt;/code&gt; properties:
-    &lt;ul&gt;
-      &lt;li&gt;Pull the Twitter username to a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;twitter_username&lt;/code&gt; property if there is a URL which points to twitter&lt;/li&gt;
-      &lt;li&gt;Pull the GitHub username to a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;github_username&lt;/code&gt; property if there is a URL which points to twitter&lt;/li&gt;
-      &lt;li&gt;Extract all URIs to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;uris&lt;/code&gt; property as an array (no URI protocol or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;www.&lt;/code&gt;)&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;Extract any E-Mail addresses from the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;about_me&lt;/code&gt; property to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;emails&lt;/code&gt; property&lt;/li&gt;
-  &lt;li&gt;Further reduce &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;uris&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;emails&lt;/code&gt; to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;domains&lt;/code&gt; property (no paths)&lt;/li&gt;
-  &lt;li&gt;Make a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;usernames&lt;/code&gt; property with the GitHub and Twitter usernames as well as the StackOverflow &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;display_name&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;github-users&quot;&gt;GitHub users&lt;/h4&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Extract the Twitter username from the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;blog&lt;/code&gt; property if it points to twitter&lt;/li&gt;
-  &lt;li&gt;Standardize the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;blog&lt;/code&gt; property to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;uris&lt;/code&gt; property as an array (no URL protocol or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;www.&lt;/code&gt;)&lt;/li&gt;
-  &lt;li&gt;Further reduce &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;uris&lt;/code&gt; to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;domains&lt;/code&gt; property (no paths)&lt;/li&gt;
-  &lt;li&gt;Make a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;usernames&lt;/code&gt; property with the GitHub and Twitter usernames&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;post-processing&quot;&gt;Post-processing&lt;/h4&gt;
-
-&lt;p&gt;All of the above generated properties get downcased, stripped of extra whitespace, and stored without duplicates.&lt;/p&gt;
-
-&lt;p&gt;After all domains have been looked for, I run the followed to extract any domains which have been used more than once to find and eliminate domains like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gmail.com&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;github.com&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;neo4j.com&lt;/code&gt;, etc…&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby line-numbers&quot;&gt;
-
-query.match(u: :User).unwind(domain: &apos;u.domains&apos;).
-  with(:domain, count: &apos;count(domain)&apos;).where(&apos;count &amp;gt; 1&apos;).
-  pluck(:domain)
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&quot;linkage&quot;&gt;Linkage&lt;/h3&gt;
-
-&lt;p&gt;With the data standardized we can now easily do record comparison and scoring.  Here I go through the millions of combinations of user pairings and give each of them a score.  For each pairing I want to create a relationship in the database so that I don’t need to calculate the score again.  Since I don’t want to have millions of relationships connecting every single user to every other user, I only create relationships above a score threshold.&lt;/p&gt;
-
-&lt;p&gt;I created a class called &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ObjectIdentifier&lt;/code&gt; which allows me to create rules for comparing and scoring records.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby line-numbers&quot;&gt;
-
-identifier = ObjectIdentifier.new do |config|
-  config.default_threshold = 0.8
-  config.default_weight = 1.0
-
-  config.add_matcher :name, :display_name, &amp;amp;fuzzy_string_matcher
-  config.add_matcher :login, :display_name, &amp;amp;fuzzy_string_matcher
-  config.add_matcher :blog, :website_url, &amp;amp;fuzzy_string_matcher
-  config.add_matcher :location, :location, &amp;amp;fuzzy_string_matcher
-
-  config.add_matcher :login, :github_username, weight: 2.0, &amp;amp;exact_string_matcher
-  config.add_matcher :twitter_username, :twitter_username, weight: 2.0, &amp;amp;exact_string_matcher
-
-  config.add_matcher :domains, :domains, threshold: 0.98, &amp;amp;array_fuzzy_string_matcher
-  config.add_matcher :usernames, :usernames, threshold: 0.98, &amp;amp;array_exact_string_matcher
-
-end
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;You can see that there are anonymous functions for both fuzzy and exact string matching.&lt;/p&gt;
-
-&lt;p&gt;With the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;identifier&lt;/code&gt; object I can call &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;identifier.classify_hash(ghu, sou)&lt;/code&gt; to get the following result:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby line-numbers&quot;&gt;
-
-{
-                    [ :name, :display_name ] =&amp;gt; 0.9769319492502884,
-                   [ :login, :display_name ] =&amp;gt; 0.9769319492502884,
-                     [ :blog, :website_url ] =&amp;gt; 0.0,
-                    [ :location, :location ] =&amp;gt; 1.0,
-                [ :login, :github_username ] =&amp;gt; 0.0,
-    [ :twitter_username, :twitter_username ] =&amp;gt; 0.0,
-                      [ :domains, :domains ] =&amp;gt; 0.0,
-                  [ :usernames, :usernames ] =&amp;gt; 0.0,
-}
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Using the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;identifier&lt;/code&gt; object, I then compare every combination of users between GitHub and StackOverflow.  With &lt;strong&gt;2,312&lt;/strong&gt; StackOverflow users and &lt;strong&gt;6,255&lt;/strong&gt; GitHub users there are &lt;strong&gt;14,461,560&lt;/strong&gt; potential pairs, which can take some time.&lt;/p&gt;
-
-&lt;p&gt;For each pairing my script gets the result hash and calculates a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;score&lt;/code&gt; as the sum of the Hash values.  If that score is above a threshold, it creates a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;COMPUTER_IDENTIFIED&lt;/code&gt; Neo4j relationship to represent a hit.  The relationship stores the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;score&lt;/code&gt; as well as a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hash&lt;/code&gt; property with a JSON representation of the result for debugging.&lt;/p&gt;
-
-&lt;h3 id=&quot;phash&quot;&gt;pHash&lt;/h3&gt;
-
-&lt;p&gt;While comparing strings to strings I realized there was another aspect of the profile that I was missing: The profile photo.&lt;/p&gt;
-
-&lt;p&gt;If I could do fuzzy comparisons against the user images I could narrow down the results even further.  Fortunately the &lt;a href=&quot;https://github.com/westonplatter/phashion&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;phashion&lt;/code&gt;&lt;/a&gt; gem provides an implementation of the &lt;a href=&quot;http://www.phash.org/&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pHash&lt;/code&gt;&lt;/a&gt; algorithm to do just that.  So I wrote a quick script to &lt;a href=&quot;https://github.com/neo4jrb/neo4j-mdm-linking/blob/master/image_download.rb&quot;&gt;download the profile photos&lt;/a&gt; locally and then another to &lt;a href=&quot;https://github.com/neo4jrb/neo4j-mdm-linking/blob/master/image_match.rb&quot;&gt;compare the millions of combinations&lt;/a&gt;.  With all of that downloading and pHashing, I found that I also needed to use the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;parallel&lt;/code&gt; gem to complete in a reasonable amount of time.&lt;/p&gt;
-
-&lt;p&gt;So that I didn’t need to compare photos during my &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ObjectIdentifier&lt;/code&gt; process, I simply created a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SIMILAR_IMAGE_TO&lt;/code&gt; relationship between users to store the result of the pHash (a value between 1 and 15 where 1 is the closest perceived match).&lt;/p&gt;
-
-&lt;p&gt;Using Neo4j I don’t need to worry about table structure or if I should create a collection or embed in existing objects.  I can create whatever links between users that I need as I play with algorithms that will work for my purpose.&lt;/p&gt;
-
-&lt;h2 id=&quot;man-vs-machine&quot;&gt;Man vs. Machine&lt;/h2&gt;
-
-&lt;p&gt;To help guide my algorithms I used the only thing that I had available to me that could do a reasonable comparison of profiles: me.  I turned my project into a Rails app which could show my two profiles side-by-side:&lt;/p&gt;
-
-&lt;p&gt;&lt;img style=&quot;width: 800px&quot; src=&quot;/assets/neo4j-mdm/profile_comparison.png&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;This view would show me a randomly chosen pair of users.  80% of the time those users were chosen because I had algorithmically determined some linkage between them.  20% of the time it would just show me a randomly chosen set of two users which hadn’t already been matched to acts as a control group.  I created five links along the top of the page (“Definitely not”, “Probably not”, “Don’t know”, “Probably”, and “Definitely”) and threw in a bit of CoffeeScript to let me choose them via arrow keys.&lt;/p&gt;
-
-&lt;p&gt;In making decisions on hundres of pairs of profiles, a number of questions occurred to me:&lt;/p&gt;
-
-&lt;dl&gt;
-&lt;dt&gt;How should do I choose between the five levels?&lt;/dt&gt;
-&lt;dd&gt;
-  I made some rules to describe how I evaluate the evidence.  By evidence I mean comparing name, location, photo, etc...
-
-  &lt;ul&gt;
-    &lt;li&gt;two pieces of matching evidence mean &quot;Probably&quot;&lt;/li&gt;
-    &lt;li&gt;three pieces of matching evidence mean &quot;Definitely&quot;&lt;/li&gt;
-    &lt;li&gt;two pieces of contradictory evidence means &quot;Probably not&quot;&lt;/li&gt;
-    &lt;li&gt;three pieces of contradictory evidence means &quot;Definitely not&quot;&lt;/li&gt;
-  &lt;/ul&gt;
-
-  While I placed &quot;Not sure&quot; in the middle, that was a special case which means that I don&apos;t have enough evidence.
-&lt;/dd&gt;
-
-&lt;dt&gt;Should I follow links and otherwise research the users?&lt;/dt&gt;
-&lt;dd&gt;No.  If I want to determine how well my matching algorithms work, I should use only same data that they have.&lt;/dd&gt;
-
-&lt;dt&gt;What about pictures?&lt;/dt&gt;
-&lt;dd&gt;I happen to be a human and humans are pretty good at comparing photos, particularly photos of people.  I was torn about this, but decided that if two photos were obviously not the same person, I should classify the profiles as different.&lt;/dd&gt;
-
-&lt;/dl&gt;
-
-&lt;h2 id=&quot;analyzing-the-result&quot;&gt;Analyzing the result&lt;/h2&gt;
-
-&lt;p&gt;To figure out how well my classification algorithm worked I turned, of course, to &lt;a href=&quot;http://www.r-project.org/&quot;&gt;R&lt;/a&gt;.  Using &lt;a href=&quot;https://github.com/nicolewhite/RNeo4j&quot;&gt;RNeo4j&lt;/a&gt; I run a query to get the human score (from &lt;strong&gt;-2&lt;/strong&gt; as ‘Definitely not’ and &lt;strong&gt;2&lt;/strong&gt; as ‘Definitely’) and the computer score (for the rules I specified this runs from &lt;strong&gt;0&lt;/strong&gt; to about &lt;strong&gt;6&lt;/strong&gt;):&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-r&quot;&gt;
-
-query &amp;lt;- &quot;MATCH
-          (ghu:User:GitHub)-[ci:COMPUTER_IDENTIFIED]-(u:User),
-          MATCH ghu-[i:IDENTIFIED]-u
-        RETURN ci.score, toInt(i.index)&quot;
-result &amp;lt;- cypher(graph, query)
-
-plot(result[[2]], result[[1]], xlab = &quot;Human Score&quot;, ylab = &quot;ObjectIdentifier score&quot;)
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;…and plot the results…&lt;/p&gt;
-
-&lt;div style=&quot;text-align: center&quot;&gt;
-  &lt;img src=&quot;/assets/neo4j-mdm/human_vs_computer.png&quot; /&gt;
-&lt;/div&gt;
-
-&lt;p&gt;This shows me that I should be able to relatively safely classify an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ObjectIdentifier&lt;/code&gt; score of around &lt;strong&gt;3&lt;/strong&gt; and up as the same user.  A score of &lt;strong&gt;2.5&lt;/strong&gt; and above looks promising, though looking in that range for users with a human classification of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Not sure&lt;/code&gt; there are some false positives.  I suspect I can improve the correlation between the two by adjusting the algorithm scoring/weights.&lt;/p&gt;
-
-&lt;p&gt;That’s plenty to digest for now, so next time I’ll show the sorts of queries that can be run on the linked database!  You can see all the code on the &lt;a href=&quot;https://github.com/neo4jrb/neo4j-mdm-linking&quot;&gt;GitHub repository&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;If you want to talk more in person, feel free to drop by one of my upcoming &lt;a href=&quot;/engagements&quot;&gt;speaking engagements&lt;/a&gt;!&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="neo4j" /><category term="master-data-management" /><category term="phash" /><category term="r" /><category term="stackoverflow" /><category term="github" /><summary type="html">In my last two posts I covered the process of importing data from StackOverflow and GitHub for the purpose of creating a combined MDM database. Now we get to the really fun stuff: today I show you how I tied the data together!</summary></entry></feed>
+&lt;p&gt;The workshop was a really fun way to get people using Neo4j really quickly.  It can feel a bit strange to simply give people some datasets and ask them to do something with it, but the freedom to be creative helped both the participants and me be really excited about working with Neo4j.  I look forward to doing more workshops again in the future!&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="neo4j" /><category term="advocacy" /><summary type="html">Last night I ran a very successful workshop at the Friends of Neo4j Stockholm meetup group. The format was based on a workshop that I attended in San Francisco while the World Cup was going on and was based around investigating a dataset of previous World Cup matches. Roughly the format was:</summary></entry></feed>

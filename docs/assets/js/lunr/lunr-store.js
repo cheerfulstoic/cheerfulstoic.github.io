@@ -112,4 +112,10 @@ var store = [{
         "tags": ["javascript","lodash"],
         "url": "/javascript/2021/05/13/why-I-love-lodash",
         "teaser": null
+      },{
+        "title": "How Far Can I Push a GenServer?",
+        "excerpt":"I’ve been using Elixir for a while and I’ve implemented a number of GenServers. But while I think I mostly understand the purpose of them, I’ve not gotten the chance to push one it’s limits, scale it up, and find ways to address it’s bottlenecks. I thought that it would...","categories": ["elixir"],
+        "tags": ["elixir"],
+        "url": "/elixir/2021/07/23/How-Far-Can-I-Push-a-GenServer",
+        "teaser": null
       }]

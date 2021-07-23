@@ -1,9 +1,7 @@
 ---
-permalink: /preview
-hidden: true
 title: How Far Can I Push a GenServer?
 layout: single
-date: 2021-07-10 00:00
+date: 2021-07-23 00:00
 categories:
 - elixir
 tags:
