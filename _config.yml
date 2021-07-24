@@ -92,7 +92,7 @@ destination: ./docs/
 include: ["_pages"]
 
 analytics:
-  provider: "google"
+  provider: "google-gtag"
   google:
     tracking_id: "G-3HP2EB83RV"
     anonymize_ip: false # default
