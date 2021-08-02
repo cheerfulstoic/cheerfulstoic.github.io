@@ -12,6 +12,8 @@ I've been using Elixir for a while and I've implemented a number of GenServers. 
 
 If you would like to look at the source code for this project you can see it [on GitHub](https://github.com/cheerfulstoic/emoji_game).
 
+TL;DR: This post isn't very TL;DR-able 😁  I don't have any conclusions or recommendations to share, just a journey.  I invite you to join me to learn what I've learned!
+
 Overview of the Project
 =======================
 
