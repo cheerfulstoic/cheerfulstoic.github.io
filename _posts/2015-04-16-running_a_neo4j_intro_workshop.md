@@ -2,11 +2,8 @@
 title: Running a Neo4j Cypher Introduction Workshop
 layout: posts
 date: 2015-04-16 14:23
-
-
 tags:
 - neo4j
-- advocacy
 ---
 
 Last night I ran a very successful workshop at the [Friends of Neo4j Stockholm](http://www.meetup.com/Friends-of-Neo4j-Stockholm/) meetup group.  The format was based on a workshop that I attended in San Francisco while the World Cup was going on and was based around investigating a dataset of previous World Cup matches.  Roughly the format was:

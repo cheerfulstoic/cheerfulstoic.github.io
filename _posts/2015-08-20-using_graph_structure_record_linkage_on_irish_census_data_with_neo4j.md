@@ -5,7 +5,6 @@ date: 2015-08-20 09:55 ART
 
 tags:
 - neo4j
-- analysis
 - master-data-management
 ---
 

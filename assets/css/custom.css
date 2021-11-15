@@ -1,10 +1,13 @@
-
-p:last-child {
-  margin-bottom: auto;
+.sidebar {
+  opacity: 1.0;
 }
 
 .page__content:last-child p {
   margin: 0 0 1.3em;
+}
+
+.page__content h2 {
+  padding-bottom: 0.2em;
 }
 
 details {
@@ -16,16 +19,16 @@ details summary {
   font-weight: bold;
 }
 details.nitty-gritty {
-  background-color: #ffffcc;
-  border-left: 6px solid #ffeb3b;
+  background-color: #ffe;
+  border-left: 6px solid #ff7;
 }
 details.show-the-code {
-  background-color: #ddffdd;
-  border-left: 6px solid #04AA6D;
+  background-color: #efffef;
+  border-left: 6px solid #afa;
 }
 details.tabbed-git-gist {
-  background-color: #ddffdd;
-  border-left: 6px solid #04AA6D;
+  background-color: #efffef;
+  border-left: 6px solid #afa;
 }
 
 div.note
@@ -38,3 +41,33 @@ div.note
   overflow: hidden;
   padding: 12px;
 }
+
+.archive__item a[rel="permalink"] {
+  text-decoration: none;
+}
+
+.taxonomy__section .archive__item-title {
+  margin-top: 2em;
+}
+
+ul.author__urls li,
+ul.author__urls li a {
+  margin-bottom: 0;
+}
+
+.page__content h1,
+.page__content h2,
+.page__content h3,
+.page__content h4,
+.page__content h5,
+.page__content h6 {
+  border: 1px solid black;
+  border-top-width: 1px;
+  border-right-width: 1px;
+  border-bottom-width: 1px;
+  border-left-width: 1px;
+  border-width: 1px 4px 1px 4px;
+  border-radius: 0.3em;
+  padding: 0.2em;
+}
+

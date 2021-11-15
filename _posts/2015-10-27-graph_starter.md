@@ -6,8 +6,7 @@ hidden: true
 
 tags:
 - neo4j
-- neo4j.rb
-- ruby gem
+- ruby
 ---
 
 For a while now I've been building various [Neo4j.rb](http://neo4jrb.io/) educational resources using the example of an [asset portal](http://github.com/neo4j-examples/asset_portal).  There has been:

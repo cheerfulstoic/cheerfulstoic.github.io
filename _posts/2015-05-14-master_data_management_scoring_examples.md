@@ -5,9 +5,6 @@ date: 2015-05-14 16:10 GMT
 tags:
 - neo4j
 - master-data-management
-- stackoverflow
-- github
-- analysis
 ---
 
 A while ago my colleague [Michael](https://twitter.com/mesirii) suggested to me that I draw out some examples of how my [record linkage]({% post_url 2015-03-08-making_master_data_management_fun_with_neo4j_-_part_3 %}) algorithm did it's thing.  In order to do that, I've picked some users from both GitHub and StackOverflow which are big names in the Neo4j community to give you the idea.  

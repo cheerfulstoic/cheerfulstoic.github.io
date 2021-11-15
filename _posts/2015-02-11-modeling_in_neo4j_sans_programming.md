@@ -6,11 +6,9 @@ categories:
 - ruby
 - rails
 - neo4j
-- announcements
 tags:
 - neo4j
-- tools
-- neo4j.rb
+excerpt_separator: <!--more-->
 ---
 
 <a href="http://www.xkcd.com/917/" target="_blank">
@@ -19,7 +17,10 @@ tags:
 
 I have a bit of a problem.
 
+<!--more-->
+
 Sometimes I have a hard time implementing a specific solution to a problem.  Sometimes I think: *"If I just took a step back, I could create a tool which anybody could use to do anything!"*  If I do it right, nobody will ever need to write a piece of software again!
+
 
 I'm not there yet, but I'd like to announce a big step on my journey: **[neo4j-meta_model](https://github.com/neo4jrb/neo4j-meta_model)**
 

@@ -17,9 +17,11 @@ permalink: /tags/
 {% for tag in site.tags %}
 {% if tag[1].size == i %}
 <li>
-<a href="#{{ tag[0] | slugify }}">
-<strong>{{ tag[0] }}</strong> <span class="taxonomy__count">{{ i }}</span>
-</a>
+<h1>
+  <a href="#{{ tag[0] | slugify }}">
+    <strong>{{ tag[0] }}</strong> <span class="taxonomy__count">{{ i }}</span>
+  </a>
+</h1>
 </li>
 {% endif %}
 {% endfor %}
@@ -34,7 +36,9 @@ permalink: /tags/
 <h2 class="archive__subtitle">{{ tag[0] }}</h2>
 <div class="entries-{{ entries_layout }}">
 {% for post in tag.last %}
-{% include archive-single.html type=entries_layout %}
+  {%- unless post.hidden -%}
+    {% include archive-single.html type=entries_layout %}
+  {%- endunless -%}
 
 {% endfor %}
 </div>

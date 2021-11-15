@@ -8,7 +8,6 @@ categories:
 tags:
 - elixir
 - phoenix
-- ecto
 ---
 
 I've `mix phx.new` ed many applications and when doing so I often start with wondering how to organize my code. I love how Phoenix pushes you to think about the different domains in your app via generators while at the same time I have the freedom to organize modules on my own. Ecto schemas make for a nice abstraction, but where should I put code related just to that table? It could be in the context, but I don't want the context to become a "grab bag" of unorganized function calls.

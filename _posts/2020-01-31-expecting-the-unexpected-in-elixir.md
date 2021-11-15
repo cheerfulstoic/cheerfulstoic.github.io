@@ -5,16 +5,15 @@ categories:
 - elixir
 tags:
 - elixir
-- ksp
 ---
+
+**What can a 50 year old cryptic error message teach us about the software we write today?**
 
 <img style="width: 800px; margin: 0 auto;" src="/assets/expecting_the_unexpected/rocket.jpg">
 
 <p style="text-align: center;">
 <em>Apollo 11's Saturn V rocket on the launchpad at the Kennedy Space Center. 1 July 1969. Photo: <a href="https://commons.wikimedia.org/wiki/File:Apollo_11_Saturn_V_on_the_pad_at_the_Kennedy_Space_Center.jpg">NASA</a></em>
 </p>
-
-**What can a 50 year old cryptic error message teach us about the software we write today?**
 
 **Cross-posted from [Medium](https://medium.com/fishbrain/expecting-the-unexpected-in-elixir-a24deb06b5a6)**
 

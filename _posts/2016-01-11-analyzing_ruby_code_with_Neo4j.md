@@ -9,20 +9,7 @@ categories:
 - neo4j
 tags:
 - neo4j
-- tools
-- neo4j.rb
 ---
-
-<style>
-table {
-  border-collapse: collapse;
-}
-table, th, td {
-  border: 1px solid #CCC;
-  padding: 0.3em;
-}
-
-</style>
 
 
 For a long time I've been wanting to use Neo4j as a tool to analyze Ruby code.  Using Ruby for almost a decade, I have a lot of experience with effectively finding my way around Ruby code.  Still Ruby programs can by very dynamic and thus tools are always welcome.  As I've begun to use Neo4j I've been inspired by code analysis tools such as [joern](http://mlsec.org/joern/) and [jQAssistant](http://jqassistant.org/) as well as Aaron Patterson's [heap-analyzer](http://tenderlove.github.io/heap-analyzer/).  In that spirit I'd like to announce a new project called [Neolytics](https://github.com/neo4jrb/neolytics).
@@ -189,3 +176,15 @@ There are many ways to use this data model to debug and otherwise analyze our co
 
 
 Analysis app running on Heroku: [https://ruby-neo4j-code-analysis.herokuapp.com](https://ruby-neo4j-code-analysis.herokuapp.com)
+
+<style>
+table {
+  border-collapse: collapse;
+}
+table, th, td {
+  border: 1px solid #CCC;
+  padding: 0.3em;
+}
+
+</style>
+

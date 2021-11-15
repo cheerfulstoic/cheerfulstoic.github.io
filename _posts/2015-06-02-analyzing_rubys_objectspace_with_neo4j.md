@@ -6,23 +6,7 @@ date: 2015-06-02 22:47 GMT
 tags:
 - neo4j
 - ruby
-- analysis
-- memory
 ---
-
-<style>
-  table {
-    border-collapse: collapse;
-    width: 600px;
-  }
-  table, th, td {
-    border: 1px solid black;
-  }
-  td {
-    padding: 0.5em;
-  }
-</style>
-
 
 Recently the continuous builds for the [neo4j Ruby gem](https://github.com/neo4jrb/neo4j) failed for JRuby because the memory limit had been reached.  I wanted to see if I could use my favorite tool (Neo4j) to analyize the memory usage.  So I threw together [a bit of Ruby code](https://github.com/neo4jrb/neo4j_ruby_object_space) to use Ruby's `ObjectSpace.each_object` functionality to dump every object in memory after the test suite of the gem finished (garbage collecting first, of course).  First let's take a look at the model:
 
@@ -220,4 +204,18 @@ Here's the graph (click to zoom):
 That's all for now, but please [let me know](https://twitter.com/cheerfulstoic) if you have other thoughts for how to use this approach!
 
 Along a similar line I've been thinking about graphing dependency trees like in RubyGems or NPM.  Other project ideas are also welcome!
+
+<style>
+  table {
+    border-collapse: collapse;
+    width: 600px;
+  }
+  table, th, td {
+    border: 1px solid black;
+  }
+  td {
+    padding: 0.5em;
+  }
+</style>
+
 

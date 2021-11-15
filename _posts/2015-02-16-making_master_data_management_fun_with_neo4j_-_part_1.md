@@ -7,7 +7,6 @@ tags:
 - neo4j
 - master-data-management
 - clojure
-- stackoverflow
 ---
 
 Joining multiple disparate data-sources, commonly dubbed [Master Data Management](http://en.wikipedia.org/wiki/Master_data_management) (MDM), is usually not a fun exercise. I would like to show you how to use a graph database (Neo4j) and an interesting dataset (developer-oriented collaboration sites) to make MDM an enjoyable experience. This approach will allow you to quickly and sensibly merge data from different sources into a consistent picture and query across the data efficiently to answer your most pressing questions.

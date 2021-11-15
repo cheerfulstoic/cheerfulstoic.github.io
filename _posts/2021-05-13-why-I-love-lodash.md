@@ -7,7 +7,6 @@ categories:
 - javascript
 tags:
 - javascript
-- lodash
 ---
 
 I love [Lodash](https://lodash.com/), but I'm not here to tell you to use Lodash.  It's up to you to decide if a tool is useful for you or your project.  It will come down to the needs of the project (file size, browser/Node.js, how much you use it, etc...).  But my new team was surprised by my passion for it and so I wanted to share my thoughts.  Specifically: I want to focus in this post on those things which I like, including things which I think people often miss.

@@ -4,12 +4,8 @@ title: Loading SQL to Neo4j Like Magic
 categories:
 - sql
 - neo4j
-- neo4apis
-- activerecord
-- announcements
 tags:
 - neo4j
-- tools
 - sql
 ---
 

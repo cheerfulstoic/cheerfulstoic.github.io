@@ -31,16 +31,16 @@ github_username:  cheerfulstoic
 
 author:
   name: "Brian Underwood"
-  avatar: "/assets/images/bio-photo.jpg"
+  avatar: "/assets/images/bio-photo.png"
   location: "Stockholm, Sweden"
   links:
     - label: "brian-underwood.codes"
       icon: "fas fa-fw fa-link"
       url: "http://www.brian-underwood.codes/"
-    - label: "@cheerfulstoic"
+    - label: "cheerfulstoic"
       icon: "fab fa-fw fa-twitter-square"
       url: "https://twitter.com/cheerfulstoic"
-    - label: "@cheerfulstoic"
+    - label: "cheerfulstoic"
       icon: "fab fa-fw fa-github-square"
       url: "https://github.com/cheerfulstoic"
 
@@ -73,6 +73,7 @@ defaults:
     values:
       layout: single
       author_profile: true
+      show_date: true
 
 # Build settings
 theme: minimal-mistakes-jekyll

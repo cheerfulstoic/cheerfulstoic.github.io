@@ -5,17 +5,16 @@ categories:
 - ruby
 - rails
 - neo4j
-- announcements
 tags:
 - neo4j
-- tools
-- twitter
-- neo4apis
+excerpt_separator: <!--more-->
 ---
 
 <img style="float: right; width: 450px; margin: 0.6em;" src="/assets/twitter_analytics/tag_view.png">
 
 Having recently become interested in making it easy to pull data from Twitter with [neo4apis-twitter]({% post_url 2014-11-03-neo4apis %}) I also decided that I wanted to be able to visualize and browse the data that I've downloaded.  Therefore I created the [twitter_analytics](https://github.com/neo4jrb/twitter_analytics) rails app!
+
+<!--more-->
 
 ### What cool stuff does this do?
 

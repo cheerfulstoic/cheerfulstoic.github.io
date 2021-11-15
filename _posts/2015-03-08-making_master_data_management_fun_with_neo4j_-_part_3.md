@@ -7,10 +7,7 @@ date: 2015-03-08 20:31
 tags:
 - neo4j
 - master-data-management
-- phash
 - r
-- stackoverflow
-- github
 ---
 
 In my last two posts I covered the process of importing data from [StackOverflow]({% post_url 2015-02-16-making_master_data_management_fun_with_neo4j_-_part_1 %}) and [GitHub]({% post_url 2015-02-22-making_master_data_management_fun_with_neo4j_-_part_2 %}) for the purpose of creating a combined MDM database.  Now we get to the really fun stuff: today I show you how I tied the data together!

@@ -7,7 +7,6 @@ date: 2015-02-22 16:39
 tags:
 - neo4j
 - master-data-management
-- github
 ---
 
 In my [last post]({% post_url 2015-02-16-making_master_data_management_fun_with_neo4j_-_part_1 %}) I said I would *"bring in another data source, show how I linked the data together, and demonstrate the sort of bigger picture that one can get from this approach"*.  There's a lot to talk about, so I'm going to break these each into different posts so that I can give them the proper attention.
