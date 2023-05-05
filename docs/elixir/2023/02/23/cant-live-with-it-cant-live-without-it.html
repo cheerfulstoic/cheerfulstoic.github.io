@@ -1,0 +1,539 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.22.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Can’t Live with It, Can’t Live without It - brian-underwood.blogs</title>
+<meta name="description" content="I’d like to share some thoughts about Elixir’s with keyword.  with is a wonderful tool, but in my experience it is a bit overused.  To use it best, we must understand how it behaves in all cases.  So, let’s briefly cover the basics, starting with pipes in Elixir.">
+
+
+  <meta name="author" content="Brian Underwood">
+  
+  <meta property="article:author" content="Brian Underwood">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="brian-underwood.blogs">
+<meta property="og:title" content="Can’t Live with It, Can’t Live without It">
+<meta property="og:url" content="https://www.erlang-solutions.com/blog/cant-live-with-it-cant-live-without-it">
+
+
+  <meta property="og:description" content="I’d like to share some thoughts about Elixir’s with keyword.  with is a wonderful tool, but in my experience it is a bit overused.  To use it best, we must understand how it behaves in all cases.  So, let’s briefly cover the basics, starting with pipes in Elixir.">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2023-02-23T00:00:00+01:00">
+
+
+
+
+
+
+<link rel="canonical" href="https://www.erlang-solutions.com/blog/cant-live-with-it-cant-live-without-it">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://www.brian-underwood.codes//"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="brian-underwood.blogs Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+    <link rel="stylesheet" href="/assets/css/custom.css">
+<link rel="stylesheet" href="/assets/prism.css">
+<link rel="stylesheet" href="/assets/site.css">
+
+<script defer src="/assets/js/alpine-3.2.1.min.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&family=Raleway:ital,wght@0,200;0,500;0,700;1,200;1,500;1,700&display=swap" rel="stylesheet">
+ <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          brian-underwood.blogs
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/tags/">Tags</a>
+            </li><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+        <img src="/assets/images/bio-photo.png" alt="Brian Underwood" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Brian Underwood</h3>
+    
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li itemprop="homeLocation" itemscope itemtype="https://schema.org/Place">
+          <i class="fas fa-fw fa-map-marker-alt" aria-hidden="true"></i> <span itemprop="name">Stockholm, Sweden</span>
+        </li>
+      
+
+      
+        
+          
+            <li><a href="http://www.brian-underwood.codes/" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-link" aria-hidden="true"></i><span class="label">brian-underwood.codes</span></a></li>
+          
+        
+          
+            <li><a href="https://twitter.com/cheerfulstoic" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i><span class="label">cheerfulstoic</span></a></li>
+          
+        
+          
+            <li><a href="https://github.com/cheerfulstoic" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github-square" aria-hidden="true"></i><span class="label">cheerfulstoic</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Can’t Live with It, Can’t Live without It">
+    <meta itemprop="description" content="I’d like to share some thoughts about Elixir’s with keyword.  with is a wonderful tool, but in my experience it is a bit overused.  To use it best, we must understand how it behaves in all cases.  So, let’s briefly cover the basics, starting with pipes in Elixir.">
+    <meta itemprop="datePublished" content="2023-02-23T00:00:00+01:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Can’t Live <code class="language-plaintext highlighter-rouge">with</code> It, Can’t Live <code class="language-plaintext highlighter-rouge">with</code>out It
+</h1>
+          
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        <time datetime="2023-02-23T00:00:00+01:00">February 23, 2023</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>I’d like to share some thoughts about Elixir’s <code class="language-plaintext highlighter-rouge">with</code> keyword.  <code class="language-plaintext highlighter-rouge">with</code> is a wonderful tool, but in my experience it is a bit overused.  To use it best, we must understand how it behaves in all cases.  So, let’s briefly cover the basics, starting with pipes in Elixir.</p>
+
+<h1 id="pipes-are-a-wonderful-abstraction">Pipes are a wonderful abstraction</h1>
+
+<p>But like all tools, you should think about when it is best used…</p>
+
+<p>Pipes are <strong>at their best</strong> when you expect your functions to accept and return basic values. But often we don’t have only simple values because we need to deal with <strong>error cases</strong>. For example:</p>
+
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">region</span> 
+<span class="o">|&gt;</span> <span class="no">Module</span><span class="o">.</span><span class="n">fetch_companies</span><span class="p">()</span>
+<span class="o">|&gt;</span> <span class="no">Module</span><span class="o">.</span><span class="n">fetch_departments</span><span class="p">()</span>
+<span class="o">|&gt;</span> <span class="no">Enum</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">&amp;</span> <span class="nv">&amp;1</span><span class="o">.</span><span class="n">employee_count</span><span class="p">)</span>
+<span class="o">|&gt;</span> <span class="n">calculate_average</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>If our <code class="language-plaintext highlighter-rouge">fetch_*</code> methods return list values there isn’t a problem. But often we fetch data from an external source, which means we introduce the possibility of an <code class="language-plaintext highlighter-rouge">error</code>. Generally in Elixir this means <code class="language-plaintext highlighter-rouge">{:ok, _}</code> tuples for success and <code class="language-plaintext highlighter-rouge">{:error, _}</code> tuples for failure. Using pipes that might become:</p>
+
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">region</span>
+<span class="o">|&gt;</span> <span class="no">Module</span><span class="o">.</span><span class="n">fetch_companies</span><span class="p">()</span>
+<span class="o">|&gt;</span> <span class="k">case</span> <span class="k">do</span>
+<span class="err">  </span><span class="p">{</span><span class="ss">:ok</span><span class="p">,</span> <span class="n">companies</span><span class="p">}</span> <span class="o">-&gt;</span> <span class="no">Module</span><span class="o">.</span><span class="n">fetch_departments</span><span class="p">(</span><span class="n">companies</span><span class="p">)</span>
+<span class="err">  </span><span class="p">{</span><span class="ss">:error</span><span class="p">,</span> <span class="n">_</span><span class="p">}</span> <span class="o">=</span> <span class="n">error</span> <span class="o">-&gt;</span> <span class="n">error</span>
+<span class="k">end</span>
+<span class="o">|&gt;</span> <span class="k">case</span> <span class="k">do</span>
+<span class="err">  </span><span class="p">{</span><span class="ss">:ok</span><span class="p">,</span> <span class="n">departments</span><span class="p">}</span> <span class="o">-&gt;</span>
+<span class="err">    </span><span class="n">departments</span>
+<span class="err">    </span><span class="o">|&gt;</span> <span class="no">Enum</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">&amp;</span> <span class="nv">&amp;1</span><span class="o">.</span><span class="n">employee_count</span><span class="p">)</span>
+<span class="err">    </span><span class="o">|&gt;</span> <span class="n">calculate_average</span><span class="p">()</span>
+<span class="err">  </span><span class="p">{</span><span class="ss">:error</span><span class="p">,</span> <span class="n">_</span><span class="p">}</span> <span class="o">=</span> <span class="n">error</span> <span class="o">-&gt;</span> <span class="n">error</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>Not horrible, but certainly not beautiful. Fortunately, Elixir has <code class="language-plaintext highlighter-rouge">with</code>!</p>
+
+<h1 id="with-is-a-wonderful-abstraction"><code class="language-plaintext highlighter-rouge">with</code> is a wonderful abstraction</h1>
+
+<p>But like all tools, you should think about when it’s best used…</p>
+
+<p><code class="language-plaintext highlighter-rouge">with</code> is <strong>at it’s best</strong> when dealing with the <strong>happy paths</strong> of a set of calls which <strong>all return similar things</strong>. What do I mean by that? Let’s look at what this code might look like using <code class="language-plaintext highlighter-rouge">with</code>?</p>
+
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">with</span> <span class="p">{</span><span class="ss">:ok</span><span class="p">,</span> <span class="n">companies</span><span class="p">}</span> <span class="o">&lt;-</span> <span class="no">Module</span><span class="o">.</span><span class="n">fetch_companies</span><span class="p">(</span><span class="n">region</span><span class="p">),</span>
+<span class="err">     </span><span class="p">{</span><span class="ss">:ok</span><span class="p">,</span> <span class="n">departments</span><span class="p">}</span> <span class="o">&lt;-</span> <span class="no">Module</span><span class="o">.</span><span class="n">fetch_departments</span><span class="p">(</span><span class="n">companies</span><span class="p">)</span> <span class="k">do</span>
+<span class="err">  </span><span class="n">departments</span>
+<span class="err">  </span><span class="o">|&gt;</span> <span class="no">Enum</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">&amp;</span> <span class="nv">&amp;1</span><span class="o">.</span><span class="n">employee_count</span><span class="p">)</span>
+<span class="err">  </span><span class="o">|&gt;</span> <span class="n">calculate_average</span><span class="p">()</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>That’s definitely better!</p>
+
+<ul>
+  <li>We separated out the parts of our code which might fail (remember that failure is a sign of a side-effect and in functional programming we want to isolate side-effects).</li>
+  <li>The body is only the things that we don’t expect to fail.</li>
+  <li>We don’t need to explicitly deal with the <code class="language-plaintext highlighter-rouge">{:error, _}</code> cases (in this case <code class="language-plaintext highlighter-rouge">with</code> will return any clause values which don’t match the pattern before <code class="language-plaintext highlighter-rouge">&lt;-</code>).</li>
+</ul>
+
+<p>But this is a great example of a <strong>happy path</strong> where the set of calls <strong>all return similar things</strong>. But where are some examples of where we might go wrong with <code class="language-plaintext highlighter-rouge">with</code>?</p>
+
+<h2 id="non-standard-failure">Non-standard failure</h2>
+
+<p>What if <code class="language-plaintext highlighter-rouge">Module.fetch_companies</code> returns <code class="language-plaintext highlighter-rouge">{:error, _}</code> but <code class="language-plaintext highlighter-rouge">Module.fetch_departments</code> returns just <code class="language-plaintext highlighter-rouge">:error</code>? That means your <code class="language-plaintext highlighter-rouge">with</code> is going to return two different error results. If your <code class="language-plaintext highlighter-rouge">with</code> is the end of your function call then that complexity is now the caller’s responsibility. You might not think that’s a big deal because we can do this:</p>
+
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">else</span>
+<span class="err">  </span><span class="ss">:error</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="ss">:error</span><span class="p">,</span> <span class="s2">"Error fetching departments"</span><span class="p">}</span>
+</code></pre></div></div>
+
+<p>But this breaks to more-or-less important degrees because:</p>
+
+<ul>
+  <li>… once you add an <code class="language-plaintext highlighter-rouge">else</code> clause, you need to take care of <em>every</em> non-happy path case (e.g. above we should match the <code class="language-plaintext highlighter-rouge">{:error, _}</code> returned by <code class="language-plaintext highlighter-rouge">Module.fetch_companies</code> which we didn’t need to explicitly match before) 😤</li>
+  <li>… if either function is later refactored to return another pattern (e.g. <code class="language-plaintext highlighter-rouge">{:error, _, _}</code>) – there will be a <code class="language-plaintext highlighter-rouge">WithClauseError</code> exception (again, because once you add an <code class="language-plaintext highlighter-rouge">else</code> the fallback behavior of non-matching <code class="language-plaintext highlighter-rouge">&lt;-</code> patterns doesn’t work) 🤷‍♂️</li>
+  <li>… if <code class="language-plaintext highlighter-rouge">Module.fetch_departments</code> is later refactored to return <code class="language-plaintext highlighter-rouge">{:error, _}</code> – we’ll then have an unused handler 🤷‍♂️</li>
+  <li>… if another clause is added which also returns <code class="language-plaintext highlighter-rouge">:error</code> the message <code class="language-plaintext highlighter-rouge">Error fetching departments</code> probably won’t be the right error 🙈</li>
+  <li>… if you want to refactor this code later, you need to understand <em>everything</em> that the called functions might potentially return, leading to code which is hard to refactor.  If there are just two clauses and we’re just calling simple functions, that’s not as big of a deal.  But with many <code class="language-plaintext highlighter-rouge">with</code> clauses which call complex functions, it can become a nightmare 🙀</li>
+</ul>
+
+<p>So the first major thing to know when using <code class="language-plaintext highlighter-rouge">with</code> is what happens <strong>when a clause doesn’t match it’s pattern</strong>:</p>
+
+<ul>
+  <li>If <code class="language-plaintext highlighter-rouge">else</code> <strong>is not</strong> specified then the non-matching clause is returned.</li>
+  <li>If <code class="language-plaintext highlighter-rouge">else</code> <strong>is</strong> specified then the code for the first matching <code class="language-plaintext highlighter-rouge">else</code> pattern is evaluated. If no <code class="language-plaintext highlighter-rouge">else</code> pattern matches , a <code class="language-plaintext highlighter-rouge">WithClauseError</code> is raised.</li>
+</ul>
+
+<p>As <a href="http://stratus3d.com/blog/2022/06/01/the-problem-with-elixirs-with/">Stratus3D</a> excellently put it: “<code class="language-plaintext highlighter-rouge">with</code> blocks are the only Elixir construct that implicitly uses the same else clauses to handle return values from different expressions. The lack of a one-to-one correspondence between an expression in the head of the <code class="language-plaintext highlighter-rouge">with</code> block and the clauses that handle its return values makes it impossible to know when each <code class="language-plaintext highlighter-rouge">else</code> clause will be used”. There are a couple of well known solutions to address this.  One is using “tagged tuples”:</p>
+
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">with</span> <span class="p">{</span><span class="ss">:fetch_companies</span><span class="p">,</span> <span class="p">{</span><span class="ss">:ok</span><span class="p">,</span> <span class="n">companies</span><span class="p">}</span> <span class="o">&lt;-</span> <span class="p">{</span><span class="ss">:fetch_companies</span><span class="p">,</span> <span class="no">Module</span><span class="o">.</span><span class="n">fetch_companies</span><span class="p">(</span><span class="n">region</span><span class="p">)},</span>
+<span class="err">     </span><span class="p">{</span><span class="ss">:fetch_departments</span><span class="p">,</span> <span class="p">{</span><span class="ss">:ok</span><span class="p">,</span> <span class="n">departments</span><span class="p">}</span> <span class="o">&lt;-</span> <span class="p">{</span><span class="ss">:fetch_departments</span><span class="p">,</span> <span class="no">Module</span><span class="o">.</span><span class="n">fetch_departments</span><span class="p">(</span><span class="n">companies</span><span class="p">)},</span>
+<span class="err">  </span><span class="n">departments</span>
+<span class="err">  </span><span class="o">|&gt;</span> <span class="no">Enum</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">&amp;</span> <span class="nv">&amp;1</span><span class="o">.</span><span class="n">employee_count</span><span class="p">)</span>
+<span class="err">  </span><span class="o">|&gt;</span> <span class="n">calculate_average</span><span class="p">()</span>
+<span class="k">else</span>
+<span class="err">  </span><span class="p">{</span><span class="ss">:fetch_companies</span><span class="p">,</span> <span class="p">{</span><span class="ss">:error</span><span class="p">,</span> <span class="n">reason</span><span class="p">}}</span> <span class="o">-&gt;</span> <span class="o">...</span>
+<span class="err">  </span><span class="p">{</span><span class="ss">:fetch_departments</span><span class="p">,</span> <span class="ss">:error</span><span class="p">}</span> <span class="o">-&gt;</span> <span class="o">...</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>Though tagged tuples should be avoided for various reasons:</p>
+
+<ul>
+  <li>They make the code a lot more verbose</li>
+  <li><code class="language-plaintext highlighter-rouge">else</code> is now being used, so we need to match all patterns that might occur</li>
+  <li>We need to keep the clauses and <code class="language-plaintext highlighter-rouge">else</code> in sync when adding/removing/modifying clauses, leaving room for bugs.</li>
+  <li><strong>Most importantly</strong>: the value in an abstraction like <code class="language-plaintext highlighter-rouge">{:ok, _}</code> / <code class="language-plaintext highlighter-rouge">{:error, _}</code> tuples is that you can handle things generically without needing to worry about the source</li>
+</ul>
+
+<p>A generally better solution is to create functions which normalize the values matched in the patterns.  This is covered well in <a href="https://hexdocs.pm/elixir/Kernel.SpecialForms.html#with/1-beware">a note in the docs for <code class="language-plaintext highlighter-rouge">with</code></a> and I recommend checking it out.  One addition I would make: in the above case you could leave the <code class="language-plaintext highlighter-rouge">Module.fetch_companies</code> alone and just surround the <code class="language-plaintext highlighter-rouge">Module.fetch_departments</code> with a local <code class="language-plaintext highlighter-rouge">fetch_departments</code> to turn the <code class="language-plaintext highlighter-rouge">:error</code> into an <code class="language-plaintext highlighter-rouge">{:error, reason}</code>.</p>
+
+<h2 id="non-standard-success">Non-standard <em>success</em></h2>
+
+<p>We can even get unexpected results when <code class="language-plaintext highlighter-rouge">with</code> succeeds! To start let’s look at the <code class="language-plaintext highlighter-rouge">parse/1</code> function from the excellent <code class="language-plaintext highlighter-rouge">decimal</code> library. It’s typespec tells us that it can return <code class="language-plaintext highlighter-rouge">{Decimal.t(), binary()}</code> or <code class="language-plaintext highlighter-rouge">:error</code>. If we want to match a decimal value without extra characters, we could have a <code class="language-plaintext highlighter-rouge">with</code> clause like this:</p>
+
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">with</span> <span class="p">{</span><span class="ss">:ok</span><span class="p">,</span> <span class="n">value</span><span class="p">}</span> <span class="o">&lt;-</span> <span class="n">fetch_value</span><span class="p">(),</span>
+<span class="err">     </span><span class="p">{</span><span class="n">decimal</span><span class="p">,</span> <span class="s2">""</span><span class="p">}</span> <span class="o">&lt;-</span> <span class="no">Decimal</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">do</span>
+<span class="err">  </span><span class="p">{</span><span class="ss">:ok</span><span class="p">,</span> <span class="n">decimal</span><span class="p">}</span>
+</code></pre></div></div>
+
+<p>But if <code class="language-plaintext highlighter-rouge">value</code> is given as <code class="language-plaintext highlighter-rouge">"1.23 "</code> (with a space at the end), then <code class="language-plaintext highlighter-rouge">Decimal.parse/1</code> will return <code class="language-plaintext highlighter-rouge">{#Decimal&lt;1.23&gt;, " "}</code>. Since that doesn’t match our pattern (string with a space vs. an empty string), the body of the <code class="language-plaintext highlighter-rouge">with</code> will be skipped. If we don’t have an <code class="language-plaintext highlighter-rouge">else</code> then instead of returning a <code class="language-plaintext highlighter-rouge">{:ok, _}</code> value, we return <code class="language-plaintext highlighter-rouge">{#Decimal&lt;1.23&gt;, " "}</code>.</p>
+
+<p>The solution may seem simple: match on <code class="language-plaintext highlighter-rouge">{decimal, _}</code>! But then we match strings like <code class="language-plaintext highlighter-rouge">"1.23a"</code> which is what we were trying to avoid. Again, we’re likely better off defining a local <code class="language-plaintext highlighter-rouge">parse_decimal</code> function which returns <code class="language-plaintext highlighter-rouge">{:ok, _}</code> or <code class="language-plaintext highlighter-rouge">{:error, _}</code>.</p>
+
+<p>There are other, similar, situations:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">{:ok, %{"key" =&gt; value}} &lt;- fetch_data(...)</code> – the value inside of the <code class="language-plaintext highlighter-rouge">{:ok, _}</code> tuple may not have a <code class="language-plaintext highlighter-rouge">"key"</code> key.</li>
+  <li><code class="language-plaintext highlighter-rouge">[%{id: value}] &lt;- fetch_data(...)</code> – the list returned may have more or less than one item, or if it does only have one item it may not have the <code class="language-plaintext highlighter-rouge">:id</code> key</li>
+  <li><code class="language-plaintext highlighter-rouge">value when length(value) &gt; 2 &lt;- fetch_data(...)</code> – the <code class="language-plaintext highlighter-rouge">when</code> might not match. There are two cases where this might surprise you:
+    <ul>
+      <li>If <code class="language-plaintext highlighter-rouge">value</code> is a list, the length of the list being 2 or below will return the list.</li>
+      <li>If <code class="language-plaintext highlighter-rouge">value</code> is a string, <code class="language-plaintext highlighter-rouge">length</code> isn’t a valid function (you’d probably want <code class="language-plaintext highlighter-rouge">byte_size</code>). Instead of an exception, the guard simply fails and the pattern doesn’t match.</li>
+    </ul>
+  </li>
+</ul>
+
+<p>The problem in all of these cases is that the intermediate value from <code class="language-plaintext highlighter-rouge">fetch_data</code> will be returned, not what the body of the <code class="language-plaintext highlighter-rouge">with</code> would return. This means that our <code class="language-plaintext highlighter-rouge">with</code> returns “uneven” results. We can handle these cases in the <code class="language-plaintext highlighter-rouge">else</code>, but again, once we introduce <code class="language-plaintext highlighter-rouge">else</code> we need to take care of all potential cases.</p>
+
+<p>I might even go to the extent of recommending that you don’t define <code class="language-plaintext highlighter-rouge">with</code> clause patterns which are at all deep in their pattern matching unless you are very sure the <strong>success case</strong> will be able to match the <strong>whole pattern</strong>.  One example where you might take a risk is when matching <code class="language-plaintext highlighter-rouge">%MyStruct{key: value} &lt;- …</code> where you <strong>know</strong> that a <code class="language-plaintext highlighter-rouge">MyStruct</code> value is going to be returned and you know that <code class="language-plaintext highlighter-rouge">key</code> is one of the keys defined for the struct. No matter the case, dialyzer is one tool to gain confidence that you will be able to match on the pattern (at least for your own code or libraries which also use dialyzer).</p>
+
+<p>One of the simplest and most standard ways to avoid these issues is to make sure the functions that you are calling return <code class="language-plaintext highlighter-rouge">{:ok, variable}</code> or <code class="language-plaintext highlighter-rouge">{:error, reason}</code> tuples. Then <code class="language-plaintext highlighter-rouge">with</code> can fall through cleanly (<em>definitely</em> check out Chris Keathley’s discussion of “Avoid else in with blocks” in his post <a href="https://keathley.io/blog/good-and-bad-elixir.html">“Good and Bad Elixir”</a>).</p>
+
+<p>With all that said, I recommend using <code class="language-plaintext highlighter-rouge">with</code> statements whenever you can! Just make sure that you think about fallback cases that might happen. Even better: write tests to cover all of your potential cases! If you can strike a balance and use <code class="language-plaintext highlighter-rouge">with</code> carefully, your code can be both cleaner <strong>and</strong> more reliable.</p>
+
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags</strong>
+    <span itemprop="keywords">
+    
+      <a href="/tags/#elixir" class="page__taxonomy-item" rel="tag">elixir</a>
+    
+    </span>
+  </p>
+
+
+
+
+
+        
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2023-02-23T00:00:00+01:00">February 23, 2023</time></p>
+
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/elixir/2021/07/23/How-Far-Can-I-Push-a-GenServer" class="pagination--pager" title="How Far Can I Push a GenServer?
+">Previous</a>
+    
+    
+      <a href="#" class="pagination--pager disabled">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 brian-underwood.blogs. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  
+    <script src="/assets/prism.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

@@ -118,4 +118,10 @@ var store = [{
         "tags": ["elixir"],
         "url": "/elixir/2021/07/23/How-Far-Can-I-Push-a-GenServer",
         "teaser": null
+      },{
+        "title": "Can’t Live `with` It, Can’t Live `with`out It",
+        "excerpt":"I’d like to share some thoughts about Elixir’s with keyword. with is a wonderful tool, but in my experience it is a bit overused. To use it best, we must understand how it behaves in all cases. So, let’s briefly cover the basics, starting with pipes in Elixir. Pipes are...","categories": ["elixir"],
+        "tags": ["elixir"],
+        "url": "/elixir/2023/02/23/cant-live-with-it-cant-live-without-it",
+        "teaser": null
       }]
