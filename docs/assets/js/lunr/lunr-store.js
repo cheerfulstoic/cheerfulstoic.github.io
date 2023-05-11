@@ -124,4 +124,10 @@ var store = [{
         "tags": ["elixir"],
         "url": "/elixir/2023/02/23/cant-live-with-it-cant-live-without-it",
         "teaser": null
+      },{
+        "title": "Load Early => TODO BETTER TITLE",
+        "excerpt":"This post will discuss one particular aspect of designing Elixir applications using the Ecto library: separating data loading from using the data which is loaded. Applications will differ, but let’s look at this example from the Plausible Analytics repo[1]: def plans_for(user) do user = Repo.preload(user, :subscription) # … other code...","categories": ["elixir"],
+        "tags": ["elixir"],
+        "url": "/elixir/2023/05/10/load-early",
+        "teaser": null
       }]

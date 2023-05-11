@@ -1,0 +1,580 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Load Early =&gt; TODO BETTER TITLE - brian-underwood.blogs</title>
+<meta name="description" content="This post will discuss one particular aspect of designing Elixir applications using the Ecto library: separating data loading from using the data which is loaded.  Applications will differ, but let’s look at this example from the Plausible Analytics repo1:">
+
+
+  <meta name="author" content="Brian Underwood">
+  
+  <meta property="article:author" content="Brian Underwood">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="brian-underwood.blogs">
+<meta property="og:title" content="Load Early =&gt; TODO BETTER TITLE">
+<meta property="og:url" content="https://www.erlang-solutions.com/blog/load-early">
+
+
+  <meta property="og:description" content="This post will discuss one particular aspect of designing Elixir applications using the Ecto library: separating data loading from using the data which is loaded.  Applications will differ, but let’s look at this example from the Plausible Analytics repo1:">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2023-05-10T00:00:00+02:00">
+
+
+
+
+
+
+<link rel="canonical" href="https://www.erlang-solutions.com/blog/load-early">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://www.brian-underwood.codes//"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="brian-underwood.blogs Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <link rel="stylesheet" href="/assets/css/custom.css">
+<link rel="stylesheet" href="/assets/prism.css">
+<link rel="stylesheet" href="/assets/site.css">
+
+<script defer src="/assets/js/alpine-3.2.1.min.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&family=Raleway:ital,wght@0,200;0,500;0,700;1,200;1,500;1,700&display=swap" rel="stylesheet">
+ <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          brian-underwood.blogs
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/tags/">Tags</a>
+            </li><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+        <img src="/assets/images/bio-photo.png" alt="Brian Underwood" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Brian Underwood</h3>
+    
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li itemprop="homeLocation" itemscope itemtype="https://schema.org/Place">
+          <i class="fas fa-fw fa-map-marker-alt" aria-hidden="true"></i> <span itemprop="name">Stockholm, Sweden</span>
+        </li>
+      
+
+      
+        
+          
+            <li><a href="http://www.brian-underwood.codes/" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-link" aria-hidden="true"></i><span class="label">brian-underwood.codes</span></a></li>
+          
+        
+          
+            <li><a href="https://twitter.com/cheerfulstoic" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i><span class="label">cheerfulstoic</span></a></li>
+          
+        
+          
+            <li><a href="https://github.com/cheerfulstoic" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github-square" aria-hidden="true"></i><span class="label">cheerfulstoic</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Load Early =&gt; TODO BETTER TITLE">
+    <meta itemprop="description" content="This post will discuss one particular aspect of designing Elixir applications using the Ecto library: separating data loading from using the data which is loaded.  Applications will differ, but let’s look at this example from the Plausible Analytics repo1:">
+    <meta itemprop="datePublished" content="2023-05-10T00:00:00+02:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Load Early =&gt; TODO BETTER TITLE
+</h1>
+          
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2023-05-10T00:00:00+02:00">May 10, 2023</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>This post will discuss one particular aspect of designing Elixir applications using the Ecto library: separating data loading from using the data which is loaded.  Applications will differ, but let’s look at <a href="https://github.com/plausible/analytics/blob/7d935b79bf516deaa0175ffe1b07784a8c72f3c2/lib/plausible/billing/plans.ex#LL39C1-L71C1">this example</a> from the Plausible Analytics repo[1]:</p>
+
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="n">plans_for</span><span class="p">(</span><span class="n">user</span><span class="p">)</span> <span class="k">do</span>
+  <span class="n">user</span> <span class="o">=</span> <span class="no">Repo</span><span class="o">.</span><span class="n">preload</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="ss">:subscription</span><span class="p">)</span>
+  <span class="c1"># … other code …</span>
+
+  <span class="n">raw_plans</span> <span class="o">=</span>
+  <span class="k">cond</span> <span class="k">do</span>
+    <span class="n">contains?</span><span class="p">(</span><span class="n">v1_plans</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">subscription</span><span class="p">)</span> <span class="o">-&gt;</span>
+      <span class="n">v1_plans</span>
+
+    <span class="n">contains?</span><span class="p">(</span><span class="n">v2_plans</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">subscription</span><span class="p">)</span> <span class="o">-&gt;</span>
+      <span class="n">v2_plans</span>
+
+    <span class="n">contains?</span><span class="p">(</span><span class="n">v3_plans</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">subscription</span><span class="p">)</span> <span class="o">-&gt;</span>
+      <span class="n">v3_plans</span>
+
+    <span class="n">contains?</span><span class="p">(</span><span class="n">sandbox_plans</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">subscription</span><span class="p">)</span> <span class="o">-&gt;</span>
+      <span class="n">sandbox_plans</span>
+
+    <span class="no">true</span> <span class="o">-&gt;</span>
+      <span class="c1"># … other code …</span>
+  <span class="k">end</span>
+
+  <span class="c1"># … other code …</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>Here the <code class="language-plaintext highlighter-rouge">subscription</code> association is preloaded for the given user which is then immediately used as part of the logic of <code class="language-plaintext highlighter-rouge">plans_for/1</code>.  I’d like to try to convince you that it in cases like this it would be better to “lift” that loading of data out of the function.  Let’s start with a brief background on Ecto:</p>
+
+<h1 id="the-ecto-library">The Ecto Library</h1>
+
+<p>Ecto was creating using the “repository pattern”.  With Elixir being a language drawing a lot of people from the Ruby community, this was a marked departure from the “active record pattern” used in the “Active Record” library made popular by Ruby on Rails.  The active record pattern uses classes to fetch data (e.g. <code class="language-plaintext highlighter-rouge">User.find(id)</code>) and object methods to update data (e.g. <code class="language-plaintext highlighter-rouge">user.save</code>). Since “encapsulation” is a fundamental aspect of object-oriented programming, it seems logical at first to hide away the database access in this way. Many found, however, that while encapsulation of business logic makes sense, also encapsulating the database logic often lead to complexity when trying to control the lifecycle of a record.</p>
+
+<p>The repository pattern as implemented by Ecto requires explicit use of functions in a “Repo” module for all data going to and from the database. By drawing this line to separate database access, modules using <code class="language-plaintext highlighter-rouge">Ecto.Schema</code> can allows us to define data that an application uses and modules using <code class="language-plaintext highlighter-rouge">Ecto.Changeset</code> can allow us to validate and transform data that an application uses.</p>
+
+<p>This separation is made very clear in Ecto’s <code class="language-plaintext highlighter-rouge">README</code> which states: “Ecto is also commonly used to map data from any source into Elixir structs, whether they are backed by a database or not.”.</p>
+
+<p>Even if you’re fairly familiar with Ecto, I highly recommend watching Darin Wilson’s <a href="https://www.youtube.com/watch?app=desktop&amp;v=YQxopjai0CU">“Thinking in Ecto”</a> presentation for a really good overview of the hows and whys of Ecto.</p>
+
+<h1 id="pure-functions">Pure Functions</h1>
+
+<p>Ecto’s separation of a repository layer makes even more sense in the context of functional programming.  One big idea in functional programming (or more specifically <a href="https://en.wikipedia.org/wiki/Purely_functional_programming">“purely functional programming”</a>) is the notion of minimizing and isolating side-effects.  A function with side-effects is one which interacts with some global state such as memory, a file, or a database.  It’s common to think about side-effects as changing that global state, but reading state also means that your function becomes dependent on global state, meaning the output of the function could change depending on when it’s run.  What benefits does avoiding side-effects give us?</p>
+
+<ul>
+  <li>Separating database access from operations on data is a great <a href="https://en.wikipedia.org/wiki/Separation_of_concerns">separation of concerns</a> which can lead to more modular and therefore more maintainable code.</li>
+  <li>Defining a function where the output depends completely on the input makes the function easier to understand and therefore easier to use and maintain.</li>
+  <li>Automated tests for functions without side-effects can be much simpler because you don’t need to setup external state.</li>
+</ul>
+
+<h1 id="a-solution">A Solution</h1>
+
+<p>A first approach to lifting the <code class="language-plaintext highlighter-rouge">Repo.preload</code> in the example above would be to do just that.  That would suddenly make the function “pure” and dependent only the caller passing in a value for the user’s <code class="language-plaintext highlighter-rouge">subscription</code> field. The problem comes when the person writing code which calls <code class="language-plaintext highlighter-rouge">plans_for/1</code> forgets to preload.  Since Ecto defaults associations on schema structs to have a <code class="language-plaintext highlighter-rouge">%Ecto.Association.NotLoaded{}</code> value, this approach would lead to a confusing error message like:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(KeyError) key :paddle_plan_id not found in: #Ecto.Association.NotLoaded&lt;association :subscription is not loaded&gt;
+</code></pre></div></div>
+
+<p>This is because the <a href="https://github.com/plausible/analytics/blob/7d935b79bf516deaa0175ffe1b07784a8c72f3c2/lib/plausible/billing/plans.ex#L139-L146"><code class="language-plaintext highlighter-rouge">contains/2</code></a> function accesses <code class="language-plaintext highlighter-rouge">subscription.paddle_plan_id</code>.</p>
+
+<p>So probably it would be better to explicitly look to see if the subscription is loaded.  We could do this with pattern matching in an additional function definition:</p>
+
+<p>def plans_for(%{subscription: %Ecto.Association.NotLoaded{}}), do: raise “Expected subscription to be preloaded”</p>
+
+<p>Or if we want to avoid referencing the <code class="language-plaintext highlighter-rouge">Ecto.Association.NotLoaded</code> module in your application’s code, there’s even a function Ecto provides to allow you to check at runtime:</p>
+
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="n">plans_for</span><span class="p">(</span><span class="n">user</span><span class="p">)</span> <span class="k">do</span>
+  <span class="k">if</span><span class="p">(</span><span class="n">!Ecto</span><span class="o">.</span><span class="n">assoc_loaded?</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">subscription</span><span class="p">)</span> <span class="k">do</span>
+    <span class="k">raise</span> <span class="s2">"Expected subscription to be preloaded"</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="c1"># …</span>
+</code></pre></div></div>
+
+<p>This can get repetitive and potentially error-prone if you have a larger set of associations that you would like your function to depend on.  So I’ve created a small library called <code class="language-plaintext highlighter-rouge">ecto_require_associations</code> to take care of the details for you.  If you’d like to load multiple associations you can use the same syntax used by Ecto’s <code class="language-plaintext highlighter-rouge">preload</code> function:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>EctoRequireAssociations.ensure!(user, [:subscriptions, site_memberships: :site])
+</code></pre></div></div>
+
+<p>The above call would check:</p>
+
+<ul>
+  <li>If the <code class="language-plaintext highlighter-rouge">subscriptions</code> association has been loaded for the user</li>
+  <li>If the <code class="language-plaintext highlighter-rouge">site_memberships</code> association has been loaded for the user</li>
+  <li>If the <code class="language-plaintext highlighter-rouge">site</code> association has been loaded on each site membership</li>
+</ul>
+
+<p>If, for example, one or more of the <code class="language-plaintext highlighter-rouge">site</code> memberships hasn’t been loaded then an exception is raised like:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(ArgumentError) Expected association to be set: `site_memberships.site`
+</code></pre></div></div>
+
+<p>It can even work on a list of records given to it, just like <code class="language-plaintext highlighter-rouge">Repo.preload</code>.
+Going Too Far The Other Way</p>
+
+<p>Hopefully I’ve convinced you that the above approach can be helpful for creating more maintainable code.  At the same time I want to caution against another potential problem on the “other side” of this.  Let’s say we have a function to get a user like this:</p>
+
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">defmodule</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Users</span> <span class="k">do</span>
+  <span class="k">def</span> <span class="n">get_user</span><span class="p">(</span><span class="n">id</span><span class="p">)</span> <span class="k">do</span>
+    <span class="no">MyApp</span><span class="o">.</span><span class="no">Repo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+    <span class="o">|&gt;</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Repo</span><span class="o">.</span><span class="n">preload</span><span class="p">([</span><span class="ss">:api_keys</span><span class="p">,</span> <span class="ss">:subscriptions</span><span class="p">,</span> <span class="ss">site_memberships:</span> <span class="ss">:site</span><span class="p">])</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="n">get_admins</span> <span class="k">do</span>
+    <span class="n">from</span><span class="p">(</span><span class="n">user</span> <span class="ow">in</span> <span class="no">User</span><span class="p">,</span> <span class="ss">where:</span> <span class="n">user</span><span class="o">.</span><span class="n">is_admin</span><span class="p">)</span>
+    <span class="o">|&gt;</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Repo</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="o">|&gt;</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Repo</span><span class="o">.</span><span class="n">preload</span><span class="p">([</span><span class="ss">:api_keys</span><span class="p">,</span> <span class="ss">:subscriptions</span><span class="p">,</span> <span class="ss">site_memberships:</span> <span class="ss">:site</span><span class="p">])</span>
+  <span class="k">end</span>
+</code></pre></div></div>
+
+<p>When making sure that you have everything that is needed for functions to work in a purely functional way it could be tempting to load everything that you might need in any function which fetches a user like the above.  The risk then becomes one of loading too much data.  Functions like <code class="language-plaintext highlighter-rouge">get_user</code> and <code class="language-plaintext highlighter-rouge">get_admins</code> are likely to be used all over your application, and generally you won’t need all of the associations loaded.  This is one of those scaling problems that isn’t a problem until your application gets popular.</p>
+
+<p>One common pattern to solve this is to simply have a <code class="language-plaintext highlighter-rouge">preloads</code> argument:</p>
+
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">defmodule</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Users</span> <span class="k">do</span>
+    <span class="k">def</span> <span class="n">get_user</span><span class="p">(</span><span class="n">id</span><span class="p">,</span> <span class="n">preloads</span> <span class="p">\\</span> <span class="p">[])</span> <span class="k">do</span>
+        <span class="no">MyApp</span><span class="o">.</span><span class="no">Repo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+        <span class="o">|&gt;</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Repo</span><span class="o">.</span><span class="n">preload</span><span class="p">(</span><span class="n">preloads</span><span class="p">)</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="n">get_admins</span><span class="p">(</span><span class="n">preloads</span> <span class="p">\\</span> <span class="p">[])</span> <span class="k">do</span>
+        <span class="n">from</span><span class="p">(</span><span class="n">user</span> <span class="ow">in</span> <span class="no">User</span><span class="p">,</span> <span class="ss">where:</span> <span class="n">user</span><span class="o">.</span><span class="n">is_admin</span><span class="p">)</span>
+        <span class="o">|&gt;</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Repo</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="o">|&gt;</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Repo</span><span class="o">.</span><span class="n">preload</span><span class="p">(</span><span class="n">preloads</span><span class="p">)</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c1"># Usage</span>
+<span class="no">MyApp</span><span class="o">.</span><span class="no">Users</span><span class="o">.</span><span class="n">get_admins</span><span class="p">([</span><span class="ss">:api_keys</span><span class="p">])</span>
+</code></pre></div></div>
+
+<p>This does solve the problem of allowing you to efficiently load only those associations that you need only where you need them. I would say, however, that this code falls into the same trap as the Active Record library: trying to hide away the database along with the application logic.  The Ecto library isn’t a secret.  Your schemas and the associations it uses aren’t secrets either. You absolutely should encapsulate things like the details for how you query objects or the details for how you calculate numbers or make decisions based on data.  But it’s fine to ask Ecto to preload the associations and let your query functions just do querying.  This can give you a clean separation of concerns:</p>
+
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">defmodule</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Users</span> <span class="k">do</span>
+  <span class="k">def</span> <span class="n">get_user</span><span class="p">(</span><span class="n">id</span><span class="p">),</span> <span class="k">do</span><span class="p">:</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Repo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+
+  <span class="k">def</span> <span class="n">get_admins</span> <span class="k">do</span>
+    <span class="n">from</span><span class="p">(</span><span class="n">user</span> <span class="ow">in</span> <span class="no">User</span><span class="p">,</span> <span class="ss">where:</span> <span class="n">user</span><span class="o">.</span><span class="n">is_admin</span><span class="p">)</span>
+    <span class="o">|&gt;</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Repo</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c1"># Usage:</span>
+<span class="no">MyApp</span><span class="o">.</span><span class="no">Users</span><span class="o">.</span><span class="n">get_admins</span><span class="p">()</span>
+<span class="o">|&gt;</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Repo</span><span class="o">.</span><span class="n">preload</span><span class="p">(</span><span class="ss">:api_keys</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>That said, if you have a set of associations you’d like to load you may want to create functions to preload them.  This saves repetition and helps clarify overlapping dependencies:</p>
+
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">defmodule</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Users</span> <span class="k">do</span>
+  <span class="c1"># You can call `preload_for_access_check(user)` to load the required data</span>
+  <span class="k">def</span> <span class="n">can_access?</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">resource</span><span class="p">)</span> <span class="k">do</span>
+    <span class="no">EctoRequireAssociations</span><span class="o">.</span><span class="n">ensure!</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="p">[</span><span class="ss">:roles</span><span class="p">,</span> <span class="ss">:permissions</span><span class="p">])</span>
+
+    <span class="c1"># …</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="n">preload_for_access_check</span><span class="p">(</span><span class="n">user</span><span class="p">)</span> <span class="k">do</span>
+    <span class="no">MyApp</span><span class="o">.</span><span class="no">Repo</span><span class="o">.</span><span class="n">preload</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="p">[</span><span class="ss">:roles</span><span class="p">,</span> <span class="ss">:permissions</span><span class="p">])</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="n">preload_for_something_else</span><span class="p">(</span><span class="n">user</span><span class="p">)</span> <span class="k">do</span>
+    <span class="no">MyApp</span><span class="o">.</span><span class="no">Repo</span><span class="o">.</span><span class="n">preload</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="p">[</span><span class="ss">:roles</span><span class="p">,</span> <span class="ss">:regions</span><span class="p">])</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>Remember that <code class="language-plaintext highlighter-rouge">Repo.preload</code> won’t load data if it’s already been set on the struct unless you specify <code class="language-plaintext highlighter-rouge">force: true</code>!
+Coordinating Queries and Logic</p>
+
+<p>So if we shouldn’t put our data loading along with our business logic or with our queries, where should it go?  The answer to this is fuzzier, but it makes sense to think about what parts of your code should exist as “coordination” points.  Let’s talk about some good options:</p>
+
+<h2 id="phoenix-controllers-channels-liveviews-and-email-handlers">Phoenix Controllers, Channels, LiveViews, and Email handlers</h2>
+
+<p>Controllers, LiveViews, and email handlers are all places where we render a template, and generally we are loading some sort of data to be able to do that. Channels and LiveViews are dealing with events are are also often a place where we’ll need to load data to provide some sort of update to a client. In both cases this is the place where we know what data will be needed, so it makes sense to keep the responsibility of choosing what data to load in this code.</p>
+
+<h2 id="absinthe-resolvers">Absinthe Resolvers</h2>
+
+<p>Absinthe is a library for implementing a GraphQL API.  Not only will you need to preload data, sometimes you may use the <a href="https://github.com/absinthe-graphql/dataloader">Dataloader</a> to efficiently load data outside of manual preloading.  This highlights how loading of associated data is a separate concern from evaluating it.</p>
+
+<h2 id="scripts-and-tasks">Scripts and Tasks</h2>
+
+<p>Scripts and <code class="language-plaintext highlighter-rouge">mix</code> tasks are another place for coordinating loading and logic. This code might even be one-off and/or short-lived, so it may not even make sense to define functions inside of context modules.  Depending on the importance and lifecycle of a script/task it could be that none of the above discussion is applicable.</p>
+
+<h2 id="high-level-context-functions">High Level Context Functions</h2>
+
+<p>The discussion above suggests pushing loading logic up and out of <a href="https://hexdocs.pm/phoenix/contexts.html">context</a>-type modules, but if you have a high-level function which is an entrypoint into some complex code then it may make sense to coordinate your loading and logic there.  This is especially true if the function is used from multiple places in your application.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>TODO: CONCLUSION</p>
+
+<p>￼
+[1]: Please don’t see this as me picking on the Plausible Analytics folks in any way.  I think that their project is great and the fact that they open-sourced it makes it a a great resource for real-world examples like this one!</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags</strong>
+    <span itemprop="keywords">
+    
+      <a href="/tags/#elixir" class="page__taxonomy-item" rel="tag">elixir</a>
+    
+    </span>
+  </p>
+
+
+
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2023-05-10T00:00:00+02:00">May 10, 2023</time></p>
+
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/elixir/2023/02/23/cant-live-with-it-cant-live-without-it" class="pagination--pager" title="Can’t Live with It, Can’t Live without It
+">Previous</a>
+    
+    
+      <a href="#" class="pagination--pager disabled">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 brian-underwood.blogs. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  
+    <script src="/assets/prism.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>
