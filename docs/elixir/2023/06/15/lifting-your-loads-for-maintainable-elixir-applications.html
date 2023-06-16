@@ -293,7 +293,7 @@
 
 <p>This post will discuss one particular aspect of designing Elixir applications using the Ecto library: separating data loading from using the data which is loaded.  I will lay out the situations and present some solutions, including a new library called <a href="https://github.com/cheerfulstoic/ecto_require_associations">ecto_require_associations</a>.</p>
 
-<p>Applications will differ, but let’s look at <a href="https://github.com/plausible/analytics/blob/7d935b79bf516deaa0175ffe1b07784a8c72f3c2/lib/plausible/billing/plans.ex#LL39C1-L71C1">this example</a> from the Plausible Analytics repo<a href="Please don't see this as me picking on the Plausible Analytics folks in any way. I think that their project is great and the fact that they open-sourced it makes it a great resource for real-world examples like this one!">1</a>:</p>
+<p>Applications will differ, but let’s look at <a href="https://github.com/plausible/analytics/blob/7d935b79bf516deaa0175ffe1b07784a8c72f3c2/lib/plausible/billing/plans.ex#LL39C1-L71C1">this example</a> from the Plausible Analytics repo[1]:</p>
 
 <div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="n">plans_for</span><span class="p">(</span><span class="n">user</span><span class="p">)</span> <span class="k">do</span>
   <span class="n">user</span> <span class="o">=</span> <span class="no">Repo</span><span class="o">.</span><span class="n">preload</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="ss">:subscription</span><span class="p">)</span>
@@ -319,8 +319,6 @@
 
   <span class="c1"># … other code …</span>
 <span class="k">end</span>
-
-
 </code></pre></div></div>
 
 <p>Here the <code class="language-plaintext highlighter-rouge">subscription</code> association is preloaded for the given user, which is then immediately used as part of the logic of <code class="language-plaintext highlighter-rouge">plans_for/1</code>.  I’d like to try to convince you that in cases like this, it would be better to “lift” that loading of data out of the function.</p>
@@ -361,25 +359,25 @@
 
 <p>So, it would probably be better to explicitly look to see if the subscription is loaded. We could do this with pattern matching in an additional function definition:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>def plans_for(%{subscription: %Ecto.Association.NotLoaded{}}), do: raise "Expected subscription to be preloaded"
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="n">plans_for</span><span class="p">(%{</span><span class="ss">subscription:</span> <span class="p">%</span><span class="no">Ecto</span><span class="o">.</span><span class="no">Association</span><span class="o">.</span><span class="no">NotLoaded</span><span class="p">{}}),</span> <span class="k">do</span><span class="p">:</span> <span class="k">raise</span> <span class="s2">"Expected subscription to be preloaded"</span>
 </code></pre></div></div>
 
 <p>Or, if we want to avoid referencing the <code class="language-plaintext highlighter-rouge">Ecto.Association.NotLoaded</code> module in your application’s code, there’s even a function Ecto provides to allow you to check at runtime:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>def plans_for(user) do
-  if(!Ecto.assoc_loaded?(user.subscription) do
-    raise "Expected subscription to be preloaded")
-  end
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="n">plans_for</span><span class="p">(</span><span class="n">user</span><span class="p">)</span> <span class="k">do</span>
+  <span class="k">if</span><span class="p">(</span><span class="n">!Ecto</span><span class="o">.</span><span class="n">assoc_loaded?</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">subscription</span><span class="p">)</span> <span class="k">do</span>
+    <span class="k">raise</span> <span class="s2">"Expected subscription to be preloaded"</span><span class="p">)</span>
+  <span class="k">end</span>
 
-  # …
+  <span class="c1"># …</span>
 </code></pre></div></div>
 
 <p>This can get repetitive and potentially error-prone if you have a larger set of associations that you would like your function to depend on. I’ve created a small library called <a href="https://github.com/cheerfulstoic/require_associations_test"><code class="language-plaintext highlighter-rouge">ecto_require_associations</code></a> to take care of the details for you. If you’d like to load multiple associations you can use the same syntax used by Ecto’s <code class="language-plaintext highlighter-rouge">preload</code> function:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>def plans_for(user) do
-  EctoRequireAssociations.ensure!(user, [:subscriptions, site_memberships: :site])
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="n">plans_for</span><span class="p">(</span><span class="n">user</span><span class="p">)</span> <span class="k">do</span>
+  <span class="no">EctoRequireAssociations</span><span class="o">.</span><span class="n">ensure!</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="p">[</span><span class="ss">:subscriptions</span><span class="p">,</span> <span class="ss">site_memberships:</span> <span class="ss">:site</span><span class="p">])</span>
 
-  # …
+  <span class="c1"># …</span>
 </code></pre></div></div>
 
 <p>The above call would check:</p>
@@ -401,74 +399,74 @@
 
 <p>Hopefully I’ve convinced you that the above approach can be helpful for creating more maintainable code. At the same time, I want to caution against another potential problem on the “other side”. Let’s say we have a function to get a user like this:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>defmodule MyApp.Users do
-  def get_user(id) do
-    MyApp.Repo.get(id)
-    |&gt; MyApp.Repo.preload([:api_keys, :subscriptions, site_memberships: :site])
-  end
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">defmodule</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Users</span> <span class="k">do</span>
+  <span class="k">def</span> <span class="n">get_user</span><span class="p">(</span><span class="n">id</span><span class="p">)</span> <span class="k">do</span>
+    <span class="no">MyApp</span><span class="o">.</span><span class="no">Repo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+    <span class="o">|&gt;</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Repo</span><span class="o">.</span><span class="n">preload</span><span class="p">([</span><span class="ss">:api_keys</span><span class="p">,</span> <span class="ss">:subscriptions</span><span class="p">,</span> <span class="ss">site_memberships:</span> <span class="ss">:site</span><span class="p">])</span>
+  <span class="k">end</span>
 
-  def get_admins do
-    from(user in User, where: user.is_admin)
-    |&gt; MyApp.Repo.all()
-    |&gt; MyApp.Repo.preload([:api_keys, :subscriptions, site_memberships: :site])
-  end
+  <span class="k">def</span> <span class="n">get_admins</span> <span class="k">do</span>
+    <span class="n">from</span><span class="p">(</span><span class="n">user</span> <span class="ow">in</span> <span class="no">User</span><span class="p">,</span> <span class="ss">where:</span> <span class="n">user</span><span class="o">.</span><span class="n">is_admin</span><span class="p">)</span>
+    <span class="o">|&gt;</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Repo</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="o">|&gt;</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Repo</span><span class="o">.</span><span class="n">preload</span><span class="p">([</span><span class="ss">:api_keys</span><span class="p">,</span> <span class="ss">:subscriptions</span><span class="p">,</span> <span class="ss">site_memberships:</span> <span class="ss">:site</span><span class="p">])</span>
+  <span class="k">end</span>
 </code></pre></div></div>
 
 <p>When loading data to support pure functions, it could be tempting to load everything that might be needed by all functions which have a user argument. The risk then becomes one of loading too much data. Functions like <code class="language-plaintext highlighter-rouge">get_user</code> and <code class="language-plaintext highlighter-rouge">get_admins</code> are likely to be used all over your application, and generally you won’t need all of the associations loaded. This is a scaling problem that isn’t a problem until your application gets popular.One common pattern to solve this is to simply have a <code class="language-plaintext highlighter-rouge">preloads</code> argument:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>defmodule MyApp.Users do
-    def get_user(id, preloads \\ []) do
-        MyApp.Repo.get(id)
-        |&gt; MyApp.Repo.preload(preloads)
-    end
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">defmodule</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Users</span> <span class="k">do</span>
+    <span class="k">def</span> <span class="n">get_user</span><span class="p">(</span><span class="n">id</span><span class="p">,</span> <span class="n">preloads</span> <span class="p">\\</span> <span class="p">[])</span> <span class="k">do</span>
+        <span class="no">MyApp</span><span class="o">.</span><span class="no">Repo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+        <span class="o">|&gt;</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Repo</span><span class="o">.</span><span class="n">preload</span><span class="p">(</span><span class="n">preloads</span><span class="p">)</span>
+    <span class="k">end</span>
 
-    def get_admins(preloads \\ []) do
-        from(user in User, where: user.is_admin)
-        |&gt; MyApp.Repo.all()
-        |&gt; MyApp.Repo.preload(preloads)
-    end
-end
+    <span class="k">def</span> <span class="n">get_admins</span><span class="p">(</span><span class="n">preloads</span> <span class="p">\\</span> <span class="p">[])</span> <span class="k">do</span>
+        <span class="n">from</span><span class="p">(</span><span class="n">user</span> <span class="ow">in</span> <span class="no">User</span><span class="p">,</span> <span class="ss">where:</span> <span class="n">user</span><span class="o">.</span><span class="n">is_admin</span><span class="p">)</span>
+        <span class="o">|&gt;</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Repo</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="o">|&gt;</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Repo</span><span class="o">.</span><span class="n">preload</span><span class="p">(</span><span class="n">preloads</span><span class="p">)</span>
+    <span class="k">end</span>
+<span class="k">end</span>
 
-# Usage
-MyApp.Users.get_admins([:api_keys])
+<span class="c1"># Usage</span>
+<span class="no">MyApp</span><span class="o">.</span><span class="no">Users</span><span class="o">.</span><span class="n">get_admins</span><span class="p">([</span><span class="ss">:api_keys</span><span class="p">])</span>
 </code></pre></div></div>
 
 <p>This does solve the problem and allows you to load associations only where you need them. I would say, however, that this code falls into the same trap as the Active Record library by intertwining database and application logic.</p>
 
 <p>The Ecto library, your schemas, and your associations aren’t secrets.  You absolutely should encapsulate things like your complex query logic, the details for how you calculate numbers, or the decisions you make based on data. But it’s fine to ask Ecto to preload the associations and let your query functions just do querying. This can give you a clean separation of concerns:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>defmodule MyApp.Users do
-  def get_user(id), do: MyApp.Repo.get(id)
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">defmodule</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Users</span> <span class="k">do</span>
+  <span class="k">def</span> <span class="n">get_user</span><span class="p">(</span><span class="n">id</span><span class="p">),</span> <span class="k">do</span><span class="p">:</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Repo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
 
-  def get_admins do
-    from(user in User, where: user.is_admin)
-    |&gt; MyApp.Repo.all()
-  end
-end
+  <span class="k">def</span> <span class="n">get_admins</span> <span class="k">do</span>
+    <span class="n">from</span><span class="p">(</span><span class="n">user</span> <span class="ow">in</span> <span class="no">User</span><span class="p">,</span> <span class="ss">where:</span> <span class="n">user</span><span class="o">.</span><span class="n">is_admin</span><span class="p">)</span>
+    <span class="o">|&gt;</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Repo</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+  <span class="k">end</span>
+<span class="k">end</span>
 
-# Usage:
-MyApp.Users.get_admins()
-|&gt; MyApp.Repo.preload(:api_keys)
+<span class="c1"># Usage:</span>
+<span class="no">MyApp</span><span class="o">.</span><span class="no">Users</span><span class="o">.</span><span class="n">get_admins</span><span class="p">()</span>
+<span class="o">|&gt;</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Repo</span><span class="o">.</span><span class="n">preload</span><span class="p">(</span><span class="ss">:api_keys</span><span class="p">)</span>
 </code></pre></div></div>
 
 <p>That said, if you have associations you need for specific functions, you may want to create functions which can preload without the caller knowing the details. This saves repetition and helps clarify overlapping dependencies:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>defmodule MyApp.Users do
-  # You can call `preload_for_access_check(user)` to load the required data
-  def can_access?(user, resource) do
-    EctoRequireAssociations.ensure!(user, [:roles, :permissions])
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">defmodule</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Users</span> <span class="k">do</span>
+  <span class="c1"># You can call `preload_for_access_check(user)` to load the required data</span>
+  <span class="k">def</span> <span class="n">can_access?</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">resource</span><span class="p">)</span> <span class="k">do</span>
+    <span class="no">EctoRequireAssociations</span><span class="o">.</span><span class="n">ensure!</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="p">[</span><span class="ss">:roles</span><span class="p">,</span> <span class="ss">:permissions</span><span class="p">])</span>
 
-    # …
-  end
+    <span class="c1"># …</span>
+  <span class="k">end</span>
 
-  def preload_for_access_check(user) do
-    MyApp.Repo.preload(user, [:roles, :permissions])
-  end
+  <span class="k">def</span> <span class="n">preload_for_access_check</span><span class="p">(</span><span class="n">user</span><span class="p">)</span> <span class="k">do</span>
+    <span class="no">MyApp</span><span class="o">.</span><span class="no">Repo</span><span class="o">.</span><span class="n">preload</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="p">[</span><span class="ss">:roles</span><span class="p">,</span> <span class="ss">:permissions</span><span class="p">])</span>
+  <span class="k">end</span>
 
-  def preload_for_something_else(user) do
-    MyApp.Repo.preload(user, [:roles, :regions])
-  end
-end
+  <span class="k">def</span> <span class="n">preload_for_something_else</span><span class="p">(</span><span class="n">user</span><span class="p">)</span> <span class="k">do</span>
+    <span class="no">MyApp</span><span class="o">.</span><span class="no">Repo</span><span class="o">.</span><span class="n">preload</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="p">[</span><span class="ss">:roles</span><span class="p">,</span> <span class="ss">:regions</span><span class="p">])</span>
+  <span class="k">end</span>
+<span class="k">end</span>
 </code></pre></div></div>
 
 <p>Remember that <code class="language-plaintext highlighter-rouge">Repo.preload</code> won’t load data if it’s already been set on the struct unless you specify <code class="language-plaintext highlighter-rouge">force: true</code>!</p>
@@ -494,6 +492,8 @@ end
 <h1 id="conclusion">Conclusion</h1>
 
 <p>It seems like a small detail, but making more functions purely functional and isolating your database access can have compounding effects on the maintainability of your code. This can be especially true when the codebase is maintained by more than one person, making it easier for everybody to change the code without worrying about side-effects. Try it out and see!</p>
+
+<p><code class="language-plaintext highlighter-rouge">[1]</code>: Please don’t see this as me picking on the Plausible Analytics folks in any way. I think that their project is great and the fact that they open-sourced it makes it a great resource for real-world examples like this one!</p>
 
 
         

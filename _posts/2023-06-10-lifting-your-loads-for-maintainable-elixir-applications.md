@@ -40,8 +40,6 @@ def plans_for(user) do
 
   # … other code …
 end
-
-
 ```
 
 Here the `subscription` association is preloaded for the given user, which is then immediately used as part of the logic of `plans_for/1`.  I'd like to try to convince you that in cases like this, it would be better to "lift" that loading of data out of the function.
@@ -81,13 +79,13 @@ This is because the [`contains/2`](https://github.com/plausible/analytics/blob/7
 
 So, it would probably be better to explicitly look to see if the subscription is loaded. We could do this with pattern matching in an additional function definition:
 
-```
+```elixir
 def plans_for(%{subscription: %Ecto.Association.NotLoaded{}}), do: raise "Expected subscription to be preloaded"
 ```
 
 Or, if we want to avoid referencing the `Ecto.Association.NotLoaded` module in your application's code, there's even a function Ecto provides to allow you to check at runtime:
 
-```
+```elixir
 def plans_for(user) do
   if(!Ecto.assoc_loaded?(user.subscription) do
     raise "Expected subscription to be preloaded")
@@ -98,7 +96,7 @@ def plans_for(user) do
 
 This can get repetitive and potentially error-prone if you have a larger set of associations that you would like your function to depend on. I've created a small library called [`ecto_require_associations`](https://github.com/cheerfulstoic/require_associations_test) to take care of the details for you. If you'd like to load multiple associations you can use the same syntax used by Ecto's `preload` function:
 
-```
+```elixir
 def plans_for(user) do
   EctoRequireAssociations.ensure!(user, [:subscriptions, site_memberships: :site])
 
@@ -124,7 +122,7 @@ It can even work on a list of records given to it, just like `Repo.preload`.
 
 Hopefully I've convinced you that the above approach can be helpful for creating more maintainable code. At the same time, I want to caution against another potential problem on the "other side". Let's say we have a function to get a user like this:
 
-```
+```elixir
 defmodule MyApp.Users do
   def get_user(id) do
     MyApp.Repo.get(id)
@@ -140,7 +138,7 @@ defmodule MyApp.Users do
 
 When loading data to support pure functions, it could be tempting to load everything that might be needed by all functions which have a user argument. The risk then becomes one of loading too much data. Functions like `get_user` and `get_admins` are likely to be used all over your application, and generally you won't need all of the associations loaded. This is a scaling problem that isn't a problem until your application gets popular.One common pattern to solve this is to simply have a `preloads` argument:
 
-```
+```elixir
 defmodule MyApp.Users do
     def get_user(id, preloads \\ []) do
         MyApp.Repo.get(id)
@@ -162,7 +160,7 @@ This does solve the problem and allows you to load associations only where you n
 
 The Ecto library, your schemas, and your associations aren't secrets.  You absolutely should encapsulate things like your complex query logic, the details for how you calculate numbers, or the decisions you make based on data. But it's fine to ask Ecto to preload the associations and let your query functions just do querying. This can give you a clean separation of concerns:
 
-```
+```elixir
 defmodule MyApp.Users do
   def get_user(id), do: MyApp.Repo.get(id)
 
@@ -180,7 +178,7 @@ MyApp.Users.get_admins()
 That said, if you have associations you need for specific functions, you may want to create functions which can preload without the caller knowing the details. This saves repetition and helps clarify overlapping dependencies:
 
 
-```
+```elixir
 defmodule MyApp.Users do
   # You can call `preload_for_access_check(user)` to load the required data
   def can_access?(user, resource) do
@@ -223,5 +221,5 @@ The discussion above suggests pushing loading logic up and out of [context](http
 
 It seems like a small detail, but making more functions purely functional and isolating your database access can have compounding effects on the maintainability of your code. This can be especially true when the codebase is maintained by more than one person, making it easier for everybody to change the code without worrying about side-effects. Try it out and see!
 
-[1]: Please don't see this as me picking on the Plausible Analytics folks in any way. I think that their project is great and the fact that they open-sourced it makes it a great resource for real-world examples like this one!
+`[1]`: Please don't see this as me picking on the Plausible Analytics folks in any way. I think that their project is great and the fact that they open-sourced it makes it a great resource for real-world examples like this one!
 
