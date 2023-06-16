@@ -126,7 +126,7 @@ var store = [{
         "teaser": null
       },{
         "title": "Lifting Your Loads for Maintainable Elixir Applications",
-        "excerpt":"This post will discuss one particular aspect of designing Elixir applications using the Ecto library: separating data loading from using the data which is loaded. I will lay out the situations and present some solutions, including a new library called ecto_require_associations. Applications will differ, but let’s look at this example...","categories": ["elixir"],
+        "excerpt":"(This post was originally created for the Erlang Solutions blog. The original can be found here) This post will discuss one particular aspect of designing Elixir applications using the Ecto library: separating data loading from using the data which is loaded. I will lay out the situations and present some...","categories": ["elixir"],
         "tags": ["elixir"],
         "url": "/elixir/2023/06/15/lifting-your-loads-for-maintainable-elixir-applications",
         "teaser": null

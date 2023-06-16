@@ -9,6 +9,8 @@ tags:
 - elixir
 ---
 
+(This post was originally created for the Erlang Solutions blog.  The original can be found [here](https://www.erlang-solutions.com/blog/lifting-your-loads-for-maintainable-elixir-applications/))
+
 This post will discuss one particular aspect of designing Elixir applications using the Ecto library: separating data loading from using the data which is loaded.  I will lay out the situations and present some solutions, including a new library called [ecto_require_associations](https://github.com/cheerfulstoic/ecto_require_associations).
 
 Applications will differ, but let's look at [this example](https://github.com/plausible/analytics/blob/7d935b79bf516deaa0175ffe1b07784a8c72f3c2/lib/plausible/billing/plans.ex#LL39C1-L71C1) from the Plausible Analytics repo[1]:
