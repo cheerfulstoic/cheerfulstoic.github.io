@@ -9,7 +9,7 @@ tags:
 - elixir
 ---
 
-
+(This post was originally created for the Erlang Solutions blog.  The original can be found [here](https://www.erlang-solutions.com/blog/cant-live-with-it-cant-live-without-it))
 
 I’d like to share some thoughts about Elixir’s `with` keyword.  `with` is a wonderful tool, but in my experience it is a bit overused.  To use it best, we must understand how it behaves in all cases.  So, let’s briefly cover the basics, starting with pipes in Elixir.
 

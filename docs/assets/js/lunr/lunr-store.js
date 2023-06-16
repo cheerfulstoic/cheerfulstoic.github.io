@@ -120,14 +120,14 @@ var store = [{
         "teaser": null
       },{
         "title": "Can’t Live `with` It, Can’t Live `with`out It",
-        "excerpt":"I’d like to share some thoughts about Elixir’s with keyword. with is a wonderful tool, but in my experience it is a bit overused. To use it best, we must understand how it behaves in all cases. So, let’s briefly cover the basics, starting with pipes in Elixir. Pipes are...","categories": ["elixir"],
+        "excerpt":"(This post was originally created for the Erlang Solutions blog. The original can be found here) I’d like to share some thoughts about Elixir’s with keyword. with is a wonderful tool, but in my experience it is a bit overused. To use it best, we must understand how it behaves...","categories": ["elixir"],
         "tags": ["elixir"],
         "url": "/elixir/2023/02/23/cant-live-with-it-cant-live-without-it",
         "teaser": null
       },{
-        "title": "Load Early => TODO BETTER TITLE",
-        "excerpt":"This post will discuss one particular aspect of designing Elixir applications using the Ecto library: separating data loading from using the data which is loaded. Applications will differ, but let’s look at this example from the Plausible Analytics repo[1]: def plans_for(user) do user = Repo.preload(user, :subscription) # … other code...","categories": ["elixir"],
+        "title": "Lifting Your Loads for Maintainable Elixir Applications",
+        "excerpt":"This post will discuss one particular aspect of designing Elixir applications using the Ecto library: separating data loading from using the data which is loaded. I will lay out the situations and present some solutions, including a new library called ecto_require_associations. Applications will differ, but let’s look at this example...","categories": ["elixir"],
         "tags": ["elixir"],
-        "url": "/elixir/2023/05/10/load-early",
+        "url": "/elixir/2023/06/15/lifting-your-loads-for-maintainable-elixir-applications",
         "teaser": null
       }]
