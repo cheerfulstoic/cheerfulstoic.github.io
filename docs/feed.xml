@@ -1,4 +1,101 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="http://www.brian-underwood.codes//feed.xml" rel="self" type="application/atom+xml" /><link href="http://www.brian-underwood.codes//" rel="alternate" type="text/html" /><updated>2023-06-16T17:37:29+02:00</updated><id>http://www.brian-underwood.codes//feed.xml</id><title type="html">brian-underwood.blogs</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><author><name>Brian Underwood</name></author><entry><title type="html">Lifting Your Loads for Maintainable Elixir Applications</title><link href="http://www.brian-underwood.codes//elixir/2023/06/15/lifting-your-loads-for-maintainable-elixir-applications" rel="alternate" type="text/html" title="Lifting Your Loads for Maintainable Elixir Applications" /><published>2023-06-15T00:00:00+02:00</published><updated>2023-06-15T00:00:00+02:00</updated><id>http://www.brian-underwood.codes//elixir/2023/06/15/lifting-your-loads-for-maintainable-elixir-applications</id><content type="html" xml:base="http://www.brian-underwood.codes//elixir/2023/06/15/lifting-your-loads-for-maintainable-elixir-applications">&lt;p&gt;(This post was originally created for the Erlang Solutions blog.  The original can be found &lt;a href=&quot;https://www.erlang-solutions.com/blog/lifting-your-loads-for-maintainable-elixir-applications/&quot;&gt;here&lt;/a&gt;)&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2024-07-01T12:57:12+02:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">brian-underwood.blogs</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><author><name>Brian Underwood</name></author><entry><title type="html">Let Your Database Update You with EctoWatch</title><link href="http://localhost:4000/elixir/2024/06/27/let_your_database_update_you_with_ectowatch" rel="alternate" type="text/html" title="Let Your Database Update You with EctoWatch" /><published>2024-06-27T00:00:00+02:00</published><updated>2024-06-27T00:00:00+02:00</updated><id>http://localhost:4000/elixir/2024/06/27/let_your_database_update_you_with_ectowatch</id><content type="html" xml:base="http://localhost:4000/elixir/2024/06/27/let_your_database_update_you_with_ectowatch">&lt;p&gt;Elixir allows application developers to create very parallel and very complex systems. Tools like Phoenix PubSub and LiveView thrive on this property of the language, making it very easy to develop functionality that requires continuous updates to users and clients.&lt;/p&gt;
+
+&lt;p&gt;But one thing that has often frustrated me is how to cleanly design an application to respond to database record updates.&lt;/p&gt;
+
+&lt;p&gt;A typical pattern that I’ve used is to have a dedicated function which makes a database change (e.g &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Shipping.insert_event&lt;/code&gt;). This function can contain a post-update step which sends out, for example, a PubSub broadcast. But this relies on the team using that function consistently. If there are other update functions (e.g. &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Shipping.insert_delivery&lt;/code&gt;) they also need to do the broadcast.&lt;/p&gt;
+
+&lt;p&gt;But the most fool-proof solution would be to have the &lt;strong&gt;database&lt;/strong&gt; update the &lt;strong&gt;application&lt;/strong&gt; whenever there is a change. Not only would this avoid needing to make sure all update functions send out broadcasts, but it also makes sure that the correct actions are taken whenever some external task or application updates the database directly.&lt;/p&gt;
+
+&lt;p&gt;While I knew that PostgreSQL had functionality to inform my applications about updates it always seemed intimidating. So I finally decided to figure out how it worked and to make a library! I’d like to introduce EctoWatch which is my attempt to implement this pattern in the simplest way possible.&lt;/p&gt;
+
+&lt;h1 id=&quot;why-broadcast-database-updates&quot;&gt;Why Broadcast Database Updates?&lt;/h1&gt;
+
+&lt;p&gt;Aside from the obvious case of updating LiveViews, there are a number of things you might want to do in response to record changes:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;redoing a calculation/cache when source information changes&lt;/li&gt;
+  &lt;li&gt;sending out emails about a change&lt;/li&gt;
+  &lt;li&gt;sending out webhook requests&lt;/li&gt;
+  &lt;li&gt;updating a GraphQL subscription&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;For example, if you insert a new status event for a tracked package, you may want to:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;update any webpages/applications currently tracking the package&lt;/li&gt;
+  &lt;li&gt;send updates about important events (like the package being delivered)&lt;/li&gt;
+  &lt;li&gt;recalculate and update the estimated delivery date&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;using-ectowatch&quot;&gt;Using EctoWatch&lt;/h1&gt;
+
+&lt;p&gt;EctoWatch allows you to set up watchers in your application’s supervision tree which can track inserts, updates, and deletes on Ecto schemas which are backed by PostgreSQL tables:&lt;/p&gt;
+
+&lt;div class=&quot;language-elixir highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;EctoWatch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;ss&quot;&gt;repo:&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;MyApp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Repo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;ss&quot;&gt;pub_sub:&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;MyApp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;PubSub&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;ss&quot;&gt;watchers:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Accounts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:inserted&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Accounts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:updated&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Accounts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:deleted&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Shipping&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Package&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:inserted&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Shipping&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Package&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:updated&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;]}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Then processes can subscribe to the broadcasts sent by the watchers:&lt;/p&gt;
+
+&lt;div class=&quot;language-elixir highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;no&quot;&gt;EctoWatch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;subscribe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Accounts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:inserted&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;EctoWatch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;subscribe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Accounts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:updated&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;EctoWatch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;subscribe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Accounts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:deleted&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;no&quot;&gt;EctoWatch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;subscribe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Shipping&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Package&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:inserted&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;EctoWatch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;subscribe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Shipping&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Package&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:updated&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;If your process just needs to get updates about a specific record an ID can be given:&lt;/p&gt;
+
+&lt;div class=&quot;language-elixir highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;no&quot;&gt;EctoWatch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;subscribe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Accounts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Package&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:updated&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;package&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Then finally the module that implements your process (LiveView, GenServer, etc…) can handle messages about records:&lt;/p&gt;
+
+&lt;div class=&quot;language-elixir highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;# LiveView example&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;handle_info&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:inserted&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Accounts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Accounts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get_user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stream_insert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:users&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+  &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:noreply&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;handle_info&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:updated&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Accounts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Accounts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get_user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stream_insert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:users&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+  &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:noreply&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;handle_info&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:deleted&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Accounts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Accounts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get_user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stream_delete&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:users&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+  &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:noreply&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;You can also define which columns trigger messages on updates as well as which values (in addition to the ID) to send with messages. Definitely check out the &lt;a href=&quot;https://github.com/cheerfulstoic/ecto_watch&quot;&gt;repo’s README&lt;/a&gt; for more details on how to use EctoWatch!&lt;/p&gt;
+
+&lt;p&gt;Conclusion&lt;/p&gt;
+
+&lt;p&gt;I believe that &lt;a href=&quot;https://github.com/cheerfulstoic/ecto_watch&quot;&gt;EctoWatch&lt;/a&gt; can be a powerful new way to simplify how we deal with database changes. Allowing a quick configuration of watchers and using simple message passing with Phoenix PubSub, you can separate the concern of &lt;strong&gt;making a change&lt;/strong&gt; from the concern of &lt;strong&gt;what happens as a result&lt;/strong&gt; of the change. This allows your code to be more easily readable and refactorable.&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="elixir" /><category term="elixir" /><summary type="html">Elixir allows application developers to create very parallel and very complex systems. Tools like Phoenix PubSub and LiveView thrive on this property of the language, making it very easy to develop functionality that requires continuous updates to users and clients.</summary></entry><entry><title type="html">Brian Nutshell Test</title><link href="http://localhost:4000/elixir/2023/08/02/brian-test" rel="alternate" type="text/html" title="Brian Nutshell Test" /><published>2023-08-02T00:00:00+02:00</published><updated>2023-08-02T00:00:00+02:00</updated><id>http://localhost:4000/elixir/2023/08/02/brian-test</id><content type="html" xml:base="http://localhost:4000/elixir/2023/08/02/brian-test">&lt;script src=&quot;/assets/js/nutshell.js&quot;&gt;&lt;/script&gt;
+
+&lt;h1 id=&quot;x-hello-test&quot;&gt;:x Hello Test&lt;/h1&gt;
+
+&lt;p&gt;What is this hidden thing?&lt;/p&gt;
+
+&lt;h1 id=&quot;whoa&quot;&gt;Whoa&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&quot;#HelloTest&quot;&gt;Hi Hi&lt;/a&gt;&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="elixir" /><category term="elixir" /><summary type="html"></summary></entry><entry><title type="html">Lifting Your Loads for Maintainable Elixir Applications</title><link href="http://localhost:4000/elixir/2023/06/15/lifting-your-loads-for-maintainable-elixir-applications" rel="alternate" type="text/html" title="Lifting Your Loads for Maintainable Elixir Applications" /><published>2023-06-15T00:00:00+02:00</published><updated>2023-06-15T00:00:00+02:00</updated><id>http://localhost:4000/elixir/2023/06/15/lifting-your-loads-for-maintainable-elixir-applications</id><content type="html" xml:base="http://localhost:4000/elixir/2023/06/15/lifting-your-loads-for-maintainable-elixir-applications">&lt;p&gt;(This post was originally created for the Erlang Solutions blog.  The original can be found &lt;a href=&quot;https://www.erlang-solutions.com/blog/lifting-your-loads-for-maintainable-elixir-applications/&quot;&gt;here&lt;/a&gt;)&lt;/p&gt;
 
 &lt;p&gt;This post will discuss one particular aspect of designing Elixir applications using the Ecto library: separating data loading from using the data which is loaded.  I will lay out the situations and present some solutions, including a new library called &lt;a href=&quot;https://github.com/cheerfulstoic/ecto_require_associations&quot;&gt;ecto_require_associations&lt;/a&gt;.&lt;/p&gt;
 
@@ -202,7 +299,7 @@
 
 &lt;p&gt;It seems like a small detail, but making more functions purely functional and isolating your database access can have compounding effects on the maintainability of your code. This can be especially true when the codebase is maintained by more than one person, making it easier for everybody to change the code without worrying about side-effects. Try it out and see!&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;[1]&lt;/code&gt;: Please don’t see this as me picking on the Plausible Analytics folks in any way. I think that their project is great and the fact that they open-sourced it makes it a great resource for real-world examples like this one!&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="elixir" /><category term="elixir" /><summary type="html">(This post was originally created for the Erlang Solutions blog. The original can be found here)</summary></entry><entry><title type="html">Can’t Live `with` It, Can’t Live `with`out It</title><link href="http://www.brian-underwood.codes//elixir/2023/02/23/cant-live-with-it-cant-live-without-it" rel="alternate" type="text/html" title="Can’t Live `with` It, Can’t Live `with`out It" /><published>2023-02-23T00:00:00+01:00</published><updated>2023-02-23T00:00:00+01:00</updated><id>http://www.brian-underwood.codes//elixir/2023/02/23/cant-live-with-it-cant-live-without-it</id><content type="html" xml:base="http://www.brian-underwood.codes//elixir/2023/02/23/cant-live-with-it-cant-live-without-it">&lt;p&gt;(This post was originally created for the Erlang Solutions blog.  The original can be found &lt;a href=&quot;https://www.erlang-solutions.com/blog/cant-live-with-it-cant-live-without-it&quot;&gt;here&lt;/a&gt;)&lt;/p&gt;
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;[1]&lt;/code&gt;: Please don’t see this as me picking on the Plausible Analytics folks in any way. I think that their project is great and the fact that they open-sourced it makes it a great resource for real-world examples like this one!&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="elixir" /><category term="elixir" /><summary type="html">(This post was originally created for the Erlang Solutions blog. The original can be found here)</summary></entry><entry><title type="html">Can’t Live `with` It, Can’t Live `with`out It</title><link href="http://localhost:4000/elixir/2023/02/23/cant-live-with-it-cant-live-without-it" rel="alternate" type="text/html" title="Can’t Live `with` It, Can’t Live `with`out It" /><published>2023-02-23T00:00:00+01:00</published><updated>2023-02-23T00:00:00+01:00</updated><id>http://localhost:4000/elixir/2023/02/23/cant-live-with-it-cant-live-without-it</id><content type="html" xml:base="http://localhost:4000/elixir/2023/02/23/cant-live-with-it-cant-live-without-it">&lt;p&gt;(This post was originally created for the Erlang Solutions blog.  The original can be found &lt;a href=&quot;https://www.erlang-solutions.com/blog/cant-live-with-it-cant-live-without-it&quot;&gt;here&lt;/a&gt;)&lt;/p&gt;
 
 &lt;p&gt;I’d like to share some thoughts about Elixir’s &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;with&lt;/code&gt; keyword.  &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;with&lt;/code&gt; is a wonderful tool, but in my experience it is a bit overused.  To use it best, we must understand how it behaves in all cases.  So, let’s briefly cover the basics, starting with pipes in Elixir.&lt;/p&gt;
 
@@ -343,7 +440,7 @@
 
 &lt;p&gt;One of the simplest and most standard ways to avoid these issues is to make sure the functions that you are calling return &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;{:ok, variable}&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;{:error, reason}&lt;/code&gt; tuples. Then &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;with&lt;/code&gt; can fall through cleanly (&lt;em&gt;definitely&lt;/em&gt; check out Chris Keathley’s discussion of “Avoid else in with blocks” in his post &lt;a href=&quot;https://keathley.io/blog/good-and-bad-elixir.html&quot;&gt;“Good and Bad Elixir”&lt;/a&gt;).&lt;/p&gt;
 
-&lt;p&gt;With all that said, I recommend using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;with&lt;/code&gt; statements whenever you can! Just make sure that you think about fallback cases that might happen. Even better: write tests to cover all of your potential cases! If you can strike a balance and use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;with&lt;/code&gt; carefully, your code can be both cleaner &lt;strong&gt;and&lt;/strong&gt; more reliable.&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="elixir" /><category term="elixir" /><summary type="html">(This post was originally created for the Erlang Solutions blog. The original can be found here)</summary></entry><entry><title type="html">How Far Can I Push a GenServer?</title><link href="http://www.brian-underwood.codes//elixir/2021/07/23/How-Far-Can-I-Push-a-GenServer" rel="alternate" type="text/html" title="How Far Can I Push a GenServer?" /><published>2021-07-23T00:00:00+02:00</published><updated>2021-07-23T00:00:00+02:00</updated><id>http://www.brian-underwood.codes//elixir/2021/07/23/How-Far-Can-I-Push-a-GenServer</id><content type="html" xml:base="http://www.brian-underwood.codes//elixir/2021/07/23/How-Far-Can-I-Push-a-GenServer">&lt;p&gt;I’ve been using Elixir for a while and I’ve implemented a number of GenServers.  But while I think I mostly understand the purpose of them, I’ve not gotten the chance to push one it’s limits, scale it up, and find ways to address it’s bottlenecks.  I thought that it would be fun to create something to which I could give the URL as part of a presentation and have some confidence that it would be able to handle all the users who connected to it.  So recently I implemented a simple game grid using Phoenix LiveView and emojis as indicators of player and objects.  If you would like to learn about my journey, read on!  But note that you’ll probably want to have at least a basic understanding of GenServers first.  You might start by &lt;a href=&quot;https://elixir-lang.org/getting-started/mix-otp/genserver.html&quot;&gt;reading this&lt;/a&gt; and/or &lt;a href=&quot;https://elixircasts.io/intro-to-genserver&quot;&gt;watching this&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;With all that said, I recommend using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;with&lt;/code&gt; statements whenever you can! Just make sure that you think about fallback cases that might happen. Even better: write tests to cover all of your potential cases! If you can strike a balance and use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;with&lt;/code&gt; carefully, your code can be both cleaner &lt;strong&gt;and&lt;/strong&gt; more reliable.&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="elixir" /><category term="elixir" /><summary type="html">(This post was originally created for the Erlang Solutions blog. The original can be found here)</summary></entry><entry><title type="html">How Far Can I Push a GenServer?</title><link href="http://localhost:4000/elixir/2021/07/23/How-Far-Can-I-Push-a-GenServer" rel="alternate" type="text/html" title="How Far Can I Push a GenServer?" /><published>2021-07-23T00:00:00+02:00</published><updated>2021-07-23T00:00:00+02:00</updated><id>http://localhost:4000/elixir/2021/07/23/How-Far-Can-I-Push-a-GenServer</id><content type="html" xml:base="http://localhost:4000/elixir/2021/07/23/How-Far-Can-I-Push-a-GenServer">&lt;p&gt;I’ve been using Elixir for a while and I’ve implemented a number of GenServers.  But while I think I mostly understand the purpose of them, I’ve not gotten the chance to push one it’s limits, scale it up, and find ways to address it’s bottlenecks.  I thought that it would be fun to create something to which I could give the URL as part of a presentation and have some confidence that it would be able to handle all the users who connected to it.  So recently I implemented a simple game grid using Phoenix LiveView and emojis as indicators of player and objects.  If you would like to learn about my journey, read on!  But note that you’ll probably want to have at least a basic understanding of GenServers first.  You might start by &lt;a href=&quot;https://elixir-lang.org/getting-started/mix-otp/genserver.html&quot;&gt;reading this&lt;/a&gt; and/or &lt;a href=&quot;https://elixircasts.io/intro-to-genserver&quot;&gt;watching this&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;If you would like to look at the source code for this project you can see it &lt;a href=&quot;https://github.com/cheerfulstoic/emoji_game&quot;&gt;on GitHub&lt;/a&gt;.&lt;/p&gt;
 
@@ -684,7 +781,7 @@
 
 &lt;h2 id=&quot;other-kinds-of-actors&quot;&gt;Other Kinds of Actors&lt;/h2&gt;
 
-&lt;p&gt;While having just one kind of actor made benchmarking straightforward, it would be great to make the world more interesting by adding other kinds of actors.  One example I can imagine would be bacteria emoji which grow and die with rules similar to &lt;a href=&quot;https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life&quot;&gt;Conway’s Game of Life&lt;/a&gt;.&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="elixir" /><category term="elixir" /><summary type="html">I’ve been using Elixir for a while and I’ve implemented a number of GenServers. But while I think I mostly understand the purpose of them, I’ve not gotten the chance to push one it’s limits, scale it up, and find ways to address it’s bottlenecks. I thought that it would be fun to create something to which I could give the URL as part of a presentation and have some confidence that it would be able to handle all the users who connected to it. So recently I implemented a simple game grid using Phoenix LiveView and emojis as indicators of player and objects. If you would like to learn about my journey, read on! But note that you’ll probably want to have at least a basic understanding of GenServers first. You might start by reading this and/or watching this.</summary></entry><entry><title type="html">Why I Love Lodash</title><link href="http://www.brian-underwood.codes//javascript/2021/05/13/why-I-love-lodash" rel="alternate" type="text/html" title="Why I Love Lodash" /><published>2021-05-13T22:26:00+02:00</published><updated>2021-05-13T22:26:00+02:00</updated><id>http://www.brian-underwood.codes//javascript/2021/05/13/why-I-love-lodash</id><content type="html" xml:base="http://www.brian-underwood.codes//javascript/2021/05/13/why-I-love-lodash">&lt;p&gt;I love &lt;a href=&quot;https://lodash.com/&quot;&gt;Lodash&lt;/a&gt;, but I’m not here to tell you to use Lodash.  It’s up to you to decide if a tool is useful for you or your project.  It will come down to the needs of the project (file size, browser/Node.js, how much you use it, etc…).  But my new team was surprised by my passion for it and so I wanted to share my thoughts.  Specifically: I want to focus in this post on those things which I like, including things which I think people often miss.&lt;/p&gt;
+&lt;p&gt;While having just one kind of actor made benchmarking straightforward, it would be great to make the world more interesting by adding other kinds of actors.  One example I can imagine would be bacteria emoji which grow and die with rules similar to &lt;a href=&quot;https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life&quot;&gt;Conway’s Game of Life&lt;/a&gt;.&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="elixir" /><category term="elixir" /><summary type="html">I’ve been using Elixir for a while and I’ve implemented a number of GenServers. But while I think I mostly understand the purpose of them, I’ve not gotten the chance to push one it’s limits, scale it up, and find ways to address it’s bottlenecks. I thought that it would be fun to create something to which I could give the URL as part of a presentation and have some confidence that it would be able to handle all the users who connected to it. So recently I implemented a simple game grid using Phoenix LiveView and emojis as indicators of player and objects. If you would like to learn about my journey, read on! But note that you’ll probably want to have at least a basic understanding of GenServers first. You might start by reading this and/or watching this.</summary></entry><entry><title type="html">Why I Love Lodash</title><link href="http://localhost:4000/javascript/2021/05/13/why-I-love-lodash" rel="alternate" type="text/html" title="Why I Love Lodash" /><published>2021-05-13T22:26:00+02:00</published><updated>2021-05-13T22:26:00+02:00</updated><id>http://localhost:4000/javascript/2021/05/13/why-I-love-lodash</id><content type="html" xml:base="http://localhost:4000/javascript/2021/05/13/why-I-love-lodash">&lt;p&gt;I love &lt;a href=&quot;https://lodash.com/&quot;&gt;Lodash&lt;/a&gt;, but I’m not here to tell you to use Lodash.  It’s up to you to decide if a tool is useful for you or your project.  It will come down to the needs of the project (file size, browser/Node.js, how much you use it, etc…).  But my new team was surprised by my passion for it and so I wanted to share my thoughts.  Specifically: I want to focus in this post on those things which I like, including things which I think people often miss.&lt;/p&gt;
 
 &lt;h2 id=&quot;checking-types&quot;&gt;Checking types&lt;/h2&gt;
 
@@ -821,7 +918,7 @@
 &lt;p&gt;And my favorite response to “You Don’t Need Lodash”:&lt;/p&gt;
 
 &lt;blockquote class=&quot;twitter-tweet&quot;&gt;&lt;p lang=&quot;en&quot; dir=&quot;ltr&quot;&gt;I guess not, but I want it. &amp;quot;You don&amp;#39;t need Lodash/Underscore&amp;quot; &lt;a href=&quot;https://t.co/keLJ43U0pa&quot;&gt;https://t.co/keLJ43U0pa&lt;/a&gt;&lt;/p&gt;&amp;mdash; Tero Parviainen (@teropa) &lt;a href=&quot;https://twitter.com/teropa/status/692280179666898944?ref_src=twsrc%5Etfw&quot;&gt;January 27, 2016&lt;/a&gt;&lt;/blockquote&gt;
-&lt;script async=&quot;&quot; src=&quot;https://platform.twitter.com/widgets.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;</content><author><name>Brian Underwood</name></author><category term="javascript" /><category term="javascript" /><summary type="html">I love Lodash, but I’m not here to tell you to use Lodash. It’s up to you to decide if a tool is useful for you or your project. It will come down to the needs of the project (file size, browser/Node.js, how much you use it, etc…). But my new team was surprised by my passion for it and so I wanted to share my thoughts. Specifically: I want to focus in this post on those things which I like, including things which I think people often miss.</summary></entry><entry><title type="html">Structuring an Elixir+Phoenix App</title><link href="http://www.brian-underwood.codes//elixir/2020/07/11/structuring-an-elixir+phoenix-app" rel="alternate" type="text/html" title="Structuring an Elixir+Phoenix App" /><published>2020-07-11T00:00:00+02:00</published><updated>2020-07-11T00:00:00+02:00</updated><id>http://www.brian-underwood.codes//elixir/2020/07/11/structuring-an-elixir+phoenix-app</id><content type="html" xml:base="http://www.brian-underwood.codes//elixir/2020/07/11/structuring-an-elixir+phoenix-app">&lt;p&gt;I’ve &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mix phx.new&lt;/code&gt; ed many applications and when doing so I often start with wondering how to organize my code. I love how Phoenix pushes you to think about the different domains in your app via generators while at the same time I have the freedom to organize modules on my own. Ecto schemas make for a nice abstraction, but where should I put code related just to that table? It could be in the context, but I don’t want the context to become a “grab bag” of unorganized function calls.&lt;/p&gt;
+&lt;script async=&quot;&quot; src=&quot;https://platform.twitter.com/widgets.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;</content><author><name>Brian Underwood</name></author><category term="javascript" /><category term="javascript" /><summary type="html">I love Lodash, but I’m not here to tell you to use Lodash. It’s up to you to decide if a tool is useful for you or your project. It will come down to the needs of the project (file size, browser/Node.js, how much you use it, etc…). But my new team was surprised by my passion for it and so I wanted to share my thoughts. Specifically: I want to focus in this post on those things which I like, including things which I think people often miss.</summary></entry><entry><title type="html">Structuring an Elixir+Phoenix App</title><link href="http://localhost:4000/elixir/2020/07/11/structuring-an-elixir+phoenix-app" rel="alternate" type="text/html" title="Structuring an Elixir+Phoenix App" /><published>2020-07-11T00:00:00+02:00</published><updated>2020-07-11T00:00:00+02:00</updated><id>http://localhost:4000/elixir/2020/07/11/structuring-an-elixir+phoenix-app</id><content type="html" xml:base="http://localhost:4000/elixir/2020/07/11/structuring-an-elixir+phoenix-app">&lt;p&gt;I’ve &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mix phx.new&lt;/code&gt; ed many applications and when doing so I often start with wondering how to organize my code. I love how Phoenix pushes you to think about the different domains in your app via generators while at the same time I have the freedom to organize modules on my own. Ecto schemas make for a nice abstraction, but where should I put code related just to that table? It could be in the context, but I don’t want the context to become a “grab bag” of unorganized function calls.&lt;/p&gt;
 
 &lt;p&gt;In the past, I’ve searched for someone writing on the subject but haven’t come up with much. I’ve even done some cursory glancing into repositories to get a feeling for what they do, but I’ve never looked thoroughly at different options. In this post, I share what I have found from four different open source Phoenix+Ecto applications. And as the old joke goes, I’ll be asking four developers for their opinions and getting four different answers. In the end, I’ll summarize how I plan to move forward.&lt;/p&gt;
 
@@ -992,7 +1089,7 @@ Things I like about these projects:&lt;/li&gt;
     my_app/&amp;lt;context&amp;gt;/&amp;lt;some_module&amp;gt;/&amp;lt;sub_module&amp;gt;.ex
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;These things might certainly change, but having looked through some other codebases and reflecting on what I like and don’t like, I think that this will be a good start.&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="elixir" /><category term="elixir" /><category term="phoenix" /><summary type="html">I’ve mix phx.new ed many applications and when doing so I often start with wondering how to organize my code. I love how Phoenix pushes you to think about the different domains in your app via generators while at the same time I have the freedom to organize modules on my own. Ecto schemas make for a nice abstraction, but where should I put code related just to that table? It could be in the context, but I don’t want the context to become a “grab bag” of unorganized function calls.</summary></entry><entry><title type="html">Expecting the Unexpected in Elixir</title><link href="http://www.brian-underwood.codes//elixir/2020/01/31/expecting-the-unexpected-in-elixir" rel="alternate" type="text/html" title="Expecting the Unexpected in Elixir" /><published>2020-01-31T00:00:00+01:00</published><updated>2020-01-31T00:00:00+01:00</updated><id>http://www.brian-underwood.codes//elixir/2020/01/31/expecting-the-unexpected-in-elixir</id><content type="html" xml:base="http://www.brian-underwood.codes//elixir/2020/01/31/expecting-the-unexpected-in-elixir">&lt;p&gt;&lt;strong&gt;What can a 50 year old cryptic error message teach us about the software we write today?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;These things might certainly change, but having looked through some other codebases and reflecting on what I like and don’t like, I think that this will be a good start.&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="elixir" /><category term="elixir" /><category term="phoenix" /><summary type="html">I’ve mix phx.new ed many applications and when doing so I often start with wondering how to organize my code. I love how Phoenix pushes you to think about the different domains in your app via generators while at the same time I have the freedom to organize modules on my own. Ecto schemas make for a nice abstraction, but where should I put code related just to that table? It could be in the context, but I don’t want the context to become a “grab bag” of unorganized function calls.</summary></entry><entry><title type="html">Expecting the Unexpected in Elixir</title><link href="http://localhost:4000/elixir/2020/01/31/expecting-the-unexpected-in-elixir" rel="alternate" type="text/html" title="Expecting the Unexpected in Elixir" /><published>2020-01-31T00:00:00+01:00</published><updated>2020-01-31T00:00:00+01:00</updated><id>http://localhost:4000/elixir/2020/01/31/expecting-the-unexpected-in-elixir</id><content type="html" xml:base="http://localhost:4000/elixir/2020/01/31/expecting-the-unexpected-in-elixir">&lt;p&gt;&lt;strong&gt;What can a 50 year old cryptic error message teach us about the software we write today?&lt;/strong&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;img style=&quot;width: 800px; margin: 0 auto;&quot; src=&quot;/assets/expecting_the_unexpected/rocket.jpg&quot; /&gt;&lt;/p&gt;
 
@@ -1057,7 +1154,7 @@ Mission Control: Roger. We got — We’re GO on that alarm
   &lt;li&gt;I found this &lt;a href=&quot;https://www.youtube.com/watch?v=Qj2IETkScWA&quot;&gt;video&lt;/a&gt; of somebody simulating the Apollo Guidance Computer to use in my presentation. In includes audio from the astronauts asking about the 1202 alarm&lt;/li&gt;
   &lt;li&gt;For those interested in more information, Vintage Space has a good &lt;a href=&quot;https://www.youtube.com/watch?v=kGD0zEbiDPQ&quot;&gt;video&lt;/a&gt; and &lt;a href=&quot;https://www.discovermagazine.com/the-sciences/apollo-11s-1202-alarm-explained#.W__d35NKh24&quot;&gt;writeup&lt;/a&gt; about the 1201 / 1202 alarms.&lt;/li&gt;
   &lt;li&gt;Aviation Week had an &lt;a href=&quot;https://web.archive.org/web/20180505110204/http://aviationweek.com/blog/dragons-radiation-tolerant-design&quot;&gt;interview&lt;/a&gt; (Wayback Machine link) with John Muratore at SpaceX discussing how they make radiation-tolerant hardware (which double checks it’s work and restarts as needed)&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>Brian Underwood</name></author><category term="elixir" /><category term="elixir" /><summary type="html">What can a 50 year old cryptic error message teach us about the software we write today?</summary></entry><entry><title type="html">Analyzing Ruby Code with Neo4j</title><link href="http://www.brian-underwood.codes//ruby/rails/neo4j/2016/01/11/analyzing_ruby_code_with_Neo4j" rel="alternate" type="text/html" title="Analyzing Ruby Code with Neo4j" /><published>2016-01-11T18:09:00+01:00</published><updated>2016-01-11T18:09:00+01:00</updated><id>http://www.brian-underwood.codes//ruby/rails/neo4j/2016/01/11/analyzing_ruby_code_with_Neo4j</id><content type="html" xml:base="http://www.brian-underwood.codes//ruby/rails/neo4j/2016/01/11/analyzing_ruby_code_with_Neo4j">&lt;p&gt;For a long time I’ve been wanting to use Neo4j as a tool to analyze Ruby code.  Using Ruby for almost a decade, I have a lot of experience with effectively finding my way around Ruby code.  Still Ruby programs can by very dynamic and thus tools are always welcome.  As I’ve begun to use Neo4j I’ve been inspired by code analysis tools such as &lt;a href=&quot;http://mlsec.org/joern/&quot;&gt;joern&lt;/a&gt; and &lt;a href=&quot;http://jqassistant.org/&quot;&gt;jQAssistant&lt;/a&gt; as well as Aaron Patterson’s &lt;a href=&quot;http://tenderlove.github.io/heap-analyzer/&quot;&gt;heap-analyzer&lt;/a&gt;.  In that spirit I’d like to announce a new project called &lt;a href=&quot;https://github.com/neo4jrb/neolytics&quot;&gt;Neolytics&lt;/a&gt;.&lt;/p&gt;
+&lt;/ul&gt;</content><author><name>Brian Underwood</name></author><category term="elixir" /><category term="elixir" /><summary type="html">What can a 50 year old cryptic error message teach us about the software we write today?</summary></entry><entry><title type="html">Analyzing Ruby Code with Neo4j</title><link href="http://localhost:4000/ruby/rails/neo4j/2016/01/11/analyzing_ruby_code_with_Neo4j" rel="alternate" type="text/html" title="Analyzing Ruby Code with Neo4j" /><published>2016-01-11T18:09:00+01:00</published><updated>2016-01-11T18:09:00+01:00</updated><id>http://localhost:4000/ruby/rails/neo4j/2016/01/11/analyzing_ruby_code_with_Neo4j</id><content type="html" xml:base="http://localhost:4000/ruby/rails/neo4j/2016/01/11/analyzing_ruby_code_with_Neo4j">&lt;p&gt;For a long time I’ve been wanting to use Neo4j as a tool to analyze Ruby code.  Using Ruby for almost a decade, I have a lot of experience with effectively finding my way around Ruby code.  Still Ruby programs can by very dynamic and thus tools are always welcome.  As I’ve begun to use Neo4j I’ve been inspired by code analysis tools such as &lt;a href=&quot;http://mlsec.org/joern/&quot;&gt;joern&lt;/a&gt; and &lt;a href=&quot;http://jqassistant.org/&quot;&gt;jQAssistant&lt;/a&gt; as well as Aaron Patterson’s &lt;a href=&quot;http://tenderlove.github.io/heap-analyzer/&quot;&gt;heap-analyzer&lt;/a&gt;.  In that spirit I’d like to announce a new project called &lt;a href=&quot;https://github.com/neo4jrb/neolytics&quot;&gt;Neolytics&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;Neolytics is a Ruby gem which records the execution of a block of Ruby code in a Neo4j database.  There are three major things which it records:&lt;/p&gt;
 
@@ -1359,7 +1456,7 @@ table, th, td {
   padding: 0.3em;
 }
 
-&lt;/style&gt;</content><author><name>Brian Underwood</name></author><category term="ruby" /><category term="rails" /><category term="neo4j" /><category term="neo4j" /><summary type="html">For a long time I’ve been wanting to use Neo4j as a tool to analyze Ruby code. Using Ruby for almost a decade, I have a lot of experience with effectively finding my way around Ruby code. Still Ruby programs can by very dynamic and thus tools are always welcome. As I’ve begun to use Neo4j I’ve been inspired by code analysis tools such as joern and jQAssistant as well as Aaron Patterson’s heap-analyzer. In that spirit I’d like to announce a new project called Neolytics.</summary></entry><entry><title type="html">GraphStarter: Getting a Neo4j Rails app up and running quickly</title><link href="http://www.brian-underwood.codes//2015/10/27/graph_starter" rel="alternate" type="text/html" title="GraphStarter: Getting a Neo4j Rails app up and running quickly" /><published>2015-10-27T10:55:00+01:00</published><updated>2015-10-27T10:55:00+01:00</updated><id>http://www.brian-underwood.codes//2015/10/27/graph_starter</id><content type="html" xml:base="http://www.brian-underwood.codes//2015/10/27/graph_starter">&lt;p&gt;For a while now I’ve been building various &lt;a href=&quot;http://neo4jrb.io/&quot;&gt;Neo4j.rb&lt;/a&gt; educational resources using the example of an &lt;a href=&quot;http://github.com/neo4j-examples/asset_portal&quot;&gt;asset portal&lt;/a&gt;.  There has been:&lt;/p&gt;
+&lt;/style&gt;</content><author><name>Brian Underwood</name></author><category term="ruby" /><category term="rails" /><category term="neo4j" /><category term="neo4j" /><summary type="html">For a long time I’ve been wanting to use Neo4j as a tool to analyze Ruby code. Using Ruby for almost a decade, I have a lot of experience with effectively finding my way around Ruby code. Still Ruby programs can by very dynamic and thus tools are always welcome. As I’ve begun to use Neo4j I’ve been inspired by code analysis tools such as joern and jQAssistant as well as Aaron Patterson’s heap-analyzer. In that spirit I’d like to announce a new project called Neolytics.</summary></entry><entry><title type="html">GraphStarter: Getting a Neo4j Rails app up and running quickly</title><link href="http://localhost:4000/2015/10/27/graph_starter" rel="alternate" type="text/html" title="GraphStarter: Getting a Neo4j Rails app up and running quickly" /><published>2015-10-27T10:55:00+01:00</published><updated>2015-10-27T10:55:00+01:00</updated><id>http://localhost:4000/2015/10/27/graph_starter</id><content type="html" xml:base="http://localhost:4000/2015/10/27/graph_starter">&lt;p&gt;For a while now I’ve been building various &lt;a href=&quot;http://neo4jrb.io/&quot;&gt;Neo4j.rb&lt;/a&gt; educational resources using the example of an &lt;a href=&quot;http://github.com/neo4j-examples/asset_portal&quot;&gt;asset portal&lt;/a&gt;.  There has been:&lt;/p&gt;
 
 &lt;ul&gt;
   &lt;li&gt;a screencast series (the &lt;a href=&quot;http://neo4j.com/blog/create-a-ruby-on-rails-app-with-neo4j-screencast-series/&quot;&gt;first half&lt;/a&gt; and the &lt;a href=&quot;http://neo4j.com/blog/advanced-ruby-on-rails-with-neo4j/&quot;&gt;second half&lt;/a&gt;)&lt;/li&gt;
@@ -1459,695 +1556,4 @@ end
 
 &lt;p&gt;You can &lt;a href=&quot;http://nhm-portal.herokuapp.com/&quot;&gt;browse the app&lt;/a&gt; on Heroku and &lt;a href=&quot;https://github.com/neo4j-examples/nhm_asset_portal&quot;&gt;checkout the repository&lt;/a&gt; on Github&lt;/p&gt;
 
-&lt;p&gt;I’ll be working on a new project to create a &lt;a href=&quot;http://graphgist.neo4j.com/&quot;&gt;GraphGist portal&lt;/a&gt; based on the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;graph_starter&lt;/code&gt; gem so I plan to continue improving it!&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="neo4j" /><category term="ruby" /><summary type="html">For a while now I’ve been building various Neo4j.rb educational resources using the example of an asset portal. There has been:</summary></entry><entry><title type="html">Using Graph Structure Record Linkage on Irish Census Data with Neo4j</title><link href="http://www.brian-underwood.codes//2015/08/20/using_graph_structure_record_linkage_on_irish_census_data_with_neo4j" rel="alternate" type="text/html" title="Using Graph Structure Record Linkage on Irish Census Data with Neo4j" /><published>2015-08-20T09:55:00+02:00</published><updated>2015-08-20T09:55:00+02:00</updated><id>http://www.brian-underwood.codes//2015/08/20/using_graph_structure_record_linkage_on_irish_census_data_with_neo4j</id><content type="html" xml:base="http://www.brian-underwood.codes//2015/08/20/using_graph_structure_record_linkage_on_irish_census_data_with_neo4j">&lt;p&gt;For just over a year I’ve been obsessed on-and-off with a project ever since I stayed in the town of Skibbereen, Ireland.  Taking data from the &lt;a href=&quot;http://www.census.nationalarchives.ie/&quot;&gt;1901 and 1911 Irish censuses&lt;/a&gt; I hoped I would be able to find a way to reliably link resident records from the two together to identify the same residents.  Since then I’ve learned a bit about &lt;a href=&quot;/tag/master-data-management&quot;&gt;master data management and record linkage&lt;/a&gt; and so I thought I would give it another stab.  Here I’d like to talk about how I’ve been matching records based on the local data space around objects to improve my record linkage scoring.&lt;/p&gt;
-
-&lt;p&gt;The data model of the imported data is very linear:&lt;/p&gt;
-
-&lt;p&gt;&lt;img style=&quot;width: 100%; display: block; margin: 0 auto&quot; src=&quot;/assets/neo4j-mdm/irish_census_wrah.png&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;In this post, however, I’m going to be focusing on Houses and Residents and creating relationships between them based on their properties.&lt;/p&gt;
-
-&lt;h2 id=&quot;relations-to-the-head&quot;&gt;Relations to the Head&lt;/h2&gt;
-
-&lt;p&gt;To view an example of what a census record from 1911 Ireland looks like you can have a look at the McCarthys of &lt;a href=&quot;http://www.census.nationalarchives.ie/pages/1901/Cork/Cloghdowell/Barnagowlane/1154382/&quot;&gt;1901&lt;/a&gt; and &lt;a href=&quot;http://www.census.nationalarchives.ie/pages/1911/Cork/Cloghdonnell/Barnagowlane/440559/&quot;&gt;1911&lt;/a&gt;.  Charles is the head of the family with his wife Hannah, mother Ellen, children (two in 1901 and seven in 1911), and a servant (Timothy Walsh in 1901 and William Regan in 1911).&lt;/p&gt;
-
-&lt;style&gt;
-table {
-  border-collapse: collapse;
-  margin: 0 auto !important;
-}
-table, th, td {
-  border: 1px solid #CCC;
-  padding: 0.3em;
-}
-&lt;/style&gt;
-
-&lt;table&gt;
-  &lt;tr&gt;
-    &lt;td style=&quot;font-weight: 0.8em; font-weight: bold; text-align: center&quot;&gt;
-      &lt;a href=&quot;http://www.census.nationalarchives.ie/pages/1901/Cork/Cloghdowell/Barnagowlane/1154382/&quot;&gt;
-        &lt;img style=&quot;width: 350px; display: block; margin: 0 auto&quot; src=&quot;/assets/neo4j-mdm/mccarthy_census_1901.png&quot; /&gt;
-        The McCarthy family of Barnagowlane, Cloghdowell, Cork, 1901
-      &lt;/a&gt;
-    &lt;/td&gt;
-    &lt;td style=&quot;font-weight: 0.8em; font-weight: bold; text-align: center&quot;&gt;
-      &lt;a href=&quot;http://www.census.nationalarchives.ie/pages/1911/Cork/Cloghdonnell/Barnagowlane/440559/&quot;&gt;
-        &lt;img style=&quot;width: 350px; display: block; margin: 0 auto&quot; src=&quot;/assets/neo4j-mdm/mccarthy_census_1911.png&quot; /&gt;
-        The McCarthy family of Barnagowlane, Cloghdonnell, Cork, 1911
-      &lt;/a&gt;
-    &lt;/td&gt;
-  &lt;/tr&gt;
-&lt;/table&gt;
-
-&lt;table&gt;
-  &lt;thead&gt;
-    &lt;tr&gt;
-      &lt;th&gt;Surname&lt;/th&gt;
-      &lt;th&gt;Forename&lt;/th&gt;
-      &lt;th&gt;Age&lt;/th&gt;
-      &lt;th&gt;Sex&lt;/th&gt;
-      &lt;th&gt;Relation to Head&lt;/th&gt;
-      &lt;th&gt;Religion&lt;/th&gt;
-      &lt;th&gt; &lt;/th&gt;
-      &lt;th&gt;Surname&lt;/th&gt;
-      &lt;th&gt;Forename&lt;/th&gt;
-      &lt;th&gt;Age&lt;/th&gt;
-      &lt;th&gt;Sex&lt;/th&gt;
-      &lt;th&gt;Relation to Head&lt;/th&gt;
-      &lt;th&gt;Religion&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;td&gt;McCarthy&lt;/td&gt;
-      &lt;td&gt;Charles&lt;/td&gt;
-      &lt;td&gt;37&lt;/td&gt;
-      &lt;td&gt;Male&lt;/td&gt;
-      &lt;td&gt;Head of Family&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;McCarthy&lt;/td&gt;
-      &lt;td&gt;Charles&lt;/td&gt;
-      &lt;td&gt;47&lt;/td&gt;
-      &lt;td&gt;Male&lt;/td&gt;
-      &lt;td&gt;Head of Family&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;McCarthy&lt;/td&gt;
-      &lt;td&gt;Hannah&lt;/td&gt;
-      &lt;td&gt;25&lt;/td&gt;
-      &lt;td&gt;Female&lt;/td&gt;
-      &lt;td&gt;Wife&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;McCarthy&lt;/td&gt;
-      &lt;td&gt;Hannah&lt;/td&gt;
-      &lt;td&gt;35&lt;/td&gt;
-      &lt;td&gt;Female&lt;/td&gt;
-      &lt;td&gt;Wife&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;McCarthy&lt;/td&gt;
-      &lt;td&gt;William&lt;/td&gt;
-      &lt;td&gt;1&lt;/td&gt;
-      &lt;td&gt;Male&lt;/td&gt;
-      &lt;td&gt;Son&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;McCarthy&lt;/td&gt;
-      &lt;td&gt;William&lt;/td&gt;
-      &lt;td&gt;11&lt;/td&gt;
-      &lt;td&gt;Male&lt;/td&gt;
-      &lt;td&gt;Son&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;McCarthy&lt;/td&gt;
-      &lt;td&gt;Bridget&lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;Female&lt;/td&gt;
-      &lt;td&gt;Daughter&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;McCarthy&lt;/td&gt;
-      &lt;td&gt;Bridget&lt;/td&gt;
-      &lt;td&gt;10&lt;/td&gt;
-      &lt;td&gt;Female&lt;/td&gt;
-      &lt;td&gt;Daughter&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;McCarthy&lt;/td&gt;
-      &lt;td&gt;Ellen&lt;/td&gt;
-      &lt;td&gt;8&lt;/td&gt;
-      &lt;td&gt;Female&lt;/td&gt;
-      &lt;td&gt;Daughter&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;McCarthy&lt;/td&gt;
-      &lt;td&gt;Kate&lt;/td&gt;
-      &lt;td&gt;6&lt;/td&gt;
-      &lt;td&gt;Female&lt;/td&gt;
-      &lt;td&gt;Daughter&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;McCarthy&lt;/td&gt;
-      &lt;td&gt;Florence&lt;/td&gt;
-      &lt;td&gt;4&lt;/td&gt;
-      &lt;td&gt;Male&lt;/td&gt;
-      &lt;td&gt;Son&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;McCarthy&lt;/td&gt;
-      &lt;td&gt;Charles Peter&lt;/td&gt;
-      &lt;td&gt;2&lt;/td&gt;
-      &lt;td&gt;Male&lt;/td&gt;
-      &lt;td&gt;Son&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;McCarthy&lt;/td&gt;
-      &lt;td&gt;Annie&lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;Female&lt;/td&gt;
-      &lt;td&gt;Daughter&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;McCarthy&lt;/td&gt;
-      &lt;td&gt;Ellen&lt;/td&gt;
-      &lt;td&gt;65&lt;/td&gt;
-      &lt;td&gt;Female&lt;/td&gt;
-      &lt;td&gt;Mother&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;McCarthy&lt;/td&gt;
-      &lt;td&gt;? Ellen&lt;/td&gt;
-      &lt;td&gt;75&lt;/td&gt;
-      &lt;td&gt;Female&lt;/td&gt;
-      &lt;td&gt;Mother&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;Walsh&lt;/td&gt;
-      &lt;td&gt;Timothy&lt;/td&gt;
-      &lt;td&gt;25&lt;/td&gt;
-      &lt;td&gt;Male&lt;/td&gt;
-      &lt;td&gt;Servant&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;Regan&lt;/td&gt;
-      &lt;td&gt;William&lt;/td&gt;
-      &lt;td&gt;24&lt;/td&gt;
-      &lt;td&gt;Male&lt;/td&gt;
-      &lt;td&gt;Servant&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;p&gt;The McCarthys are an almost exact match between two census records between 1901 and 1911.  The names, ages, occupations, and relationships all match perfectly.  Unfortunately the story for other records is not so simple.  Many times houses, which to the human eye seem to be the same house, can have wildly varying details.  For example Hannah might go be listed as Hana or Anne in a different census.  Likewise ages vary a lot more than you might think.  In examining the records I regularly found ages varying by a year or two and have even found a few houses with ages off by as much as 10-15 years.&lt;/p&gt;
-
-&lt;p&gt;In both censuses there is a field for residents to fill out called “Relation to Head”.  This gives us information about how each resident is related to the head of the house.  In the case of the McCarthys, Charles is listed as “Head of Fa&lt;D-i&gt;mily&quot; in both years.  The rest of the family has a nice representation of things that we often see in the data: &quot;Wife&quot;, &quot;Son&quot;, &quot;Daughter&quot;, and &quot;Servant&quot;.&lt;/D-i&gt;&lt;/p&gt;
-
-&lt;p&gt;We might be tempted to say “This person was the head in 1901, so they must be the same person who was the head in 1911”.  Often, however, the head of the family can die or retire leaving the roll of head of the family to their wife or child.  Can the “Relation to Head” values still be useful to us to match any given resident from 1901 to another resident in 1911?&lt;/p&gt;
-
-&lt;p&gt;First let’s cover the general the process of record linkage I have been using.  To find a match for a resident I start by using an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;elasticsearch&lt;/code&gt; server (which contains a duplicate of my Neo4j census data) to quickly find a list of other residents with a match on very rough criteria:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Is the resident in the other census?&lt;/li&gt;
-  &lt;li&gt;Does the sex match (or it it &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NULL&lt;/code&gt;)?&lt;/li&gt;
-  &lt;li&gt;Is the resident’s age within 15 years of what it would be expected to be in the other census?&lt;/li&gt;
-  &lt;li&gt;Does the name match roughly (within an edit distance of 4)&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;This comes back with anywhere from zero to hundreds of results.  I call these “similarity candidates” and for each I create a relationship between the original record and the candidate.&lt;/p&gt;
-
-&lt;p&gt;With this list I can compare the attributes of the two records (using the &lt;a href=&quot;https://rubygems.org/gems/record_linkage&quot;&gt;record_linkage&lt;/a&gt; gem I created) to see how closely they match.  The closer their name, sex, age, etc.. matches, the higher score they get.  Ideally the real match should have the highest score, but that isn’t always true and can take &lt;a href=&quot;http://127.0.0.1:4000/2015/05/14/master_data_management_scoring_examples/&quot;&gt;some tuning&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;In addition to this simple comparison of attributes, I have now added a process to take advantage of the similarity candidate relationships to compare family relationships.  Let’s start with this example of a sub-graph pattern:&lt;/p&gt;
-
-&lt;p&gt;&lt;img style=&quot;width: 850px; margin: 0.6em;&quot; src=&quot;/assets/neo4j-mdm/mccarthy_charles_comparison.png&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;The relationship &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CHILD_OF&lt;/code&gt; is created whenever there is a “Son” or “Daughter” in the “Realation to Head” field.  Likewise we can create other gender-neutral relationships like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MARRIED_TO&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SIBLING_OF&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NIECE_NEPHEW_OF&lt;/code&gt;, etc…&lt;/p&gt;
-
-&lt;p&gt;In this case the resident in question is the 1901 record for William.  When we are evaluating the 1911 record of William as a potential match we can explore other residents in the same house as evidence of similarity.  The diagram above shows that both records have a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CHILD_OF&lt;/code&gt; relationship to the two “Charles” records which furthermore are linked via a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SIMILARITY_CANDIDATE&lt;/code&gt; relationship.  Because of this we can say that there is a greater chance that the two “William” records represent the same person.&lt;/p&gt;
-
-&lt;p&gt;This only gives us the ability to find these relationships between the head of the family and other residents.  What about generically matching based on the relationship of any two residents of a house?  Let’s say that Charles died sometime between 1901 and 1911.  If his wife Hannah takes over as the head of the family we would have a sub-graph which looks like this:&lt;/p&gt;
-
-&lt;p&gt;&lt;img style=&quot;width: 850px; margin: 0.6em;&quot; src=&quot;/assets/neo4j-mdm/mccarthy_hannah_comparison.png&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;We could say that when we have the paths &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-CHILD_OF-&amp;gt;&amp;lt;-MARIED_TO-&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-CHILD_OF-&amp;gt;&lt;/code&gt; on either side that we can build our case for a match a bit more.  This kind of matching can be used on all of the other residents of the house with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SIMILARITY_CANDIDATE&lt;/code&gt; relationships.  For example, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-CHILD_OF-&amp;gt;&amp;lt;-CHILD_OF-&lt;/code&gt; could be matched to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-CHILD_OF-&amp;gt;&amp;lt;-CHILD_OF-&lt;/code&gt; even in this case where the wife becomes the head of the house.  Or if a child becomes the head then it could be compared to a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-SIBLING_OF-&lt;/code&gt; relationship.&lt;/p&gt;
-
-&lt;h2 id=&quot;the-code&quot;&gt;The Code&lt;/h2&gt;
-
-&lt;p&gt;So how do we actually do this?  First let’s take our sub-graph and turn our nodes into variables:&lt;/p&gt;
-
-&lt;p&gt;&lt;img style=&quot;width: 850px; margin: 0.6em;&quot; src=&quot;/assets/neo4j-mdm/irish_census_relationship_mapping.png&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;In this example let’s take resident &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;h1 r1&lt;/code&gt; (house 1, resident 1) as the resident in question and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;h2 r1&lt;/code&gt; as the candidate that we want to compare it to.  This is the sort of query that Neo4j is wonderful at both performing quickly and making easy to formulate.  Let’s look at part of the Ruby code:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;
-
-def get_similarity_candidate_relationship_paths
-  self.query_as(:h1_r1)
-    .match('(h1:House), (h2:House)')
-    .match('h1&amp;lt;-[:LIVES_IN]-h1_r1-[sc_1:similarity_candidate]-(h2_r1)-[:LIVES_IN]-&amp;gt;h2')
-    .match('h1&amp;lt;-[:LIVES_IN]-h1_r2-[sc_2:similarity_candidate]-(h2_r2)-[:LIVES_IN]-&amp;gt;h2')
-    .match('path1=h1_r1-[:born_to|married_to|grandchild_of|niece_nephew_of|sibling_of|cousin_of|child_in_law_of|step_child_of*1..2]-h1_r2')
-    .match('path2=h2_r1-[:born_to|married_to|grandchild_of|niece_nephew_of|sibling_of|cousin_of|child_in_law_of|step_child_of*1..2]-h2_r2')
-    .pluck(
-      :h2_r1,
-      'collect([path1, rels(path1), path2, rels(path2)])'
-      ).each_with_object({}) do |(r2, data), result|
-
-    result[r2] = data.inject(0) do |total, (path1, rels1, path2, rels2)|
-      relations1 = relation_string_from_path_and_rels(path1, rels1)
-      relations2 = relation_string_from_path_and_rels(path2, rels2)
-
-      if relations1 == relations2
-        1.0
-      elsif score = (RELATION_EQUIVILENCE_SCORES[relations1] || {})[relations2]
-        score
-      else
-        -2.0
-      end + total
-    end
-  end
-end
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Here we start with a Cypher query using the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Query&lt;/code&gt; API from neo4j.rb.  The object upon which we’ve called &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;get_similarity_candidate_relationship_paths&lt;/code&gt; is our &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;h1_r1&lt;/code&gt; anchor.  Note here that we match paths with a length of either one or two relationships long from between two residents of the same house.  Then we return all residents found via the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SIMILARITY_CANDIDATE&lt;/code&gt; relationship from our anchor and the family relationship paths aggregated into an Array.&lt;/p&gt;
-
-&lt;p&gt;Once the Cypher query returns data we call &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;relation_string_from_path_and_rels&lt;/code&gt; which is a way of transforming the path into a string like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-BORN_TO-&amp;gt;&amp;lt;-BORN_TO&lt;/code&gt;.  This string gives us a simple way to express the path between the two residents as a string.&lt;/p&gt;
-
-&lt;p&gt;We then can give a score based on the two paths.  If the paths are the same then we say that the score is 1.0.  If the pair of paths is something like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-BORN_TO-&amp;gt;&amp;lt;-BORN_TO&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-SIBLING_OF-&amp;gt;&lt;/code&gt; then we can give a score based on a lookup.  We add these scores up to give us a total score comparing our anchor resident and each of it’s similarity candidates.  All with just one query to the database.&lt;/p&gt;
-
-&lt;h3 id=&quot;challenges&quot;&gt;Challenges&lt;/h3&gt;
-
-&lt;p&gt;There are a couple of things that I needed to do to make this work:&lt;/p&gt;
-
-&lt;p&gt;Previously I was simply grabbing one resident at a time, finding all of the similarity candidates, and then creating a set of relationships to link the resident with the candidates and to store the record linkage scores (both the individual scores for fields and the total score).  However this approach requires all of the candidates in the house to have &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SIMILARITY_CANDIDATE&lt;/code&gt; relationships in order to compare family relationships.  So I first process all residents for a house to create the similarity candidate relationships and store the record linkage scores and then go through them again with the graph-based comparisons and store that score and update the total.&lt;/p&gt;
-
-&lt;p&gt;Beyond that there is the conceptual problem of determining the scoring when comparing paths.  For example, if somebody was &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;BORN_TO&lt;/code&gt; the head one year but their spouse takes over as the head, could we say that they’re &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;BORN_TO&lt;/code&gt; the spouse if they are are a step-child?  Family relationships are complicated and don’t always fit neatly into our properties and algorithms.&lt;/p&gt;
-
-&lt;h3 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h3&gt;
-
-&lt;p&gt;Most record linkage focuses on the properties of an object, but we need to remember that relationships are data about our entities too.  With Neo4j we have a powerful tool for analyzing those relationships natuarally and quickly.  Additionally I have found that the ability to create relationships on the fly to aggregate calculations like the ones discussed above is a wonderful way to find the best solution quickly.&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="neo4j" /><category term="master-data-management" /><summary type="html">For just over a year I’ve been obsessed on-and-off with a project ever since I stayed in the town of Skibbereen, Ireland. Taking data from the 1901 and 1911 Irish censuses I hoped I would be able to find a way to reliably link resident records from the two together to identify the same residents. Since then I’ve learned a bit about master data management and record linkage and so I thought I would give it another stab. Here I’d like to talk about how I’ve been matching records based on the local data space around objects to improve my record linkage scoring.</summary></entry><entry><title type="html">Analyzing Ruby’s ObjectSpace with Neo4j</title><link href="http://www.brian-underwood.codes//2015/06/03/analyzing_rubys_objectspace_with_neo4j" rel="alternate" type="text/html" title="Analyzing Ruby’s ObjectSpace with Neo4j" /><published>2015-06-03T00:47:00+02:00</published><updated>2015-06-03T00:47:00+02:00</updated><id>http://www.brian-underwood.codes//2015/06/03/analyzing_rubys_objectspace_with_neo4j</id><content type="html" xml:base="http://www.brian-underwood.codes//2015/06/03/analyzing_rubys_objectspace_with_neo4j">&lt;p&gt;Recently the continuous builds for the &lt;a href=&quot;https://github.com/neo4jrb/neo4j&quot;&gt;neo4j Ruby gem&lt;/a&gt; failed for JRuby because the memory limit had been reached.  I wanted to see if I could use my favorite tool (Neo4j) to analyize the memory usage.  So I threw together &lt;a href=&quot;https://github.com/neo4jrb/neo4j_ruby_object_space&quot;&gt;a bit of Ruby code&lt;/a&gt; to use Ruby’s &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ObjectSpace.each_object&lt;/code&gt; functionality to dump every object in memory after the test suite of the gem finished (garbage collecting first, of course).  First let’s take a look at the model:&lt;/p&gt;
-
-&lt;div style=&quot;text-align: center&quot;&gt;
-  &lt;img src=&quot;/assets/neo4j-ruby-memory/model.png&quot; style=&quot;width: 600px&quot; /&gt;
-&lt;/div&gt;
-
-&lt;p&gt;A quick Ruby primer:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Object&lt;/code&gt;s are always instantiations of one and only one &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Class&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Class&lt;/code&gt;es can &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;include&lt;/code&gt; zero or more &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Module&lt;/code&gt;s which extend their APIs&lt;/li&gt;
-  &lt;li&gt;Everything in Ruby is an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Object&lt;/code&gt;, including &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Class&lt;/code&gt;es and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Module&lt;/code&gt;s&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;So with that in mind I set out to output some CSVs.  This was my first opportunity to output some CSV files for the &lt;a href=&quot;http://neo4j.com/docs/stable/import-tool.html&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;neo4j-import&lt;/code&gt; tool&lt;/a&gt; and it was quite a straightforward standard to implement.  Here is an example of each of the files that I generated:&lt;/p&gt;
-
-&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;objects.csv&lt;/code&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;object_id:ID	inspect	:LABEL
-70099268550680	&amp;lt;RubyVM::InstructionSequence:block in contains_requirable_file?@/Users/brian/.rvm/rubies/ruby-2.2.0/lib/ruby/2.2.0/rubygems/basic_specification.rb&amp;gt;	Object
-70099273105500	RubyVM::InstructionSequence	Object;Class
-70099273176540	Class	Object;Class
-70099270029100	RSpec::Core::SharedExampleGroup::TopLevelDSL	Object;Module
-70099273176580	Module	Object;Class
-70099277099900	RSpec::Core::DSL	Object;Module
-70099275863180	PP::ObjectMixin	Object;Module
-70099278769700	JSON::Ext::Generator::GeneratorMethods::Object	Object;Module
-70099273176460	Kernel	Object;Module
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;instance_variables.csv&lt;/code&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;:START_ID	:END_ID	variable
-70099268552320	70099268552120	@version
-70099268552320	70099277643340	@segments
-70099268552320	0	@prerelease
-70099268552320	-4656870404935510835	@hash
-70099268553460	70099268553260	@version
-70099268553460	70099277643720	@segments
-70099268553460	0	@prerelease
-70099268553460	2810968934318335001	@hash
-70099268558740	70099272991680	@_declared_property_manager
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;object_classes.csv&lt;/code&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;:START_ID	:END_ID
-70099273176540	70099273176540
-70099273176580	70099273176540
-70099277099900	70099273176580
-70099275863180	70099273176580
-70099278769700	70099273176580
-70099273176460	70099273176580
-70099270029100	70099273176580
-70099273105500	70099273176540
-70099268550680	70099273105500
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;class_superclasses.csv&lt;/code&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;:START_ID	:END_ID
-70271986243040	70271986243080
-70272011737340	70271986239340
-70271986207920	70271986243120
-70271986179720	70271986243120
-70271986207000	70271986243120
-70271986517200	70271986243120
-70271986241140	70271986243120
-70271986225760	70271986225920
-70271986206080	70271986243120
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;class_modules.csv&lt;/code&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;:START_ID	:END_ID
-70099273176580	70099270029100
-70099273176580	70099277099900
-70099273176580	70099275863180
-70099273176580	70099278769700
-70099273176580	70099273176460
-70099273176540	70099270029100
-70099273176540	70099277099900
-70099273176540	70099275863180
-70099273176540	70099278769700
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Again, you can see the code for generating these files &lt;a href=&quot;https://github.com/neo4jrb/neo4j_ruby_object_space&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;As you can see I chose to make my files tab-separated.  I did this because the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;inspect&lt;/code&gt; column was going to have lots of double quotes in it and it would create a simpler file.  I also used the pipe (&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;|&lt;/code&gt;) as the quoting character because of some conflicts with the way Ruby and Neo4j interpret escaping of quoted characters.  Here is the command that I used to import the CSV files into a Neo4j database:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;./db/bin/neo4j-import \
-        --delimiter TAB \
-        --quote &quot;|&quot; \
-        --into ./db/data/graph.db \
-        --nodes ./objects.csv \
-        --relationships:INSTANCE_VARIABLE ./instance_variables.csv \
-        --relationships:HAS_CLASS ./object_classes.csv \
-        --relationships:INCLUDES_MODULE ./class_modules.csv
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Great, now we’re cooking with graphs!  What does this look like in the Neo4j web console?&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-cypher&quot;&gt;
-
-MATCH (o:Object) WHERE NOT(o:Class) AND NOT(o:Module) WITH o LIMIT 20
-MATCH o-[:HAS_CLASS]-&amp;gt;(c:Class)
-OPTIONAL MATCH c-[:INCLUDES_MODULE]-&amp;gt;(m:Module)
-RETURN *
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;div style=&quot;text-align: center&quot;&gt;
-  &lt;img src=&quot;/assets/neo4j-ruby-memory/console.png&quot; style=&quot;width: 800px&quot; /&gt;
-&lt;/div&gt;
-
-&lt;p&gt;Nice!  As another sanity check, let’s see what our top allocated objects are:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-cypher&quot;&gt;
-
-MATCH (o:Object)-[:HAS_CLASS]-&amp;gt;(c:Class)
-WHERE NOT(o:Class) AND NOT(o:Module)
-RETURN c.inspect, count(o) ORDER BY count(o) DESC LIMIT 10
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;table&gt;
-  &lt;thead&gt;
-    &lt;tr&gt;
-      &lt;th&gt;c.inspect&lt;/th&gt;
-      &lt;th&gt;count(o)&lt;/th&gt;
-      &lt;th&gt;c.inspect&lt;/th&gt;
-      &lt;th&gt;count(o)&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;td&gt;String&lt;/td&gt;
-      &lt;td&gt;171,082&lt;/td&gt;
-      &lt;td&gt;RubyVM::Env&lt;/td&gt;
-      &lt;td&gt;17,731&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;Array&lt;/td&gt;
-      &lt;td&gt;53,532&lt;/td&gt;
-      &lt;td&gt;Gem::Requirement&lt;/td&gt;
-      &lt;td&gt;4,227&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;Proc&lt;/td&gt;
-      &lt;td&gt;21,894&lt;/td&gt;
-      &lt;td&gt;RSpec::Core::Hooks::HookCollection&lt;/td&gt;
-      &lt;td&gt;3,252&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;RubyVM::InstructionSequence&lt;/td&gt;
-      &lt;td&gt;19,416&lt;/td&gt;
-      &lt;td&gt;Gem::Dependency&lt;/td&gt;
-      &lt;td&gt;2,973&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;Hash&lt;/td&gt;
-      &lt;td&gt;18,081&lt;/td&gt;
-      &lt;td&gt;Regexp&lt;/td&gt;
-      &lt;td&gt;2,971&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;p&gt;That seems right!  Any experienced Rubyists will know that Ruby will allocate a lot of strings.&lt;/p&gt;
-
-&lt;p&gt;So let’s really get into it and use the power of graphs.  Let’s find out which objects have the most references via instance variables.  This query takes every object in the database as the root of a tree of instance variable references and calculates the total number of descendent objects in that tree.  This should give us an idea for what objects have a lot of other objects depending on them which cannot be garbage collected.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-cypher&quot;&gt;
-
-// Count of tree
-MATCH (o:Object) WHERE NOT(o:Class) AND NOT(o:Module) WITH o
-MATCH o-[:HAS_CLASS]-&amp;gt;(c:Class)
-OPTIONAL MATCH path=o-[:INSTANCE_VARIABLE*]-&amp;gt;(other)
-RETURN c.inspect, o.inspect, count(other) ORDER BY count(other) DESC LIMIT 10
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;table&gt;
-  &lt;thead&gt;
-    &lt;tr&gt;
-      &lt;th&gt;c.inspect&lt;/th&gt;
-      &lt;th&gt;o.inspect&lt;/th&gt;
-      &lt;th&gt;count(other)&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;td&gt;RSpec::Core::ExampleGroup::Nested_31::Nested_5&lt;/td&gt;
-      &lt;td&gt;#&amp;lt;RSpec::Core::ExampleGroup::Nested_31:: Nested_5:0x007f8285c325d0 @__memoized=nil, @prev_wrapped_classes=[Student(name: Object), Teacher(name: Object) …&lt;/td&gt;
-      &lt;td&gt;284&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;Neo4j::ActiveNode::Reflection::AssociationReflection&lt;/td&gt;
-      &lt;td&gt;#&amp;lt;Neo4j::ActiveNode::Reflection:: AssociationReflection:0x007f828a2fcfb0 @macro=:has_many, @name=:teachers, @association=#&amp;lt;Neo4j::ActiveNode::HasN::Ass …&lt;/td&gt;
-      &lt;td&gt;193&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;Neo4j::ActiveNode::HasN::Association&lt;/td&gt;
-      &lt;td&gt;#&amp;lt;Neo4j::ActiveNode::HasN:: Association:0x007f828a2fd5f0 @type=:has_many, @name=:teachers, @direction=:out, @target_class_name_from_name=”Teacher”, @ta …&lt;/td&gt;
-      &lt;td&gt;190&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;RSpec::Core::Runner&lt;/td&gt;
-      &lt;td&gt;#&amp;lt;RSpec::Core::Runner:0x007f82859f89e0 @options=#&amp;lt;RSpec::Core::ConfigurationOptions:0x007f8284241dd8 @args=[], @command_line_options={:files_or_direct …&lt;/td&gt;
-      &lt;td&gt;127&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;Bundler::LazySpecification&lt;/td&gt;
-      &lt;td&gt;#&amp;lt;Bundler::LazySpecification:0x007f82853c47b8 @name=”neo4j”, @version=#&amp;lt;Gem::Version “5.0.0.rc.2”&amp;gt;, @dependencies=[&amp;lt;Gem::Dependency type=:runtime name …&lt;/td&gt;
-      &lt;td&gt;110&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;Bundler::LazySpecification&lt;/td&gt;
-      &lt;td&gt;#&amp;lt;Bundler::LazySpecification:0x007f82853bdc38 @name=”neo4j-core”, @version=#&amp;lt;Gem::Version “5.0.0.rc.1”&amp;gt;, @dependencies=[&amp;lt;Gem::Dependency type=:runtime …&lt;/td&gt;
-      &lt;td&gt;110&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;Bundler::LazySpecification&lt;/td&gt;
-      &lt;td&gt;#&amp;lt;Bundler::LazySpecification:0x007f82853778c8 @name=”parser”, @version=#&amp;lt;Gem::Version “2.2.0.3”&amp;gt;, @dependencies=[&amp;lt;Gem::Dependency type=:runtime name=” …&lt;/td&gt;
-      &lt;td&gt;103&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;Bundler::LazySpecification&lt;/td&gt;
-      &lt;td&gt;#&amp;lt;Bundler::LazySpecification:0x007f8285367bd0 @name=”rainbow”, @version=#&amp;lt;Gem::Version “2.0.0”&amp;gt;, @dependencies=[], @platform=”ruby”, @source=#&amp;lt;Bundler …&lt;/td&gt;
-      &lt;td&gt;103&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;Bundler::LazySpecification&lt;/td&gt;
-      &lt;td&gt;#&amp;lt;Bundler::LazySpecification:0x007f8285395850 @name=”faraday_middleware-multi_json”, @version=#&amp;lt;Gem::Version “0.0.6”&amp;gt;, @dependencies=[&amp;lt;Gem::Dependency …&lt;/td&gt;
-      &lt;td&gt;103&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;Bundler::LazySpecification&lt;/td&gt;
-      &lt;td&gt;#&amp;lt;Bundler::LazySpecification:0x007f8285396d68 @name=”erubis”, @version=#&amp;lt;Gem::Version “2.7.0”&amp;gt;, @dependencies=[], @platform=”ruby”, @source=#&amp;lt;Bundler: …&lt;/td&gt;
-      &lt;td&gt;103&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;p&gt;Not bad for a query which runs in 6.5 seconds (with 335,446 total objects on my MacBook Air)!&lt;/p&gt;
-
-&lt;p&gt;As part of the import the objects I also create a graph structure to define classes, modules, and their relationships.  Let’s see what are the most &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;include&lt;/code&gt;d modules in our object space:&lt;/p&gt;
-
-&lt;table&gt;
-  &lt;thead&gt;
-    &lt;tr&gt;
-      &lt;th&gt;m.inspect&lt;/th&gt;
-      &lt;th&gt;count(c)&lt;/th&gt;
-      &lt;th&gt;m.inspect&lt;/th&gt;
-      &lt;th&gt;count(c)&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;td&gt;Kernel&lt;/td&gt;
-      &lt;td&gt;136&lt;/td&gt;
-      &lt;td&gt;RSpec::Core::MockFrameworkAdapter&lt;/td&gt;
-      &lt;td&gt;8&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;PP::ObjectMixin&lt;/td&gt;
-      &lt;td&gt;136&lt;/td&gt;
-      &lt;td&gt;RSpec::Core::Extensions::InstanceEvalWithArgs&lt;/td&gt;
-      &lt;td&gt;8&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;JSON::Ext::Generator::GeneratorMethods::Object&lt;/td&gt;
-      &lt;td&gt;136&lt;/td&gt;
-      &lt;td&gt;RSpec::Core::Pending&lt;/td&gt;
-      &lt;td&gt;8&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;Enumerable&lt;/td&gt;
-      &lt;td&gt;21&lt;/td&gt;
-      &lt;td&gt;ActiveAttr::Matchers&lt;/td&gt;
-      &lt;td&gt;8&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;Comparable&lt;/td&gt;
-      &lt;td&gt;12&lt;/td&gt;
-      &lt;td&gt;SimpleCov::HashMergeHelper&lt;/td&gt;
-      &lt;td&gt;6&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;RSpec::Matchers&lt;/td&gt;
-      &lt;td&gt;9&lt;/td&gt;
-      &lt;td&gt;JSON::Ext::Generator::GeneratorMethods::Hash&lt;/td&gt;
-      &lt;td&gt;6&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;RSpec::Core::SharedExampleGroup&lt;/td&gt;
-      &lt;td&gt;8&lt;/td&gt;
-      &lt;td&gt;RSpec::Core::ExampleGroup::Nested_1::NamedSubjectPreventSuper&lt;/td&gt;
-      &lt;td&gt;3&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;ActiveNodeRelStubHelpers&lt;/td&gt;
-      &lt;td&gt;8&lt;/td&gt;
-      &lt;td&gt;RSpec::Core::ExampleGroup::Nested_1::LetDefinitions&lt;/td&gt;
-      &lt;td&gt;3&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;Neo4jSpecHelpers&lt;/td&gt;
-      &lt;td&gt;8&lt;/td&gt;
-      &lt;td&gt;File::Constants&lt;/td&gt;
-      &lt;td&gt;3&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;RSpec::Core::MemoizedHelpers&lt;/td&gt;
-      &lt;td&gt;8&lt;/td&gt;
-      &lt;td&gt;SimpleCov::ArrayMergeHelper&lt;/td&gt;
-      &lt;td&gt;3&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;p&gt;Looking at this I learned a couple of things I didn’t know about Ruby:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Kernel&lt;/code&gt; module is included everywhere (which makes sense)&lt;/li&gt;
-  &lt;li&gt;When loading the pretty-print and JSON libraries a corresponding module is included everywhere (which is probably why they aren’t loaded by default)&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;While we’re here let’s grab a random sample of classes and modules (excluding some ones that I hand-picked which had too many connections to make for a useful graph visualization):&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-cypher&quot;&gt;
-
-MATCH (o:Object)
-WHERE (o:Class OR o:Module) AND
-      NOT(o.inspect IN ['Class', 'Module', 'Kernel', 'PP::ObjectMixin']) AND
-      NOT o.inspect =~ &quot;JSON::Ext.*&quot;
-RETURN o LIMIT 80
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Here’s the graph (click to zoom):&lt;/p&gt;
-
-&lt;div style=&quot;text-align: center&quot;&gt;
-  &lt;a href=&quot;/assets/neo4j-ruby-memory/class_module_graph.png&quot;&gt;&lt;img src=&quot;/assets/neo4j-ruby-memory/class_module_graph.png&quot; style=&quot;width: 800px&quot; /&gt;&lt;/a&gt;
-&lt;/div&gt;
-
-&lt;p&gt;That’s all for now, but please &lt;a href=&quot;https://twitter.com/cheerfulstoic&quot;&gt;let me know&lt;/a&gt; if you have other thoughts for how to use this approach!&lt;/p&gt;
-
-&lt;p&gt;Along a similar line I’ve been thinking about graphing dependency trees like in RubyGems or NPM.  Other project ideas are also welcome!&lt;/p&gt;
-
-&lt;style&gt;
-  table {
-    border-collapse: collapse;
-    width: 600px;
-  }
-  table, th, td {
-    border: 1px solid black;
-  }
-  td {
-    padding: 0.5em;
-  }
-&lt;/style&gt;</content><author><name>Brian Underwood</name></author><category term="neo4j" /><category term="ruby" /><summary type="html">Recently the continuous builds for the neo4j Ruby gem failed for JRuby because the memory limit had been reached. I wanted to see if I could use my favorite tool (Neo4j) to analyize the memory usage. So I threw together a bit of Ruby code to use Ruby’s ObjectSpace.each_object functionality to dump every object in memory after the test suite of the gem finished (garbage collecting first, of course). First let’s take a look at the model:</summary></entry></feed>
+&lt;p&gt;I’ll be working on a new project to create a &lt;a href=&quot;http://graphgist.neo4j.com/&quot;&gt;GraphGist portal&lt;/a&gt; based on the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;graph_starter&lt;/code&gt; gem so I plan to continue improving it!&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="neo4j" /><category term="ruby" /><summary type="html">For a while now I’ve been building various Neo4j.rb educational resources using the example of an asset portal. There has been:</summary></entry></feed>
