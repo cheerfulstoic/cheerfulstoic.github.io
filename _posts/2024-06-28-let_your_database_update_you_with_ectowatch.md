@@ -97,7 +97,12 @@ def handle_info(
     {{Accounts.User, :deleted},%{id: id}},
     socket
   ) do
-  socket = stream_delete_by_dom_id(socket, :songs, "users-#{id}")
+  socket =
+    stream_delete_by_dom_id(
+      socket,
+      :songs,
+      "users-#{id}"
+    )
 
   {:noreply, socket}
 end

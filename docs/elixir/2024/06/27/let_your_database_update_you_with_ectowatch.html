@@ -376,7 +376,12 @@
     <span class="p">{{</span><span class="no">Accounts</span><span class="o">.</span><span class="no">User</span><span class="p">,</span> <span class="ss">:deleted</span><span class="p">},%{</span><span class="ss">id:</span> <span class="n">id</span><span class="p">}},</span>
     <span class="n">socket</span>
   <span class="p">)</span> <span class="k">do</span>
-  <span class="n">socket</span> <span class="o">=</span> <span class="n">stream_delete_by_dom_id</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="ss">:songs</span><span class="p">,</span> <span class="s2">"users-</span><span class="si">#{</span><span class="n">id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+  <span class="n">socket</span> <span class="o">=</span>
+    <span class="n">stream_delete_by_dom_id</span><span class="p">(</span>
+      <span class="n">socket</span><span class="p">,</span>
+      <span class="ss">:songs</span><span class="p">,</span>
+      <span class="s2">"users-</span><span class="si">#{</span><span class="n">id</span><span class="si">}</span><span class="s2">"</span>
+    <span class="p">)</span>
 
   <span class="p">{</span><span class="ss">:noreply</span><span class="p">,</span> <span class="n">socket</span><span class="p">}</span>
 <span class="k">end</span>
