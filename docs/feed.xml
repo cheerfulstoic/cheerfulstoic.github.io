@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2024-07-01T12:57:12+02:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">brian-underwood.blogs</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><author><name>Brian Underwood</name></author><entry><title type="html">Let Your Database Update You with EctoWatch</title><link href="http://localhost:4000/elixir/2024/06/27/let_your_database_update_you_with_ectowatch" rel="alternate" type="text/html" title="Let Your Database Update You with EctoWatch" /><published>2024-06-27T00:00:00+02:00</published><updated>2024-06-27T00:00:00+02:00</updated><id>http://localhost:4000/elixir/2024/06/27/let_your_database_update_you_with_ectowatch</id><content type="html" xml:base="http://localhost:4000/elixir/2024/06/27/let_your_database_update_you_with_ectowatch">&lt;p&gt;Elixir allows application developers to create very parallel and very complex systems. Tools like Phoenix PubSub and LiveView thrive on this property of the language, making it very easy to develop functionality that requires continuous updates to users and clients.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2024-08-09T10:37:48+02:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">brian-underwood.blogs</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><author><name>Brian Underwood</name></author><entry><title type="html">Let Your Database Update You with EctoWatch</title><link href="http://localhost:4000/elixir/2024/06/27/let_your_database_update_you_with_ectowatch" rel="alternate" type="text/html" title="Let Your Database Update You with EctoWatch" /><published>2024-06-27T00:00:00+02:00</published><updated>2024-06-27T00:00:00+02:00</updated><id>http://localhost:4000/elixir/2024/06/27/let_your_database_update_you_with_ectowatch</id><content type="html" xml:base="http://localhost:4000/elixir/2024/06/27/let_your_database_update_you_with_ectowatch">&lt;p&gt;Elixir allows application developers to create very parallel and very complex systems. Tools like Phoenix PubSub and LiveView thrive on this property of the language, making it very easy to develop functionality that requires continuous updates to users and clients.&lt;/p&gt;
 
 &lt;p&gt;But one thing that has often frustrated me is how to cleanly design an application to respond to database record updates.&lt;/p&gt;
 
@@ -45,39 +45,47 @@
 
 &lt;p&gt;Then processes can subscribe to the broadcasts sent by the watchers:&lt;/p&gt;
 
-&lt;div class=&quot;language-elixir highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;no&quot;&gt;EctoWatch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;subscribe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Accounts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:inserted&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;no&quot;&gt;EctoWatch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;subscribe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Accounts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:updated&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;no&quot;&gt;EctoWatch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;subscribe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Accounts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:deleted&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;div class=&quot;language-elixir highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;no&quot;&gt;EctoWatch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;subscribe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Accounts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:inserted&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;EctoWatch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;subscribe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Accounts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:updated&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;EctoWatch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;subscribe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Accounts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:deleted&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
 
-&lt;span class=&quot;no&quot;&gt;EctoWatch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;subscribe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Shipping&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Package&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:inserted&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;no&quot;&gt;EctoWatch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;subscribe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Shipping&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Package&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:updated&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;EctoWatch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;subscribe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Shipping&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Package&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:inserted&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;EctoWatch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;subscribe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Shipping&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Package&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:updated&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;If your process just needs to get updates about a specific record an ID can be given:&lt;/p&gt;
 
-&lt;div class=&quot;language-elixir highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;no&quot;&gt;EctoWatch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;subscribe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Accounts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Package&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:updated&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;package&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;div class=&quot;language-elixir highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;no&quot;&gt;EctoWatch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;subscribe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Accounts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Package&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:updated&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;package&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;Then finally the module that implements your process (LiveView, GenServer, etc…) can handle messages about records:&lt;/p&gt;
 
 &lt;div class=&quot;language-elixir highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;# LiveView example&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;handle_info&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:inserted&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Accounts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;handle_info&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{{&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Accounts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:inserted&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;%{&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;id:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}},&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Accounts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get_user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stream_insert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:users&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 
   &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:noreply&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
 
-&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;handle_info&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:updated&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Accounts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;handle_info&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{{&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Accounts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:updated&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;%{&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;id:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}},&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Accounts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get_user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stream_insert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:users&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 
   &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:noreply&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
 
-&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;handle_info&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:deleted&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Accounts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Accounts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get_user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stream_delete&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:users&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;handle_info&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{{&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Accounts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:deleted&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},%{&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;id:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}},&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stream_delete_by_dom_id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:songs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;users-&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 
   &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:noreply&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
@@ -87,15 +95,7 @@
 
 &lt;p&gt;Conclusion&lt;/p&gt;
 
-&lt;p&gt;I believe that &lt;a href=&quot;https://github.com/cheerfulstoic/ecto_watch&quot;&gt;EctoWatch&lt;/a&gt; can be a powerful new way to simplify how we deal with database changes. Allowing a quick configuration of watchers and using simple message passing with Phoenix PubSub, you can separate the concern of &lt;strong&gt;making a change&lt;/strong&gt; from the concern of &lt;strong&gt;what happens as a result&lt;/strong&gt; of the change. This allows your code to be more easily readable and refactorable.&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="elixir" /><category term="elixir" /><summary type="html">Elixir allows application developers to create very parallel and very complex systems. Tools like Phoenix PubSub and LiveView thrive on this property of the language, making it very easy to develop functionality that requires continuous updates to users and clients.</summary></entry><entry><title type="html">Brian Nutshell Test</title><link href="http://localhost:4000/elixir/2023/08/02/brian-test" rel="alternate" type="text/html" title="Brian Nutshell Test" /><published>2023-08-02T00:00:00+02:00</published><updated>2023-08-02T00:00:00+02:00</updated><id>http://localhost:4000/elixir/2023/08/02/brian-test</id><content type="html" xml:base="http://localhost:4000/elixir/2023/08/02/brian-test">&lt;script src=&quot;/assets/js/nutshell.js&quot;&gt;&lt;/script&gt;
-
-&lt;h1 id=&quot;x-hello-test&quot;&gt;:x Hello Test&lt;/h1&gt;
-
-&lt;p&gt;What is this hidden thing?&lt;/p&gt;
-
-&lt;h1 id=&quot;whoa&quot;&gt;Whoa&lt;/h1&gt;
-
-&lt;p&gt;&lt;a href=&quot;#HelloTest&quot;&gt;Hi Hi&lt;/a&gt;&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="elixir" /><category term="elixir" /><summary type="html"></summary></entry><entry><title type="html">Lifting Your Loads for Maintainable Elixir Applications</title><link href="http://localhost:4000/elixir/2023/06/15/lifting-your-loads-for-maintainable-elixir-applications" rel="alternate" type="text/html" title="Lifting Your Loads for Maintainable Elixir Applications" /><published>2023-06-15T00:00:00+02:00</published><updated>2023-06-15T00:00:00+02:00</updated><id>http://localhost:4000/elixir/2023/06/15/lifting-your-loads-for-maintainable-elixir-applications</id><content type="html" xml:base="http://localhost:4000/elixir/2023/06/15/lifting-your-loads-for-maintainable-elixir-applications">&lt;p&gt;(This post was originally created for the Erlang Solutions blog.  The original can be found &lt;a href=&quot;https://www.erlang-solutions.com/blog/lifting-your-loads-for-maintainable-elixir-applications/&quot;&gt;here&lt;/a&gt;)&lt;/p&gt;
+&lt;p&gt;I believe that &lt;a href=&quot;https://github.com/cheerfulstoic/ecto_watch&quot;&gt;EctoWatch&lt;/a&gt; can be a powerful new way to simplify how we deal with database changes. Allowing a quick configuration of watchers and using simple message passing with Phoenix PubSub, you can separate the concern of &lt;strong&gt;making a change&lt;/strong&gt; from the concern of &lt;strong&gt;what happens as a result&lt;/strong&gt; of the change. This allows your code to be more easily readable and refactorable.&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="elixir" /><category term="elixir" /><summary type="html">Elixir allows application developers to create very parallel and very complex systems. Tools like Phoenix PubSub and LiveView thrive on this property of the language, making it very easy to develop functionality that requires continuous updates to users and clients.</summary></entry><entry><title type="html">Lifting Your Loads for Maintainable Elixir Applications</title><link href="http://localhost:4000/elixir/2023/06/15/lifting-your-loads-for-maintainable-elixir-applications" rel="alternate" type="text/html" title="Lifting Your Loads for Maintainable Elixir Applications" /><published>2023-06-15T00:00:00+02:00</published><updated>2023-06-15T00:00:00+02:00</updated><id>http://localhost:4000/elixir/2023/06/15/lifting-your-loads-for-maintainable-elixir-applications</id><content type="html" xml:base="http://localhost:4000/elixir/2023/06/15/lifting-your-loads-for-maintainable-elixir-applications">&lt;p&gt;(This post was originally created for the Erlang Solutions blog.  The original can be found &lt;a href=&quot;https://www.erlang-solutions.com/blog/lifting-your-loads-for-maintainable-elixir-applications/&quot;&gt;here&lt;/a&gt;)&lt;/p&gt;
 
 &lt;p&gt;This post will discuss one particular aspect of designing Elixir applications using the Ecto library: separating data loading from using the data which is loaded.  I will lay out the situations and present some solutions, including a new library called &lt;a href=&quot;https://github.com/cheerfulstoic/ecto_require_associations&quot;&gt;ecto_require_associations&lt;/a&gt;.&lt;/p&gt;
 
@@ -818,9 +818,9 @@
 &lt;span class=&quot;kd&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;adults&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;people&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;person&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;person&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;age&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;18&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 &lt;span class=&quot;kd&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;groupedAdults&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;adults&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;reduce&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;adult&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
   &lt;span class=&quot;kd&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;groupingNumber&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Math&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;floor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;adult&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;age&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-  &lt;span class=&quot;nf&quot;&gt;if &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;groupingNumber&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;groupingNumber&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;if &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;groupingNumber&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;groupingNumber&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
   &lt;span class=&quot;nx&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;groupingNumber&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;push&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;adult&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-  &lt;span class=&quot;nf&quot;&gt;return&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{})&lt;/span&gt;
 &lt;span class=&quot;kd&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;petExistsForGroup&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;
 &lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;groupedAdults&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;forEach&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
@@ -1556,4 +1556,334 @@ end
 
 &lt;p&gt;You can &lt;a href=&quot;http://nhm-portal.herokuapp.com/&quot;&gt;browse the app&lt;/a&gt; on Heroku and &lt;a href=&quot;https://github.com/neo4j-examples/nhm_asset_portal&quot;&gt;checkout the repository&lt;/a&gt; on Github&lt;/p&gt;
 
-&lt;p&gt;I’ll be working on a new project to create a &lt;a href=&quot;http://graphgist.neo4j.com/&quot;&gt;GraphGist portal&lt;/a&gt; based on the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;graph_starter&lt;/code&gt; gem so I plan to continue improving it!&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="neo4j" /><category term="ruby" /><summary type="html">For a while now I’ve been building various Neo4j.rb educational resources using the example of an asset portal. There has been:</summary></entry></feed>
+&lt;p&gt;I’ll be working on a new project to create a &lt;a href=&quot;http://graphgist.neo4j.com/&quot;&gt;GraphGist portal&lt;/a&gt; based on the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;graph_starter&lt;/code&gt; gem so I plan to continue improving it!&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="neo4j" /><category term="ruby" /><summary type="html">For a while now I’ve been building various Neo4j.rb educational resources using the example of an asset portal. There has been:</summary></entry><entry><title type="html">Using Graph Structure Record Linkage on Irish Census Data with Neo4j</title><link href="http://localhost:4000/2015/08/20/using_graph_structure_record_linkage_on_irish_census_data_with_neo4j" rel="alternate" type="text/html" title="Using Graph Structure Record Linkage on Irish Census Data with Neo4j" /><published>2015-08-20T09:55:00+02:00</published><updated>2015-08-20T09:55:00+02:00</updated><id>http://localhost:4000/2015/08/20/using_graph_structure_record_linkage_on_irish_census_data_with_neo4j</id><content type="html" xml:base="http://localhost:4000/2015/08/20/using_graph_structure_record_linkage_on_irish_census_data_with_neo4j">&lt;p&gt;For just over a year I’ve been obsessed on-and-off with a project ever since I stayed in the town of Skibbereen, Ireland.  Taking data from the &lt;a href=&quot;http://www.census.nationalarchives.ie/&quot;&gt;1901 and 1911 Irish censuses&lt;/a&gt; I hoped I would be able to find a way to reliably link resident records from the two together to identify the same residents.  Since then I’ve learned a bit about &lt;a href=&quot;/tag/master-data-management&quot;&gt;master data management and record linkage&lt;/a&gt; and so I thought I would give it another stab.  Here I’d like to talk about how I’ve been matching records based on the local data space around objects to improve my record linkage scoring.&lt;/p&gt;
+
+&lt;p&gt;The data model of the imported data is very linear:&lt;/p&gt;
+
+&lt;p&gt;&lt;img style=&quot;width: 100%; display: block; margin: 0 auto&quot; src=&quot;/assets/neo4j-mdm/irish_census_wrah.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;In this post, however, I’m going to be focusing on Houses and Residents and creating relationships between them based on their properties.&lt;/p&gt;
+
+&lt;h2 id=&quot;relations-to-the-head&quot;&gt;Relations to the Head&lt;/h2&gt;
+
+&lt;p&gt;To view an example of what a census record from 1911 Ireland looks like you can have a look at the McCarthys of &lt;a href=&quot;http://www.census.nationalarchives.ie/pages/1901/Cork/Cloghdowell/Barnagowlane/1154382/&quot;&gt;1901&lt;/a&gt; and &lt;a href=&quot;http://www.census.nationalarchives.ie/pages/1911/Cork/Cloghdonnell/Barnagowlane/440559/&quot;&gt;1911&lt;/a&gt;.  Charles is the head of the family with his wife Hannah, mother Ellen, children (two in 1901 and seven in 1911), and a servant (Timothy Walsh in 1901 and William Regan in 1911).&lt;/p&gt;
+
+&lt;style&gt;
+table {
+  border-collapse: collapse;
+  margin: 0 auto !important;
+}
+table, th, td {
+  border: 1px solid #CCC;
+  padding: 0.3em;
+}
+&lt;/style&gt;
+
+&lt;table&gt;
+  &lt;tr&gt;
+    &lt;td style=&quot;font-weight: 0.8em; font-weight: bold; text-align: center&quot;&gt;
+      &lt;a href=&quot;http://www.census.nationalarchives.ie/pages/1901/Cork/Cloghdowell/Barnagowlane/1154382/&quot;&gt;
+        &lt;img style=&quot;width: 350px; display: block; margin: 0 auto&quot; src=&quot;/assets/neo4j-mdm/mccarthy_census_1901.png&quot; /&gt;
+        The McCarthy family of Barnagowlane, Cloghdowell, Cork, 1901
+      &lt;/a&gt;
+    &lt;/td&gt;
+    &lt;td style=&quot;font-weight: 0.8em; font-weight: bold; text-align: center&quot;&gt;
+      &lt;a href=&quot;http://www.census.nationalarchives.ie/pages/1911/Cork/Cloghdonnell/Barnagowlane/440559/&quot;&gt;
+        &lt;img style=&quot;width: 350px; display: block; margin: 0 auto&quot; src=&quot;/assets/neo4j-mdm/mccarthy_census_1911.png&quot; /&gt;
+        The McCarthy family of Barnagowlane, Cloghdonnell, Cork, 1911
+      &lt;/a&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Surname&lt;/th&gt;
+      &lt;th&gt;Forename&lt;/th&gt;
+      &lt;th&gt;Age&lt;/th&gt;
+      &lt;th&gt;Sex&lt;/th&gt;
+      &lt;th&gt;Relation to Head&lt;/th&gt;
+      &lt;th&gt;Religion&lt;/th&gt;
+      &lt;th&gt; &lt;/th&gt;
+      &lt;th&gt;Surname&lt;/th&gt;
+      &lt;th&gt;Forename&lt;/th&gt;
+      &lt;th&gt;Age&lt;/th&gt;
+      &lt;th&gt;Sex&lt;/th&gt;
+      &lt;th&gt;Relation to Head&lt;/th&gt;
+      &lt;th&gt;Religion&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;McCarthy&lt;/td&gt;
+      &lt;td&gt;Charles&lt;/td&gt;
+      &lt;td&gt;37&lt;/td&gt;
+      &lt;td&gt;Male&lt;/td&gt;
+      &lt;td&gt;Head of Family&lt;/td&gt;
+      &lt;td&gt;Roman Catholic&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;McCarthy&lt;/td&gt;
+      &lt;td&gt;Charles&lt;/td&gt;
+      &lt;td&gt;47&lt;/td&gt;
+      &lt;td&gt;Male&lt;/td&gt;
+      &lt;td&gt;Head of Family&lt;/td&gt;
+      &lt;td&gt;Roman Catholic&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;McCarthy&lt;/td&gt;
+      &lt;td&gt;Hannah&lt;/td&gt;
+      &lt;td&gt;25&lt;/td&gt;
+      &lt;td&gt;Female&lt;/td&gt;
+      &lt;td&gt;Wife&lt;/td&gt;
+      &lt;td&gt;Roman Catholic&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;McCarthy&lt;/td&gt;
+      &lt;td&gt;Hannah&lt;/td&gt;
+      &lt;td&gt;35&lt;/td&gt;
+      &lt;td&gt;Female&lt;/td&gt;
+      &lt;td&gt;Wife&lt;/td&gt;
+      &lt;td&gt;Roman Catholic&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;McCarthy&lt;/td&gt;
+      &lt;td&gt;William&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;Male&lt;/td&gt;
+      &lt;td&gt;Son&lt;/td&gt;
+      &lt;td&gt;Roman Catholic&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;McCarthy&lt;/td&gt;
+      &lt;td&gt;William&lt;/td&gt;
+      &lt;td&gt;11&lt;/td&gt;
+      &lt;td&gt;Male&lt;/td&gt;
+      &lt;td&gt;Son&lt;/td&gt;
+      &lt;td&gt;Roman Catholic&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;McCarthy&lt;/td&gt;
+      &lt;td&gt;Bridget&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;Female&lt;/td&gt;
+      &lt;td&gt;Daughter&lt;/td&gt;
+      &lt;td&gt;Roman Catholic&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;McCarthy&lt;/td&gt;
+      &lt;td&gt;Bridget&lt;/td&gt;
+      &lt;td&gt;10&lt;/td&gt;
+      &lt;td&gt;Female&lt;/td&gt;
+      &lt;td&gt;Daughter&lt;/td&gt;
+      &lt;td&gt;Roman Catholic&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;McCarthy&lt;/td&gt;
+      &lt;td&gt;Ellen&lt;/td&gt;
+      &lt;td&gt;8&lt;/td&gt;
+      &lt;td&gt;Female&lt;/td&gt;
+      &lt;td&gt;Daughter&lt;/td&gt;
+      &lt;td&gt;Roman Catholic&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;McCarthy&lt;/td&gt;
+      &lt;td&gt;Kate&lt;/td&gt;
+      &lt;td&gt;6&lt;/td&gt;
+      &lt;td&gt;Female&lt;/td&gt;
+      &lt;td&gt;Daughter&lt;/td&gt;
+      &lt;td&gt;Roman Catholic&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;McCarthy&lt;/td&gt;
+      &lt;td&gt;Florence&lt;/td&gt;
+      &lt;td&gt;4&lt;/td&gt;
+      &lt;td&gt;Male&lt;/td&gt;
+      &lt;td&gt;Son&lt;/td&gt;
+      &lt;td&gt;Roman Catholic&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;McCarthy&lt;/td&gt;
+      &lt;td&gt;Charles Peter&lt;/td&gt;
+      &lt;td&gt;2&lt;/td&gt;
+      &lt;td&gt;Male&lt;/td&gt;
+      &lt;td&gt;Son&lt;/td&gt;
+      &lt;td&gt;Roman Catholic&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;McCarthy&lt;/td&gt;
+      &lt;td&gt;Annie&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;Female&lt;/td&gt;
+      &lt;td&gt;Daughter&lt;/td&gt;
+      &lt;td&gt;Roman Catholic&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;McCarthy&lt;/td&gt;
+      &lt;td&gt;Ellen&lt;/td&gt;
+      &lt;td&gt;65&lt;/td&gt;
+      &lt;td&gt;Female&lt;/td&gt;
+      &lt;td&gt;Mother&lt;/td&gt;
+      &lt;td&gt;Roman Catholic&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;McCarthy&lt;/td&gt;
+      &lt;td&gt;? Ellen&lt;/td&gt;
+      &lt;td&gt;75&lt;/td&gt;
+      &lt;td&gt;Female&lt;/td&gt;
+      &lt;td&gt;Mother&lt;/td&gt;
+      &lt;td&gt;Roman Catholic&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Walsh&lt;/td&gt;
+      &lt;td&gt;Timothy&lt;/td&gt;
+      &lt;td&gt;25&lt;/td&gt;
+      &lt;td&gt;Male&lt;/td&gt;
+      &lt;td&gt;Servant&lt;/td&gt;
+      &lt;td&gt;Roman Catholic&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;Regan&lt;/td&gt;
+      &lt;td&gt;William&lt;/td&gt;
+      &lt;td&gt;24&lt;/td&gt;
+      &lt;td&gt;Male&lt;/td&gt;
+      &lt;td&gt;Servant&lt;/td&gt;
+      &lt;td&gt;Roman Catholic&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;The McCarthys are an almost exact match between two census records between 1901 and 1911.  The names, ages, occupations, and relationships all match perfectly.  Unfortunately the story for other records is not so simple.  Many times houses, which to the human eye seem to be the same house, can have wildly varying details.  For example Hannah might go be listed as Hana or Anne in a different census.  Likewise ages vary a lot more than you might think.  In examining the records I regularly found ages varying by a year or two and have even found a few houses with ages off by as much as 10-15 years.&lt;/p&gt;
+
+&lt;p&gt;In both censuses there is a field for residents to fill out called “Relation to Head”.  This gives us information about how each resident is related to the head of the house.  In the case of the McCarthys, Charles is listed as “Head of Fa&lt;D-i&gt;mily&quot; in both years.  The rest of the family has a nice representation of things that we often see in the data: &quot;Wife&quot;, &quot;Son&quot;, &quot;Daughter&quot;, and &quot;Servant&quot;.&lt;/D-i&gt;&lt;/p&gt;
+
+&lt;p&gt;We might be tempted to say “This person was the head in 1901, so they must be the same person who was the head in 1911”.  Often, however, the head of the family can die or retire leaving the roll of head of the family to their wife or child.  Can the “Relation to Head” values still be useful to us to match any given resident from 1901 to another resident in 1911?&lt;/p&gt;
+
+&lt;p&gt;First let’s cover the general the process of record linkage I have been using.  To find a match for a resident I start by using an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;elasticsearch&lt;/code&gt; server (which contains a duplicate of my Neo4j census data) to quickly find a list of other residents with a match on very rough criteria:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Is the resident in the other census?&lt;/li&gt;
+  &lt;li&gt;Does the sex match (or it it &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NULL&lt;/code&gt;)?&lt;/li&gt;
+  &lt;li&gt;Is the resident’s age within 15 years of what it would be expected to be in the other census?&lt;/li&gt;
+  &lt;li&gt;Does the name match roughly (within an edit distance of 4)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This comes back with anywhere from zero to hundreds of results.  I call these “similarity candidates” and for each I create a relationship between the original record and the candidate.&lt;/p&gt;
+
+&lt;p&gt;With this list I can compare the attributes of the two records (using the &lt;a href=&quot;https://rubygems.org/gems/record_linkage&quot;&gt;record_linkage&lt;/a&gt; gem I created) to see how closely they match.  The closer their name, sex, age, etc.. matches, the higher score they get.  Ideally the real match should have the highest score, but that isn’t always true and can take &lt;a href=&quot;http://127.0.0.1:4000/2015/05/14/master_data_management_scoring_examples/&quot;&gt;some tuning&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;In addition to this simple comparison of attributes, I have now added a process to take advantage of the similarity candidate relationships to compare family relationships.  Let’s start with this example of a sub-graph pattern:&lt;/p&gt;
+
+&lt;p&gt;&lt;img style=&quot;width: 850px; margin: 0.6em;&quot; src=&quot;/assets/neo4j-mdm/mccarthy_charles_comparison.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The relationship &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CHILD_OF&lt;/code&gt; is created whenever there is a “Son” or “Daughter” in the “Realation to Head” field.  Likewise we can create other gender-neutral relationships like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MARRIED_TO&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SIBLING_OF&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NIECE_NEPHEW_OF&lt;/code&gt;, etc…&lt;/p&gt;
+
+&lt;p&gt;In this case the resident in question is the 1901 record for William.  When we are evaluating the 1911 record of William as a potential match we can explore other residents in the same house as evidence of similarity.  The diagram above shows that both records have a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CHILD_OF&lt;/code&gt; relationship to the two “Charles” records which furthermore are linked via a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SIMILARITY_CANDIDATE&lt;/code&gt; relationship.  Because of this we can say that there is a greater chance that the two “William” records represent the same person.&lt;/p&gt;
+
+&lt;p&gt;This only gives us the ability to find these relationships between the head of the family and other residents.  What about generically matching based on the relationship of any two residents of a house?  Let’s say that Charles died sometime between 1901 and 1911.  If his wife Hannah takes over as the head of the family we would have a sub-graph which looks like this:&lt;/p&gt;
+
+&lt;p&gt;&lt;img style=&quot;width: 850px; margin: 0.6em;&quot; src=&quot;/assets/neo4j-mdm/mccarthy_hannah_comparison.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;We could say that when we have the paths &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-CHILD_OF-&amp;gt;&amp;lt;-MARIED_TO-&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-CHILD_OF-&amp;gt;&lt;/code&gt; on either side that we can build our case for a match a bit more.  This kind of matching can be used on all of the other residents of the house with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SIMILARITY_CANDIDATE&lt;/code&gt; relationships.  For example, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-CHILD_OF-&amp;gt;&amp;lt;-CHILD_OF-&lt;/code&gt; could be matched to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-CHILD_OF-&amp;gt;&amp;lt;-CHILD_OF-&lt;/code&gt; even in this case where the wife becomes the head of the house.  Or if a child becomes the head then it could be compared to a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-SIBLING_OF-&lt;/code&gt; relationship.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-code&quot;&gt;The Code&lt;/h2&gt;
+
+&lt;p&gt;So how do we actually do this?  First let’s take our sub-graph and turn our nodes into variables:&lt;/p&gt;
+
+&lt;p&gt;&lt;img style=&quot;width: 850px; margin: 0.6em;&quot; src=&quot;/assets/neo4j-mdm/irish_census_relationship_mapping.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;In this example let’s take resident &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;h1 r1&lt;/code&gt; (house 1, resident 1) as the resident in question and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;h2 r1&lt;/code&gt; as the candidate that we want to compare it to.  This is the sort of query that Neo4j is wonderful at both performing quickly and making easy to formulate.  Let’s look at part of the Ruby code:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;
+
+def get_similarity_candidate_relationship_paths
+  self.query_as(:h1_r1)
+    .match('(h1:House), (h2:House)')
+    .match('h1&amp;lt;-[:LIVES_IN]-h1_r1-[sc_1:similarity_candidate]-(h2_r1)-[:LIVES_IN]-&amp;gt;h2')
+    .match('h1&amp;lt;-[:LIVES_IN]-h1_r2-[sc_2:similarity_candidate]-(h2_r2)-[:LIVES_IN]-&amp;gt;h2')
+    .match('path1=h1_r1-[:born_to|married_to|grandchild_of|niece_nephew_of|sibling_of|cousin_of|child_in_law_of|step_child_of*1..2]-h1_r2')
+    .match('path2=h2_r1-[:born_to|married_to|grandchild_of|niece_nephew_of|sibling_of|cousin_of|child_in_law_of|step_child_of*1..2]-h2_r2')
+    .pluck(
+      :h2_r1,
+      'collect([path1, rels(path1), path2, rels(path2)])'
+      ).each_with_object({}) do |(r2, data), result|
+
+    result[r2] = data.inject(0) do |total, (path1, rels1, path2, rels2)|
+      relations1 = relation_string_from_path_and_rels(path1, rels1)
+      relations2 = relation_string_from_path_and_rels(path2, rels2)
+
+      if relations1 == relations2
+        1.0
+      elsif score = (RELATION_EQUIVILENCE_SCORES[relations1] || {})[relations2]
+        score
+      else
+        -2.0
+      end + total
+    end
+  end
+end
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Here we start with a Cypher query using the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Query&lt;/code&gt; API from neo4j.rb.  The object upon which we’ve called &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;get_similarity_candidate_relationship_paths&lt;/code&gt; is our &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;h1_r1&lt;/code&gt; anchor.  Note here that we match paths with a length of either one or two relationships long from between two residents of the same house.  Then we return all residents found via the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SIMILARITY_CANDIDATE&lt;/code&gt; relationship from our anchor and the family relationship paths aggregated into an Array.&lt;/p&gt;
+
+&lt;p&gt;Once the Cypher query returns data we call &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;relation_string_from_path_and_rels&lt;/code&gt; which is a way of transforming the path into a string like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-BORN_TO-&amp;gt;&amp;lt;-BORN_TO&lt;/code&gt;.  This string gives us a simple way to express the path between the two residents as a string.&lt;/p&gt;
+
+&lt;p&gt;We then can give a score based on the two paths.  If the paths are the same then we say that the score is 1.0.  If the pair of paths is something like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-BORN_TO-&amp;gt;&amp;lt;-BORN_TO&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-SIBLING_OF-&amp;gt;&lt;/code&gt; then we can give a score based on a lookup.  We add these scores up to give us a total score comparing our anchor resident and each of it’s similarity candidates.  All with just one query to the database.&lt;/p&gt;
+
+&lt;h3 id=&quot;challenges&quot;&gt;Challenges&lt;/h3&gt;
+
+&lt;p&gt;There are a couple of things that I needed to do to make this work:&lt;/p&gt;
+
+&lt;p&gt;Previously I was simply grabbing one resident at a time, finding all of the similarity candidates, and then creating a set of relationships to link the resident with the candidates and to store the record linkage scores (both the individual scores for fields and the total score).  However this approach requires all of the candidates in the house to have &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SIMILARITY_CANDIDATE&lt;/code&gt; relationships in order to compare family relationships.  So I first process all residents for a house to create the similarity candidate relationships and store the record linkage scores and then go through them again with the graph-based comparisons and store that score and update the total.&lt;/p&gt;
+
+&lt;p&gt;Beyond that there is the conceptual problem of determining the scoring when comparing paths.  For example, if somebody was &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;BORN_TO&lt;/code&gt; the head one year but their spouse takes over as the head, could we say that they’re &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;BORN_TO&lt;/code&gt; the spouse if they are are a step-child?  Family relationships are complicated and don’t always fit neatly into our properties and algorithms.&lt;/p&gt;
+
+&lt;h3 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h3&gt;
+
+&lt;p&gt;Most record linkage focuses on the properties of an object, but we need to remember that relationships are data about our entities too.  With Neo4j we have a powerful tool for analyzing those relationships natuarally and quickly.  Additionally I have found that the ability to create relationships on the fly to aggregate calculations like the ones discussed above is a wonderful way to find the best solution quickly.&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="neo4j" /><category term="master-data-management" /><summary type="html">For just over a year I’ve been obsessed on-and-off with a project ever since I stayed in the town of Skibbereen, Ireland. Taking data from the 1901 and 1911 Irish censuses I hoped I would be able to find a way to reliably link resident records from the two together to identify the same residents. Since then I’ve learned a bit about master data management and record linkage and so I thought I would give it another stab. Here I’d like to talk about how I’ve been matching records based on the local data space around objects to improve my record linkage scoring.</summary></entry></feed>

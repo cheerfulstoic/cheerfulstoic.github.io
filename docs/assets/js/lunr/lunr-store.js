@@ -131,12 +131,6 @@ var store = [{
         "url": "/elixir/2023/06/15/lifting-your-loads-for-maintainable-elixir-applications",
         "teaser": null
       },{
-        "title": "Brian Nutshell Test",
-        "excerpt":"  :x Hello Test   What is this hidden thing?   Whoa   Hi Hi   ","categories": ["elixir"],
-        "tags": ["elixir"],
-        "url": "/elixir/2023/08/02/brian-test",
-        "teaser": null
-      },{
         "title": "Let Your Database Update You with EctoWatch",
         "excerpt":"Elixir allows application developers to create very parallel and very complex systems. Tools like Phoenix PubSub and LiveView thrive on this property of the language, making it very easy to develop functionality that requires continuous updates to users and clients. But one thing that has often frustrated me is how...","categories": ["elixir"],
         "tags": ["elixir"],

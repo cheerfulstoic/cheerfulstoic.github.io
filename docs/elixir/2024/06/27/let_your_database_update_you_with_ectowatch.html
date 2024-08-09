@@ -336,39 +336,47 @@
 
 <p>Then processes can subscribe to the broadcasts sent by the watchers:</p>
 
-<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">EctoWatch</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="no">Accounts</span><span class="o">.</span><span class="no">User</span><span class="p">,</span> <span class="ss">:inserted</span><span class="p">)</span>
-<span class="no">EctoWatch</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="no">Accounts</span><span class="o">.</span><span class="no">User</span><span class="p">,</span> <span class="ss">:updated</span><span class="p">)</span>
-<span class="no">EctoWatch</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="no">Accounts</span><span class="o">.</span><span class="no">User</span><span class="p">,</span> <span class="ss">:deleted</span><span class="p">)</span>
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">EctoWatch</span><span class="o">.</span><span class="n">subscribe</span><span class="p">({</span><span class="no">Accounts</span><span class="o">.</span><span class="no">User</span><span class="p">,</span> <span class="ss">:inserted</span><span class="p">})</span>
+<span class="no">EctoWatch</span><span class="o">.</span><span class="n">subscribe</span><span class="p">({</span><span class="no">Accounts</span><span class="o">.</span><span class="no">User</span><span class="p">,</span> <span class="ss">:updated</span><span class="p">})</span>
+<span class="no">EctoWatch</span><span class="o">.</span><span class="n">subscribe</span><span class="p">({</span><span class="no">Accounts</span><span class="o">.</span><span class="no">User</span><span class="p">,</span> <span class="ss">:deleted</span><span class="p">})</span>
 
-<span class="no">EctoWatch</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="no">Shipping</span><span class="o">.</span><span class="no">Package</span><span class="p">,</span> <span class="ss">:inserted</span><span class="p">)</span>
-<span class="no">EctoWatch</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="no">Shipping</span><span class="o">.</span><span class="no">Package</span><span class="p">,</span> <span class="ss">:updated</span><span class="p">)</span>
+<span class="no">EctoWatch</span><span class="o">.</span><span class="n">subscribe</span><span class="p">({</span><span class="no">Shipping</span><span class="o">.</span><span class="no">Package</span><span class="p">,</span> <span class="ss">:inserted</span><span class="p">})</span>
+<span class="no">EctoWatch</span><span class="o">.</span><span class="n">subscribe</span><span class="p">({</span><span class="no">Shipping</span><span class="o">.</span><span class="no">Package</span><span class="p">,</span> <span class="ss">:updated</span><span class="p">})</span>
 </code></pre></div></div>
 
 <p>If your process just needs to get updates about a specific record an ID can be given:</p>
 
-<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">EctoWatch</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="no">Accounts</span><span class="o">.</span><span class="no">Package</span><span class="p">,</span> <span class="ss">:updated</span><span class="p">,</span> <span class="n">package</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">EctoWatch</span><span class="o">.</span><span class="n">subscribe</span><span class="p">({</span><span class="no">Accounts</span><span class="o">.</span><span class="no">Package</span><span class="p">,</span> <span class="ss">:updated</span><span class="p">},</span> <span class="n">package</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 </code></pre></div></div>
 
 <p>Then finally the module that implements your process (LiveView, GenServer, etc…) can handle messages about records:</p>
 
 <div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># LiveView example</span>
-<span class="k">def</span> <span class="n">handle_info</span><span class="p">({</span><span class="ss">:inserted</span><span class="p">,</span> <span class="no">Accounts</span><span class="o">.</span><span class="no">User</span><span class="p">,</span> <span class="n">id</span><span class="p">,</span> <span class="n">_</span><span class="p">},</span> <span class="n">socket</span><span class="p">)</span> <span class="k">do</span>
+<span class="k">def</span> <span class="n">handle_info</span><span class="p">(</span>
+    <span class="p">{{</span><span class="no">Accounts</span><span class="o">.</span><span class="no">User</span><span class="p">,</span> <span class="ss">:inserted</span><span class="p">},</span> <span class="p">%{</span><span class="ss">id:</span> <span class="n">id</span><span class="p">}},</span>
+    <span class="n">socket</span>
+  <span class="p">)</span> <span class="k">do</span>
   <span class="n">user</span> <span class="o">=</span> <span class="no">Accounts</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
   <span class="n">socket</span> <span class="o">=</span> <span class="n">stream_insert</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="ss">:users</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span>
 
   <span class="p">{</span><span class="ss">:noreply</span><span class="p">,</span> <span class="n">socket</span><span class="p">}</span>
 <span class="k">end</span>
 
-<span class="k">def</span> <span class="n">handle_info</span><span class="p">({</span><span class="ss">:updated</span><span class="p">,</span> <span class="no">Accounts</span><span class="o">.</span><span class="no">User</span><span class="p">,</span> <span class="n">id</span><span class="p">,</span> <span class="n">_</span><span class="p">},</span> <span class="n">socket</span><span class="p">)</span> <span class="k">do</span>
+<span class="k">def</span> <span class="n">handle_info</span><span class="p">(</span>
+    <span class="p">{{</span><span class="no">Accounts</span><span class="o">.</span><span class="no">User</span><span class="p">,</span> <span class="ss">:updated</span><span class="p">},</span> <span class="p">%{</span><span class="ss">id:</span> <span class="n">id</span><span class="p">}},</span>
+    <span class="n">socket</span>
+  <span class="p">)</span> <span class="k">do</span>
   <span class="n">user</span> <span class="o">=</span> <span class="no">Accounts</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
   <span class="n">socket</span> <span class="o">=</span> <span class="n">stream_insert</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="ss">:users</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span>
 
   <span class="p">{</span><span class="ss">:noreply</span><span class="p">,</span> <span class="n">socket</span><span class="p">}</span>
 <span class="k">end</span>
 
-<span class="k">def</span> <span class="n">handle_info</span><span class="p">({</span><span class="ss">:deleted</span><span class="p">,</span> <span class="no">Accounts</span><span class="o">.</span><span class="no">User</span><span class="p">,</span> <span class="n">id</span><span class="p">,</span> <span class="n">_</span><span class="p">},</span> <span class="n">socket</span><span class="p">)</span> <span class="k">do</span>
-  <span class="n">user</span> <span class="o">=</span> <span class="no">Accounts</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
-  <span class="n">socket</span> <span class="o">=</span> <span class="n">stream_delete</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="ss">:users</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span>
+<span class="k">def</span> <span class="n">handle_info</span><span class="p">(</span>
+    <span class="p">{{</span><span class="no">Accounts</span><span class="o">.</span><span class="no">User</span><span class="p">,</span> <span class="ss">:deleted</span><span class="p">},%{</span><span class="ss">id:</span> <span class="n">id</span><span class="p">}},</span>
+    <span class="n">socket</span>
+  <span class="p">)</span> <span class="k">do</span>
+  <span class="n">socket</span> <span class="o">=</span> <span class="n">stream_delete_by_dom_id</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="ss">:songs</span><span class="p">,</span> <span class="s2">"users-</span><span class="si">#{</span><span class="n">id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
   <span class="p">{</span><span class="ss">:noreply</span><span class="p">,</span> <span class="n">socket</span><span class="p">}</span>
 <span class="k">end</span>
@@ -416,7 +424,7 @@
       
   <nav class="pagination">
     
-      <a href="/elixir/2023/08/02/brian-test" class="pagination--pager" title="Brian Nutshell Test
+      <a href="/elixir/2023/06/15/lifting-your-loads-for-maintainable-elixir-applications" class="pagination--pager" title="Lifting Your Loads for Maintainable Elixir Applications
 ">Previous</a>
     
     

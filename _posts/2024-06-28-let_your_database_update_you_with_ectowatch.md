@@ -7,6 +7,7 @@ categories:
 - elixir
 tags:
 - elixir
+render_with_liquid: false
 ---
 
 Elixir allows application developers to create very parallel and very complex systems. Tools like Phoenix PubSub and LiveView thrive on this property of the language, making it very easy to develop functionality that requires continuous updates to users and clients.
@@ -54,41 +55,49 @@ EctoWatch allows you to set up watchers in your application’s supervision tree
 Then processes can subscribe to the broadcasts sent by the watchers:
 
 ```elixir
-EctoWatch.subscribe(Accounts.User, :inserted)
-EctoWatch.subscribe(Accounts.User, :updated)
-EctoWatch.subscribe(Accounts.User, :deleted)
+EctoWatch.subscribe({Accounts.User, :inserted})
+EctoWatch.subscribe({Accounts.User, :updated})
+EctoWatch.subscribe({Accounts.User, :deleted})
 
-EctoWatch.subscribe(Shipping.Package, :inserted)
-EctoWatch.subscribe(Shipping.Package, :updated)
+EctoWatch.subscribe({Shipping.Package, :inserted})
+EctoWatch.subscribe({Shipping.Package, :updated})
 ```
 
 If your process just needs to get updates about a specific record an ID can be given:
 
 ```elixir
-EctoWatch.subscribe(Accounts.Package, :updated, package.id)
+EctoWatch.subscribe({Accounts.Package, :updated}, package.id)
 ```
 
 Then finally the module that implements your process (LiveView, GenServer, etc…) can handle messages about records:
 
 ```elixir
 # LiveView example
-def handle_info({:inserted, Accounts.User, id, _}, socket) do
+def handle_info(
+    {{Accounts.User, :inserted}, %{id: id}},
+    socket
+  ) do
   user = Accounts.get_user(id)
   socket = stream_insert(socket, :users, user)
 
   {:noreply, socket}
 end
 
-def handle_info({:updated, Accounts.User, id, _}, socket) do
+def handle_info(
+    {{Accounts.User, :updated}, %{id: id}},
+    socket
+  ) do
   user = Accounts.get_user(id)
   socket = stream_insert(socket, :users, user)
 
   {:noreply, socket}
 end
 
-def handle_info({:deleted, Accounts.User, id, _}, socket) do
-  user = Accounts.get_user(id)
-  socket = stream_delete(socket, :users, user)
+def handle_info(
+    {{Accounts.User, :deleted},%{id: id}},
+    socket
+  ) do
+  socket = stream_delete_by_dom_id(socket, :songs, "users-#{id}")
 
   {:noreply, socket}
 end
