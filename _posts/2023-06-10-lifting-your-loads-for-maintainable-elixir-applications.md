@@ -2,7 +2,6 @@
 title: Lifting Your Loads for Maintainable Elixir Applications
 layout: single
 date: 2023-06-15 00:00
-canonical_url: https://www.erlang-solutions.com/blog/lifting-your-loads-for-maintainable-elixir-applications/
 categories:
 - elixir
 tags:
@@ -62,9 +61,9 @@ One big idea in functional programming (or specifically ["purely functional prog
 
 What benefits does avoiding side-effects give us?
 
- * Separating database access from operations on data is a great separation of concerns which can lead to more modular and therefore more maintainable code.
- * Defining a function where the output depends completely on the input makes the function easier to understand and therefore easier to use and maintain.
- * Automated tests for functions without side-effects can be much simpler because you don't need to setup external state.
+* Separating database access from operations on data is a great separation of concerns which can lead to more modular and therefore more maintainable code.
+* Defining a function where the output depends completely on the input makes the function easier to understand and therefore easier to use and maintain.
+* Automated tests for functions without side-effects can be much simpler because you don't need to setup external state.
 
 # A Solution
 
@@ -103,12 +102,11 @@ def plans_for(user) do
   # …
 ```
 
-
 The above call would check:
 
- * If the `subscriptions` association has been loaded for the user
- * If the `site_memberships` association has been loaded for the user
- * If the `site` association has been loaded on each site membership
+* If the `subscriptions` association has been loaded for the user
+* If the `site_memberships` association has been loaded for the user
+* If the `site` association has been loaded on each site membership
 
 If, for example, one or more of the `site` memberships hasn't been loaded then an exception is raised like:
 
@@ -177,7 +175,6 @@ MyApp.Users.get_admins()
 
 That said, if you have associations you need for specific functions, you may want to create functions which can preload without the caller knowing the details. This saves repetition and helps clarify overlapping dependencies:
 
-
 ```elixir
 defmodule MyApp.Users do
   # You can call `preload_for_access_check(user)` to load the required data
@@ -222,4 +219,3 @@ The discussion above suggests pushing loading logic up and out of [context](http
 It seems like a small detail, but making more functions purely functional and isolating your database access can have compounding effects on the maintainability of your code. This can be especially true when the codebase is maintained by more than one person, making it easier for everybody to change the code without worrying about side-effects. Try it out and see!
 
 `[1]`: Please don't see this as me picking on the Plausible Analytics folks in any way. I think that their project is great and the fact that they open-sourced it makes it a great resource for real-world examples like this one!
-

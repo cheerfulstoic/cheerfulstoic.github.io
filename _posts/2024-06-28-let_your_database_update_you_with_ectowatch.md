@@ -2,7 +2,6 @@
 title: Let Your Database Update You with EctoWatch
 layout: single
 date: 2024-06-27 00:00
-canonical_url: https://www.erlang-solutions.com/blog/let-your-database-update-you-with-ectowatch/
 categories:
 - elixir
 tags:
@@ -24,16 +23,16 @@ While I knew that PostgreSQL had functionality to inform my applications about u
 
 Aside from the obvious case of updating LiveViews, there are a number of things you might want to do in response to record changes:
 
- * redoing a calculation/cache when source information changes
- * sending out emails about a change
- * sending out webhook requests
- * updating a GraphQL subscription
+* redoing a calculation/cache when source information changes
+* sending out emails about a change
+* sending out webhook requests
+* updating a GraphQL subscription
 
 For example, if you insert a new status event for a tracked package, you may want to:
 
- * update any webpages/applications currently tracking the package
- * send updates about important events (like the package being delivered)
- * recalculate and update the estimated delivery date
+* update any webpages/applications currently tracking the package
+* send updates about important events (like the package being delivered)
+* recalculate and update the estimated delivery date
 
 # Using EctoWatch
 
