@@ -1,0 +1,523 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Reduce, Reuse… Refactor: Clearer Elixir with the Enum Module - brian-underwood.blogs</title>
+<meta name="description" content="“When an operation cannot be expressed by any of the functions in the Enum module, developers will most likely resort to reduce/3.”    From the docs for Enum.reduce/3">
+
+
+  <meta name="author" content="Brian Underwood">
+  
+  <meta property="article:author" content="Brian Underwood">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="brian-underwood.blogs">
+<meta property="og:title" content="Reduce, Reuse… Refactor: Clearer Elixir with the Enum Module">
+<meta property="og:url" content="http://localhost:4000/elixir/2025/04/24/reduce-reuse-refactor-clearer-elixir-with-the-enum-module">
+
+
+  <meta property="og:description" content="“When an operation cannot be expressed by any of the functions in the Enum module, developers will most likely resort to reduce/3.”    From the docs for Enum.reduce/3">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2025-04-24T00:00:00+02:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/elixir/2025/04/24/reduce-reuse-refactor-clearer-elixir-with-the-enum-module">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="brian-underwood.blogs Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <link rel="stylesheet" href="/assets/css/custom.css">
+<link rel="stylesheet" href="/assets/prism.css">
+<link rel="stylesheet" href="/assets/site.css">
+
+<script defer src="/assets/js/alpine-3.2.1.min.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&family=Raleway:ital,wght@0,200;0,500;0,700;1,200;1,500;1,700&display=swap" rel="stylesheet">
+ <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          brian-underwood.blogs
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/tags/">Tags</a>
+            </li><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+        <img src="/assets/images/bio-photo.png" alt="Brian Underwood" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Brian Underwood</h3>
+    
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li itemprop="homeLocation" itemscope itemtype="https://schema.org/Place">
+          <i class="fas fa-fw fa-map-marker-alt" aria-hidden="true"></i> <span itemprop="name">Stockholm, Sweden</span>
+        </li>
+      
+
+      
+        
+          
+            <li><a href="http://www.brian-underwood.codes/" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-link" aria-hidden="true"></i><span class="label">brian-underwood.codes</span></a></li>
+          
+        
+          
+            <li><a href="https://twitter.com/cheerfulstoic" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i><span class="label">cheerfulstoic</span></a></li>
+          
+        
+          
+            <li><a href="https://github.com/cheerfulstoic" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github-square" aria-hidden="true"></i><span class="label">cheerfulstoic</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Reduce, Reuse… Refactor: Clearer Elixir with the Enum Module">
+    <meta itemprop="description" content="  “When an operation cannot be expressed by any of the functions in the Enum module, developers will most likely resort to reduce/3.”  From the docs for Enum.reduce/3">
+    <meta itemprop="datePublished" content="2025-04-24T00:00:00+02:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Reduce, Reuse… Refactor: Clearer Elixir with the Enum Module
+</h1>
+          
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-04-24T00:00:00+02:00">April 24, 2025</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <blockquote>
+  <p>“When an operation cannot be expressed by any of the functions in the Enum module, developers will most likely resort to reduce/3.”</p>
+
+  <p>From the docs for Enum.reduce/3</p>
+</blockquote>
+
+<p>In many Elixir applications, I find <code class="language-plaintext highlighter-rouge">Enum.reduce</code> is used frequently. <code class="language-plaintext highlighter-rouge">Enum.reduce</code> can do anything, but that doesn’t mean it should. In many cases, other <code class="language-plaintext highlighter-rouge">Enum</code> functions are more readable, practically as fast, and easier to refactor.</p>
+
+<p>I would also like to discuss situations that <strong>are</strong> a good fit for <code class="language-plaintext highlighter-rouge">Enum.reduce</code> and also introduce you to a custom <code class="language-plaintext highlighter-rouge">credo</code> check I’ve created, which can help you identify places where <code class="language-plaintext highlighter-rouge">Enum.reduce</code> could be replaced with a simpler option.</p>
+
+<h2 id="readability">Readability</h2>
+
+<p>Here are a few common reduce patterns—and their simpler alternatives.  For example, here’s something I see quite often:</p>
+
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Enum</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">numbers</span><span class="p">,</span> <span class="p">[],</span> <span class="k">fn</span> <span class="n">i</span><span class="p">,</span> <span class="n">result</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">|</span> <span class="n">result</span><span class="p">]</span> <span class="k">end</span><span class="p">)</span>
+<span class="o">|&gt;</span> <span class="no">Enum</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>This is a situation that the <code class="language-plaintext highlighter-rouge">Enum.map</code> function was designed for:</p>
+
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Enum</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">numbers</span><span class="p">,</span> <span class="o">&amp;</span> <span class="nv">&amp;1</span> <span class="o">*</span> <span class="mi">10</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Perhaps you know about <code class="language-plaintext highlighter-rouge">Enum.map</code>, but you might see a call to <code class="language-plaintext highlighter-rouge">reduce</code> like this:</p>
+
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Enum</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">numbers</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">fn</span> <span class="n">number</span><span class="p">,</span> <span class="n">result</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">number</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">result</span> <span class="k">end</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Let me introduce you to <code class="language-plaintext highlighter-rouge">Enum.sum_by</code>!</p>
+
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Enum</span><span class="o">.</span><span class="n">sum_by</span><span class="p">(</span><span class="n">numbers</span><span class="p">,</span> <span class="o">&amp;</span> <span class="nv">&amp;1</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Let’s look at something a bit more complex:</p>
+
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Enum</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">numbers</span><span class="p">,</span> <span class="p">[],</span> <span class="k">fn</span> <span class="n">item</span><span class="p">,</span> <span class="n">acc</span> <span class="o">-&gt;</span>
+  <span class="k">if</span> <span class="n">rem</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">do</span>
+    <span class="p">[</span><span class="n">item</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">|</span> <span class="n">acc</span><span class="p">]</span>
+  <span class="k">else</span>
+    <span class="n">acc</span>
+  <span class="k">end</span>
+<span class="k">end</span><span class="p">)</span>
+<span class="o">|&gt;</span> <span class="no">Enum</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>This is a perfect case for piping together two <code class="language-plaintext highlighter-rouge">Enum</code> functions:</p>
+
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">numbers</span>
+<span class="o">|&gt;</span> <span class="no">Enum</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">&amp;</span> <span class="n">rem</span><span class="p">(</span><span class="nv">&amp;1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+<span class="o">|&gt;</span> <span class="no">Enum</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">&amp;</span> <span class="nv">&amp;1</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Another option for this case could even be to use <code class="language-plaintext highlighter-rouge">Enum.flat_map</code>:</p>
+
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Enum</span><span class="o">.</span><span class="n">flat_map</span><span class="p">(</span><span class="n">numbers</span><span class="p">,</span> <span class="k">fn</span> <span class="n">number</span> <span class="o">-&gt;</span>
+  <span class="k">if</span> <span class="n">rem</span><span class="p">(</span><span class="n">number</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">do</span>
+    <span class="p">[</span><span class="n">number</span> <span class="o">*</span> <span class="mi">2</span><span class="p">]</span>
+  <span class="k">else</span>
+    <span class="p">[]</span>
+  <span class="k">end</span>
+<span class="k">end</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>This is a decent option, but while this achieves the purpose of both filtering and mapping in a single pass, it may not be as intuitive for everybody.</p>
+
+<p>Lastly, say you see something like this and think that it would be difficult to improve:</p>
+
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Enum</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">invoices</span><span class="p">,</span> <span class="p">{[],</span> <span class="p">[]},</span> <span class="k">fn</span> <span class="n">invoice</span><span class="p">,</span> <span class="n">result</span> <span class="o">-&gt;</span>
+  <span class="no">Enum</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">invoice</span><span class="o">.</span><span class="n">items</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="k">fn</span> <span class="n">item</span><span class="p">,</span> <span class="p">{</span><span class="n">no_tax</span><span class="p">,</span> <span class="n">with_tax</span><span class="p">}</span> <span class="o">-&gt;</span>
+    <span class="k">if</span> <span class="no">Invoices</span><span class="o">.</span><span class="no">Items</span><span class="o">.</span><span class="n">taxable?</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">do</span>
+      <span class="n">tax</span> <span class="o">=</span> <span class="n">tax_for_value</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">amount</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">product_type</span><span class="p">)</span>
+      <span class="n">item</span> <span class="o">=</span> <span class="no">Map</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="ss">:tax</span><span class="p">,</span> <span class="n">tax</span><span class="p">)</span>
+
+      <span class="k">if</span> <span class="no">Decimal</span><span class="o">.</span><span class="n">equal?</span><span class="p">(</span><span class="n">tax</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">do</span>
+        <span class="p">{</span><span class="n">no_tax</span> <span class="o">++</span> <span class="p">[</span><span class="n">item</span><span class="p">],</span> <span class="n">with_tax</span><span class="p">}</span>
+      <span class="k">else</span>
+        <span class="p">{</span><span class="n">no_tax</span><span class="p">,</span> <span class="n">with_tax</span> <span class="o">++</span> <span class="p">[</span><span class="n">item</span><span class="p">]}</span>
+      <span class="k">end</span>
+    <span class="k">else</span>
+      <span class="p">{</span><span class="n">no_tax</span><span class="p">,</span> <span class="n">with_tax</span><span class="p">}</span>
+    <span class="k">end</span>
+  <span class="k">end</span><span class="p">)</span>
+<span class="k">end</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>But this is just the same:</p>
+
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">invoices</span>
+<span class="o">|&gt;</span> <span class="no">Enum</span><span class="o">.</span><span class="n">flat_map</span><span class="p">(</span><span class="o">&amp;</span> <span class="nv">&amp;1</span><span class="o">.</span><span class="n">items</span><span class="p">)</span>
+<span class="o">|&gt;</span> <span class="no">Enum</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">&amp;</span><span class="no">Invoices</span><span class="o">.</span><span class="no">Items</span><span class="o">.</span><span class="n">taxable?</span><span class="o">/</span><span class="mi">1</span><span class="p">)</span>
+<span class="o">|&gt;</span> <span class="no">Enum</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">&amp;</span> <span class="no">Map</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="nv">&amp;1</span><span class="p">,</span> <span class="ss">:tax</span><span class="p">,</span> <span class="n">tax_for_value</span><span class="p">(</span><span class="nv">&amp;1</span><span class="o">.</span><span class="n">amount</span><span class="p">,</span> <span class="nv">&amp;1</span><span class="o">.</span><span class="n">product_type</span><span class="p">)))</span>
+<span class="o">|&gt;</span> <span class="no">Enum</span><span class="o">.</span><span class="n">split_with</span><span class="p">(</span><span class="o">&amp;</span> <span class="no">Decimal</span><span class="o">.</span><span class="n">equal?</span><span class="p">(</span><span class="nv">&amp;1</span><span class="o">.</span><span class="n">tax</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>Aside from improving readability, splitting code out into pipes like this can make it easier to see the different parts of your logic.  Especially once you’ve created more than a few lines of pipes, it becomes easier to see how I can pull out different pieces when refactoring.  In the above, for example, you might decide to create a <code class="language-plaintext highlighter-rouge">calculate_item_taxes</code> function which takes a list of items and performs the logic of the <code class="language-plaintext highlighter-rouge">Enum.map</code> line.</p>
+
+<h2 id="performance">Performance</h2>
+
+<p>You may have already thought of a counterpoint: when you pipe functions together you end up creating new lists, which means more work to be done as well as more memory usage (which means more garbage collection).  This is absolutely true, and you should be thinking about this!</p>
+
+<p>But 99% of the time I find that the amount of data I’m working with shows a negligible performance difference between these approaches. If you find that your code is slow because of the amount of data that you need to process, you might try using the <code class="language-plaintext highlighter-rouge">Stream</code> module — it has many of the same functions as Enum, but works lazily.  If that doesn’t work, then by all means create a <code class="language-plaintext highlighter-rouge">reduce</code> (and maybe put it into a well-named function)!</p>
+
+<p>As Joe Armstrong said:</p>
+
+<blockquote>
+  <p>“Make it work, then make it beautiful, then if you really, really have to, make it fast.”</p>
+</blockquote>
+
+<p>For some information about benchmarks that I’ve run to understand this better, see <a href="https://github.com/cheerfulstoic/credo_unnecessary_reduce/wiki/Performance">this analysis and discussion</a>.</p>
+
+<h2 id="good-opportunities-for-enumreduce">Good Opportunities for <code class="language-plaintext highlighter-rouge">Enum.reduce</code></h2>
+
+<p>Aside from occasional performance reasons, <code class="language-plaintext highlighter-rouge">Enum.reduce</code> can often be the simplest solution when you want to:</p>
+
+<ul>
+  <li>Build a data structure based on an enumerable (like <a href="https://github.com/plausible/analytics/blob/master/lib/plausible/stats/sql/where_builder.ex#L23-L27">a fragment in an Ecto query</a>)</li>
+  <li>Transform a data structure (like <a href="https://github.com/plausible/analytics/blob/master/lib/plausible/segments/segments.ex#L365-L368">replacing variable references in a string</a>)</li>
+</ul>
+
+<h2 id="find-cases-in-your-own-code-with-credo_unnecessary_reduce">Find Cases in Your Own Code With <code class="language-plaintext highlighter-rouge">credo_unnecessary_reduce</code></h2>
+
+<p>If you’re sold on writing clearer code (and I hope you are), I built a Credo check to help spot where reduce can be swapped for something simpler.</p>
+
+<p>You can drop it into your project and start catching these anti-patterns automatically.</p>
+
+<p><a href="https://github.com/cheerfulstoic/credo_unnecessary_reduce">https://github.com/cheerfulstoic/credo_unnecessary_reduce</a></p>
+
+<p>Simply add it to your <code class="language-plaintext highlighter-rouge">mix.exs</code> file:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{:credo_unnecessary_reduce, "~&gt; 0.1.0"}
+</code></pre></div></div>
+
+<p>…and then enable it in your <code class="language-plaintext highlighter-rouge">.credo.exs</code> file:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{CredounnecessaryReduce.Check, []}
+</code></pre></div></div>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags</strong>
+    <span itemprop="keywords">
+    
+      <a href="/tags/#elixir" class="page__taxonomy-item" rel="tag">elixir</a>
+    
+    </span>
+  </p>
+
+
+
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2025-04-24T00:00:00+02:00">April 24, 2025</time></p>
+
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/elixir/2024/06/27/let_your_database_update_you_with_ectowatch" class="pagination--pager" title="Let Your Database Update You with EctoWatch
+">Previous</a>
+    
+    
+      <a href="#" class="pagination--pager disabled">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 brian-underwood.blogs. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  
+    <script src="/assets/prism.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

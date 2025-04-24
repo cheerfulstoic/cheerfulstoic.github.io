@@ -136,4 +136,10 @@ var store = [{
         "tags": ["elixir"],
         "url": "/elixir/2024/06/27/let_your_database_update_you_with_ectowatch",
         "teaser": null
+      },{
+        "title": "Reduce, Reuse... Refactor: Clearer Elixir with the Enum Module",
+        "excerpt":"“When an operation cannot be expressed by any of the functions in the Enum module, developers will most likely resort to reduce/3.” From the docs for Enum.reduce/3 In many Elixir applications, I find Enum.reduce is used frequently. Enum.reduce can do anything, but that doesn’t mean it should. In many cases,...","categories": ["elixir"],
+        "tags": ["elixir"],
+        "url": "/elixir/2025/04/24/reduce-reuse-refactor-clearer-elixir-with-the-enum-module",
+        "teaser": null
       }]

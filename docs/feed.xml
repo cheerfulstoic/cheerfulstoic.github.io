@@ -1,4 +1,139 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2024-08-09T10:40:10+02:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">brian-underwood.blogs</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><author><name>Brian Underwood</name></author><entry><title type="html">Let Your Database Update You with EctoWatch</title><link href="http://localhost:4000/elixir/2024/06/27/let_your_database_update_you_with_ectowatch" rel="alternate" type="text/html" title="Let Your Database Update You with EctoWatch" /><published>2024-06-27T00:00:00+02:00</published><updated>2024-06-27T00:00:00+02:00</updated><id>http://localhost:4000/elixir/2024/06/27/let_your_database_update_you_with_ectowatch</id><content type="html" xml:base="http://localhost:4000/elixir/2024/06/27/let_your_database_update_you_with_ectowatch">&lt;p&gt;Elixir allows application developers to create very parallel and very complex systems. Tools like Phoenix PubSub and LiveView thrive on this property of the language, making it very easy to develop functionality that requires continuous updates to users and clients.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-04-24T16:36:10+02:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">brian-underwood.blogs</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</subtitle><author><name>Brian Underwood</name></author><entry><title type="html">Reduce, Reuse… Refactor: Clearer Elixir with the Enum Module</title><link href="http://localhost:4000/elixir/2025/04/24/reduce-reuse-refactor-clearer-elixir-with-the-enum-module" rel="alternate" type="text/html" title="Reduce, Reuse… Refactor: Clearer Elixir with the Enum Module" /><published>2025-04-24T00:00:00+02:00</published><updated>2025-04-24T00:00:00+02:00</updated><id>http://localhost:4000/elixir/2025/04/24/reduce-reuse-refactor-clearer-elixir-with-the-enum-module</id><content type="html" xml:base="http://localhost:4000/elixir/2025/04/24/reduce-reuse-refactor-clearer-elixir-with-the-enum-module">&lt;blockquote&gt;
+  &lt;p&gt;“When an operation cannot be expressed by any of the functions in the Enum module, developers will most likely resort to reduce/3.”&lt;/p&gt;
+
+  &lt;p&gt;From the docs for Enum.reduce/3&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;In many Elixir applications, I find &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Enum.reduce&lt;/code&gt; is used frequently. &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Enum.reduce&lt;/code&gt; can do anything, but that doesn’t mean it should. In many cases, other &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Enum&lt;/code&gt; functions are more readable, practically as fast, and easier to refactor.&lt;/p&gt;
+
+&lt;p&gt;I would also like to discuss situations that &lt;strong&gt;are&lt;/strong&gt; a good fit for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Enum.reduce&lt;/code&gt; and also introduce you to a custom &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;credo&lt;/code&gt; check I’ve created, which can help you identify places where &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Enum.reduce&lt;/code&gt; could be replaced with a simpler option.&lt;/p&gt;
+
+&lt;h2 id=&quot;readability&quot;&gt;Readability&lt;/h2&gt;
+
+&lt;p&gt;Here are a few common reduce patterns—and their simpler alternatives.  For example, here’s something I see quite often:&lt;/p&gt;
+
+&lt;div class=&quot;language-elixir highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;no&quot;&gt;Enum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reduce&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;numbers&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[],&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;|&amp;gt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Enum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reverse&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This is a situation that the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Enum.map&lt;/code&gt; function was designed for:&lt;/p&gt;
+
+&lt;div class=&quot;language-elixir highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;no&quot;&gt;Enum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;numbers&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;&amp;amp;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Perhaps you know about &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Enum.map&lt;/code&gt;, but you might see a call to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;reduce&lt;/code&gt; like this:&lt;/p&gt;
+
+&lt;div class=&quot;language-elixir highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;no&quot;&gt;Enum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reduce&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;numbers&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;number&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;number&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Let me introduce you to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Enum.sum_by&lt;/code&gt;!&lt;/p&gt;
+
+&lt;div class=&quot;language-elixir highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;no&quot;&gt;Enum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum_by&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;numbers&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;&amp;amp;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Let’s look at something a bit more complex:&lt;/p&gt;
+
+&lt;div class=&quot;language-elixir highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;no&quot;&gt;Enum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reduce&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;numbers&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[],&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;item&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;acc&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rem&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;item&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;item&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;acc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;acc&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;|&amp;gt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Enum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reverse&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This is a perfect case for piping together two &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Enum&lt;/code&gt; functions:&lt;/p&gt;
+
+&lt;div class=&quot;language-elixir highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;numbers&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;|&amp;gt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Enum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rem&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;&amp;amp;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;|&amp;gt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Enum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;&amp;amp;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Another option for this case could even be to use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Enum.flat_map&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;language-elixir highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;no&quot;&gt;Enum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;flat_map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;numbers&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;number&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rem&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;number&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;number&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This is a decent option, but while this achieves the purpose of both filtering and mapping in a single pass, it may not be as intuitive for everybody.&lt;/p&gt;
+
+&lt;p&gt;Lastly, say you see something like this and think that it would be difficult to improve:&lt;/p&gt;
+
+&lt;div class=&quot;language-elixir highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;no&quot;&gt;Enum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reduce&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;invoices&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{[],&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]},&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;invoice&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;no&quot;&gt;Enum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reduce&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;invoice&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;items&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;item&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;no_tax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;with_tax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Invoices&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Items&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;taxable?&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;item&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;tax&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tax_for_value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;item&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;amount&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;item&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;product_type&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;item&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;put&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;item&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:tax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+      &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Decimal&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;equal?&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;no_tax&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;++&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;item&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;with_tax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;no_tax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;with_tax&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;++&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;item&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]}&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+      &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;no_tax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;with_tax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;But this is just the same:&lt;/p&gt;
+
+&lt;div class=&quot;language-elixir highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;invoices&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;|&amp;gt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Enum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;flat_map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;&amp;amp;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;items&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;|&amp;gt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Enum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Invoices&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Items&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;taxable?&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;|&amp;gt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Enum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;put&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;&amp;amp;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:tax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tax_for_value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;&amp;amp;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;amount&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;&amp;amp;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;product_type&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;|&amp;gt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Enum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;split_with&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Decimal&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;equal?&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;&amp;amp;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Aside from improving readability, splitting code out into pipes like this can make it easier to see the different parts of your logic.  Especially once you’ve created more than a few lines of pipes, it becomes easier to see how I can pull out different pieces when refactoring.  In the above, for example, you might decide to create a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;calculate_item_taxes&lt;/code&gt; function which takes a list of items and performs the logic of the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Enum.map&lt;/code&gt; line.&lt;/p&gt;
+
+&lt;h2 id=&quot;performance&quot;&gt;Performance&lt;/h2&gt;
+
+&lt;p&gt;You may have already thought of a counterpoint: when you pipe functions together you end up creating new lists, which means more work to be done as well as more memory usage (which means more garbage collection).  This is absolutely true, and you should be thinking about this!&lt;/p&gt;
+
+&lt;p&gt;But 99% of the time I find that the amount of data I’m working with shows a negligible performance difference between these approaches. If you find that your code is slow because of the amount of data that you need to process, you might try using the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Stream&lt;/code&gt; module — it has many of the same functions as Enum, but works lazily.  If that doesn’t work, then by all means create a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;reduce&lt;/code&gt; (and maybe put it into a well-named function)!&lt;/p&gt;
+
+&lt;p&gt;As Joe Armstrong said:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;“Make it work, then make it beautiful, then if you really, really have to, make it fast.”&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;For some information about benchmarks that I’ve run to understand this better, see &lt;a href=&quot;https://github.com/cheerfulstoic/credo_unnecessary_reduce/wiki/Performance&quot;&gt;this analysis and discussion&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;good-opportunities-for-enumreduce&quot;&gt;Good Opportunities for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Enum.reduce&lt;/code&gt;&lt;/h2&gt;
+
+&lt;p&gt;Aside from occasional performance reasons, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Enum.reduce&lt;/code&gt; can often be the simplest solution when you want to:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Build a data structure based on an enumerable (like &lt;a href=&quot;https://github.com/plausible/analytics/blob/master/lib/plausible/stats/sql/where_builder.ex#L23-L27&quot;&gt;a fragment in an Ecto query&lt;/a&gt;)&lt;/li&gt;
+  &lt;li&gt;Transform a data structure (like &lt;a href=&quot;https://github.com/plausible/analytics/blob/master/lib/plausible/segments/segments.ex#L365-L368&quot;&gt;replacing variable references in a string&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;find-cases-in-your-own-code-with-credo_unnecessary_reduce&quot;&gt;Find Cases in Your Own Code With &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;credo_unnecessary_reduce&lt;/code&gt;&lt;/h2&gt;
+
+&lt;p&gt;If you’re sold on writing clearer code (and I hope you are), I built a Credo check to help spot where reduce can be swapped for something simpler.&lt;/p&gt;
+
+&lt;p&gt;You can drop it into your project and start catching these anti-patterns automatically.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/cheerfulstoic/credo_unnecessary_reduce&quot;&gt;https://github.com/cheerfulstoic/credo_unnecessary_reduce&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Simply add it to your &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mix.exs&lt;/code&gt; file:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;{:credo_unnecessary_reduce, &quot;~&amp;gt; 0.1.0&quot;}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;…and then enable it in your &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.credo.exs&lt;/code&gt; file:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;{CredounnecessaryReduce.Check, []}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name>Brian Underwood</name></author><category term="elixir" /><category term="elixir" /><summary type="html">“When an operation cannot be expressed by any of the functions in the Enum module, developers will most likely resort to reduce/3.” From the docs for Enum.reduce/3</summary></entry><entry><title type="html">Let Your Database Update You with EctoWatch</title><link href="http://localhost:4000/elixir/2024/06/27/let_your_database_update_you_with_ectowatch" rel="alternate" type="text/html" title="Let Your Database Update You with EctoWatch" /><published>2024-06-27T00:00:00+02:00</published><updated>2024-06-27T00:00:00+02:00</updated><id>http://localhost:4000/elixir/2024/06/27/let_your_database_update_you_with_ectowatch</id><content type="html" xml:base="http://localhost:4000/elixir/2024/06/27/let_your_database_update_you_with_ectowatch">&lt;p&gt;Elixir allows application developers to create very parallel and very complex systems. Tools like Phoenix PubSub and LiveView thrive on this property of the language, making it very easy to develop functionality that requires continuous updates to users and clients.&lt;/p&gt;
 
 &lt;p&gt;But one thing that has often frustrated me is how to cleanly design an application to respond to database record updates.&lt;/p&gt;
 
@@ -1561,334 +1696,4 @@ end
 
 &lt;p&gt;You can &lt;a href=&quot;http://nhm-portal.herokuapp.com/&quot;&gt;browse the app&lt;/a&gt; on Heroku and &lt;a href=&quot;https://github.com/neo4j-examples/nhm_asset_portal&quot;&gt;checkout the repository&lt;/a&gt; on Github&lt;/p&gt;
 
-&lt;p&gt;I’ll be working on a new project to create a &lt;a href=&quot;http://graphgist.neo4j.com/&quot;&gt;GraphGist portal&lt;/a&gt; based on the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;graph_starter&lt;/code&gt; gem so I plan to continue improving it!&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="neo4j" /><category term="ruby" /><summary type="html">For a while now I’ve been building various Neo4j.rb educational resources using the example of an asset portal. There has been:</summary></entry><entry><title type="html">Using Graph Structure Record Linkage on Irish Census Data with Neo4j</title><link href="http://localhost:4000/2015/08/20/using_graph_structure_record_linkage_on_irish_census_data_with_neo4j" rel="alternate" type="text/html" title="Using Graph Structure Record Linkage on Irish Census Data with Neo4j" /><published>2015-08-20T09:55:00+02:00</published><updated>2015-08-20T09:55:00+02:00</updated><id>http://localhost:4000/2015/08/20/using_graph_structure_record_linkage_on_irish_census_data_with_neo4j</id><content type="html" xml:base="http://localhost:4000/2015/08/20/using_graph_structure_record_linkage_on_irish_census_data_with_neo4j">&lt;p&gt;For just over a year I’ve been obsessed on-and-off with a project ever since I stayed in the town of Skibbereen, Ireland.  Taking data from the &lt;a href=&quot;http://www.census.nationalarchives.ie/&quot;&gt;1901 and 1911 Irish censuses&lt;/a&gt; I hoped I would be able to find a way to reliably link resident records from the two together to identify the same residents.  Since then I’ve learned a bit about &lt;a href=&quot;/tag/master-data-management&quot;&gt;master data management and record linkage&lt;/a&gt; and so I thought I would give it another stab.  Here I’d like to talk about how I’ve been matching records based on the local data space around objects to improve my record linkage scoring.&lt;/p&gt;
-
-&lt;p&gt;The data model of the imported data is very linear:&lt;/p&gt;
-
-&lt;p&gt;&lt;img style=&quot;width: 100%; display: block; margin: 0 auto&quot; src=&quot;/assets/neo4j-mdm/irish_census_wrah.png&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;In this post, however, I’m going to be focusing on Houses and Residents and creating relationships between them based on their properties.&lt;/p&gt;
-
-&lt;h2 id=&quot;relations-to-the-head&quot;&gt;Relations to the Head&lt;/h2&gt;
-
-&lt;p&gt;To view an example of what a census record from 1911 Ireland looks like you can have a look at the McCarthys of &lt;a href=&quot;http://www.census.nationalarchives.ie/pages/1901/Cork/Cloghdowell/Barnagowlane/1154382/&quot;&gt;1901&lt;/a&gt; and &lt;a href=&quot;http://www.census.nationalarchives.ie/pages/1911/Cork/Cloghdonnell/Barnagowlane/440559/&quot;&gt;1911&lt;/a&gt;.  Charles is the head of the family with his wife Hannah, mother Ellen, children (two in 1901 and seven in 1911), and a servant (Timothy Walsh in 1901 and William Regan in 1911).&lt;/p&gt;
-
-&lt;style&gt;
-table {
-  border-collapse: collapse;
-  margin: 0 auto !important;
-}
-table, th, td {
-  border: 1px solid #CCC;
-  padding: 0.3em;
-}
-&lt;/style&gt;
-
-&lt;table&gt;
-  &lt;tr&gt;
-    &lt;td style=&quot;font-weight: 0.8em; font-weight: bold; text-align: center&quot;&gt;
-      &lt;a href=&quot;http://www.census.nationalarchives.ie/pages/1901/Cork/Cloghdowell/Barnagowlane/1154382/&quot;&gt;
-        &lt;img style=&quot;width: 350px; display: block; margin: 0 auto&quot; src=&quot;/assets/neo4j-mdm/mccarthy_census_1901.png&quot; /&gt;
-        The McCarthy family of Barnagowlane, Cloghdowell, Cork, 1901
-      &lt;/a&gt;
-    &lt;/td&gt;
-    &lt;td style=&quot;font-weight: 0.8em; font-weight: bold; text-align: center&quot;&gt;
-      &lt;a href=&quot;http://www.census.nationalarchives.ie/pages/1911/Cork/Cloghdonnell/Barnagowlane/440559/&quot;&gt;
-        &lt;img style=&quot;width: 350px; display: block; margin: 0 auto&quot; src=&quot;/assets/neo4j-mdm/mccarthy_census_1911.png&quot; /&gt;
-        The McCarthy family of Barnagowlane, Cloghdonnell, Cork, 1911
-      &lt;/a&gt;
-    &lt;/td&gt;
-  &lt;/tr&gt;
-&lt;/table&gt;
-
-&lt;table&gt;
-  &lt;thead&gt;
-    &lt;tr&gt;
-      &lt;th&gt;Surname&lt;/th&gt;
-      &lt;th&gt;Forename&lt;/th&gt;
-      &lt;th&gt;Age&lt;/th&gt;
-      &lt;th&gt;Sex&lt;/th&gt;
-      &lt;th&gt;Relation to Head&lt;/th&gt;
-      &lt;th&gt;Religion&lt;/th&gt;
-      &lt;th&gt; &lt;/th&gt;
-      &lt;th&gt;Surname&lt;/th&gt;
-      &lt;th&gt;Forename&lt;/th&gt;
-      &lt;th&gt;Age&lt;/th&gt;
-      &lt;th&gt;Sex&lt;/th&gt;
-      &lt;th&gt;Relation to Head&lt;/th&gt;
-      &lt;th&gt;Religion&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;td&gt;McCarthy&lt;/td&gt;
-      &lt;td&gt;Charles&lt;/td&gt;
-      &lt;td&gt;37&lt;/td&gt;
-      &lt;td&gt;Male&lt;/td&gt;
-      &lt;td&gt;Head of Family&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;McCarthy&lt;/td&gt;
-      &lt;td&gt;Charles&lt;/td&gt;
-      &lt;td&gt;47&lt;/td&gt;
-      &lt;td&gt;Male&lt;/td&gt;
-      &lt;td&gt;Head of Family&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;McCarthy&lt;/td&gt;
-      &lt;td&gt;Hannah&lt;/td&gt;
-      &lt;td&gt;25&lt;/td&gt;
-      &lt;td&gt;Female&lt;/td&gt;
-      &lt;td&gt;Wife&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;McCarthy&lt;/td&gt;
-      &lt;td&gt;Hannah&lt;/td&gt;
-      &lt;td&gt;35&lt;/td&gt;
-      &lt;td&gt;Female&lt;/td&gt;
-      &lt;td&gt;Wife&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;McCarthy&lt;/td&gt;
-      &lt;td&gt;William&lt;/td&gt;
-      &lt;td&gt;1&lt;/td&gt;
-      &lt;td&gt;Male&lt;/td&gt;
-      &lt;td&gt;Son&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;McCarthy&lt;/td&gt;
-      &lt;td&gt;William&lt;/td&gt;
-      &lt;td&gt;11&lt;/td&gt;
-      &lt;td&gt;Male&lt;/td&gt;
-      &lt;td&gt;Son&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;McCarthy&lt;/td&gt;
-      &lt;td&gt;Bridget&lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;Female&lt;/td&gt;
-      &lt;td&gt;Daughter&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;McCarthy&lt;/td&gt;
-      &lt;td&gt;Bridget&lt;/td&gt;
-      &lt;td&gt;10&lt;/td&gt;
-      &lt;td&gt;Female&lt;/td&gt;
-      &lt;td&gt;Daughter&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;McCarthy&lt;/td&gt;
-      &lt;td&gt;Ellen&lt;/td&gt;
-      &lt;td&gt;8&lt;/td&gt;
-      &lt;td&gt;Female&lt;/td&gt;
-      &lt;td&gt;Daughter&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;McCarthy&lt;/td&gt;
-      &lt;td&gt;Kate&lt;/td&gt;
-      &lt;td&gt;6&lt;/td&gt;
-      &lt;td&gt;Female&lt;/td&gt;
-      &lt;td&gt;Daughter&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;McCarthy&lt;/td&gt;
-      &lt;td&gt;Florence&lt;/td&gt;
-      &lt;td&gt;4&lt;/td&gt;
-      &lt;td&gt;Male&lt;/td&gt;
-      &lt;td&gt;Son&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;McCarthy&lt;/td&gt;
-      &lt;td&gt;Charles Peter&lt;/td&gt;
-      &lt;td&gt;2&lt;/td&gt;
-      &lt;td&gt;Male&lt;/td&gt;
-      &lt;td&gt;Son&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;McCarthy&lt;/td&gt;
-      &lt;td&gt;Annie&lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;Female&lt;/td&gt;
-      &lt;td&gt;Daughter&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;McCarthy&lt;/td&gt;
-      &lt;td&gt;Ellen&lt;/td&gt;
-      &lt;td&gt;65&lt;/td&gt;
-      &lt;td&gt;Female&lt;/td&gt;
-      &lt;td&gt;Mother&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;McCarthy&lt;/td&gt;
-      &lt;td&gt;? Ellen&lt;/td&gt;
-      &lt;td&gt;75&lt;/td&gt;
-      &lt;td&gt;Female&lt;/td&gt;
-      &lt;td&gt;Mother&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;Walsh&lt;/td&gt;
-      &lt;td&gt;Timothy&lt;/td&gt;
-      &lt;td&gt;25&lt;/td&gt;
-      &lt;td&gt;Male&lt;/td&gt;
-      &lt;td&gt;Servant&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-      &lt;td&gt;Regan&lt;/td&gt;
-      &lt;td&gt;William&lt;/td&gt;
-      &lt;td&gt;24&lt;/td&gt;
-      &lt;td&gt;Male&lt;/td&gt;
-      &lt;td&gt;Servant&lt;/td&gt;
-      &lt;td&gt;Roman Catholic&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;p&gt;The McCarthys are an almost exact match between two census records between 1901 and 1911.  The names, ages, occupations, and relationships all match perfectly.  Unfortunately the story for other records is not so simple.  Many times houses, which to the human eye seem to be the same house, can have wildly varying details.  For example Hannah might go be listed as Hana or Anne in a different census.  Likewise ages vary a lot more than you might think.  In examining the records I regularly found ages varying by a year or two and have even found a few houses with ages off by as much as 10-15 years.&lt;/p&gt;
-
-&lt;p&gt;In both censuses there is a field for residents to fill out called “Relation to Head”.  This gives us information about how each resident is related to the head of the house.  In the case of the McCarthys, Charles is listed as “Head of Fa&lt;D-i&gt;mily&quot; in both years.  The rest of the family has a nice representation of things that we often see in the data: &quot;Wife&quot;, &quot;Son&quot;, &quot;Daughter&quot;, and &quot;Servant&quot;.&lt;/D-i&gt;&lt;/p&gt;
-
-&lt;p&gt;We might be tempted to say “This person was the head in 1901, so they must be the same person who was the head in 1911”.  Often, however, the head of the family can die or retire leaving the roll of head of the family to their wife or child.  Can the “Relation to Head” values still be useful to us to match any given resident from 1901 to another resident in 1911?&lt;/p&gt;
-
-&lt;p&gt;First let’s cover the general the process of record linkage I have been using.  To find a match for a resident I start by using an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;elasticsearch&lt;/code&gt; server (which contains a duplicate of my Neo4j census data) to quickly find a list of other residents with a match on very rough criteria:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Is the resident in the other census?&lt;/li&gt;
-  &lt;li&gt;Does the sex match (or it it &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NULL&lt;/code&gt;)?&lt;/li&gt;
-  &lt;li&gt;Is the resident’s age within 15 years of what it would be expected to be in the other census?&lt;/li&gt;
-  &lt;li&gt;Does the name match roughly (within an edit distance of 4)&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;This comes back with anywhere from zero to hundreds of results.  I call these “similarity candidates” and for each I create a relationship between the original record and the candidate.&lt;/p&gt;
-
-&lt;p&gt;With this list I can compare the attributes of the two records (using the &lt;a href=&quot;https://rubygems.org/gems/record_linkage&quot;&gt;record_linkage&lt;/a&gt; gem I created) to see how closely they match.  The closer their name, sex, age, etc.. matches, the higher score they get.  Ideally the real match should have the highest score, but that isn’t always true and can take &lt;a href=&quot;http://127.0.0.1:4000/2015/05/14/master_data_management_scoring_examples/&quot;&gt;some tuning&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;In addition to this simple comparison of attributes, I have now added a process to take advantage of the similarity candidate relationships to compare family relationships.  Let’s start with this example of a sub-graph pattern:&lt;/p&gt;
-
-&lt;p&gt;&lt;img style=&quot;width: 850px; margin: 0.6em;&quot; src=&quot;/assets/neo4j-mdm/mccarthy_charles_comparison.png&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;The relationship &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CHILD_OF&lt;/code&gt; is created whenever there is a “Son” or “Daughter” in the “Realation to Head” field.  Likewise we can create other gender-neutral relationships like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MARRIED_TO&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SIBLING_OF&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NIECE_NEPHEW_OF&lt;/code&gt;, etc…&lt;/p&gt;
-
-&lt;p&gt;In this case the resident in question is the 1901 record for William.  When we are evaluating the 1911 record of William as a potential match we can explore other residents in the same house as evidence of similarity.  The diagram above shows that both records have a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CHILD_OF&lt;/code&gt; relationship to the two “Charles” records which furthermore are linked via a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SIMILARITY_CANDIDATE&lt;/code&gt; relationship.  Because of this we can say that there is a greater chance that the two “William” records represent the same person.&lt;/p&gt;
-
-&lt;p&gt;This only gives us the ability to find these relationships between the head of the family and other residents.  What about generically matching based on the relationship of any two residents of a house?  Let’s say that Charles died sometime between 1901 and 1911.  If his wife Hannah takes over as the head of the family we would have a sub-graph which looks like this:&lt;/p&gt;
-
-&lt;p&gt;&lt;img style=&quot;width: 850px; margin: 0.6em;&quot; src=&quot;/assets/neo4j-mdm/mccarthy_hannah_comparison.png&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;We could say that when we have the paths &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-CHILD_OF-&amp;gt;&amp;lt;-MARIED_TO-&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-CHILD_OF-&amp;gt;&lt;/code&gt; on either side that we can build our case for a match a bit more.  This kind of matching can be used on all of the other residents of the house with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SIMILARITY_CANDIDATE&lt;/code&gt; relationships.  For example, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-CHILD_OF-&amp;gt;&amp;lt;-CHILD_OF-&lt;/code&gt; could be matched to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-CHILD_OF-&amp;gt;&amp;lt;-CHILD_OF-&lt;/code&gt; even in this case where the wife becomes the head of the house.  Or if a child becomes the head then it could be compared to a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-SIBLING_OF-&lt;/code&gt; relationship.&lt;/p&gt;
-
-&lt;h2 id=&quot;the-code&quot;&gt;The Code&lt;/h2&gt;
-
-&lt;p&gt;So how do we actually do this?  First let’s take our sub-graph and turn our nodes into variables:&lt;/p&gt;
-
-&lt;p&gt;&lt;img style=&quot;width: 850px; margin: 0.6em;&quot; src=&quot;/assets/neo4j-mdm/irish_census_relationship_mapping.png&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;In this example let’s take resident &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;h1 r1&lt;/code&gt; (house 1, resident 1) as the resident in question and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;h2 r1&lt;/code&gt; as the candidate that we want to compare it to.  This is the sort of query that Neo4j is wonderful at both performing quickly and making easy to formulate.  Let’s look at part of the Ruby code:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;
-
-def get_similarity_candidate_relationship_paths
-  self.query_as(:h1_r1)
-    .match('(h1:House), (h2:House)')
-    .match('h1&amp;lt;-[:LIVES_IN]-h1_r1-[sc_1:similarity_candidate]-(h2_r1)-[:LIVES_IN]-&amp;gt;h2')
-    .match('h1&amp;lt;-[:LIVES_IN]-h1_r2-[sc_2:similarity_candidate]-(h2_r2)-[:LIVES_IN]-&amp;gt;h2')
-    .match('path1=h1_r1-[:born_to|married_to|grandchild_of|niece_nephew_of|sibling_of|cousin_of|child_in_law_of|step_child_of*1..2]-h1_r2')
-    .match('path2=h2_r1-[:born_to|married_to|grandchild_of|niece_nephew_of|sibling_of|cousin_of|child_in_law_of|step_child_of*1..2]-h2_r2')
-    .pluck(
-      :h2_r1,
-      'collect([path1, rels(path1), path2, rels(path2)])'
-      ).each_with_object({}) do |(r2, data), result|
-
-    result[r2] = data.inject(0) do |total, (path1, rels1, path2, rels2)|
-      relations1 = relation_string_from_path_and_rels(path1, rels1)
-      relations2 = relation_string_from_path_and_rels(path2, rels2)
-
-      if relations1 == relations2
-        1.0
-      elsif score = (RELATION_EQUIVILENCE_SCORES[relations1] || {})[relations2]
-        score
-      else
-        -2.0
-      end + total
-    end
-  end
-end
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Here we start with a Cypher query using the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Query&lt;/code&gt; API from neo4j.rb.  The object upon which we’ve called &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;get_similarity_candidate_relationship_paths&lt;/code&gt; is our &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;h1_r1&lt;/code&gt; anchor.  Note here that we match paths with a length of either one or two relationships long from between two residents of the same house.  Then we return all residents found via the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SIMILARITY_CANDIDATE&lt;/code&gt; relationship from our anchor and the family relationship paths aggregated into an Array.&lt;/p&gt;
-
-&lt;p&gt;Once the Cypher query returns data we call &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;relation_string_from_path_and_rels&lt;/code&gt; which is a way of transforming the path into a string like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-BORN_TO-&amp;gt;&amp;lt;-BORN_TO&lt;/code&gt;.  This string gives us a simple way to express the path between the two residents as a string.&lt;/p&gt;
-
-&lt;p&gt;We then can give a score based on the two paths.  If the paths are the same then we say that the score is 1.0.  If the pair of paths is something like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-BORN_TO-&amp;gt;&amp;lt;-BORN_TO&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-SIBLING_OF-&amp;gt;&lt;/code&gt; then we can give a score based on a lookup.  We add these scores up to give us a total score comparing our anchor resident and each of it’s similarity candidates.  All with just one query to the database.&lt;/p&gt;
-
-&lt;h3 id=&quot;challenges&quot;&gt;Challenges&lt;/h3&gt;
-
-&lt;p&gt;There are a couple of things that I needed to do to make this work:&lt;/p&gt;
-
-&lt;p&gt;Previously I was simply grabbing one resident at a time, finding all of the similarity candidates, and then creating a set of relationships to link the resident with the candidates and to store the record linkage scores (both the individual scores for fields and the total score).  However this approach requires all of the candidates in the house to have &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SIMILARITY_CANDIDATE&lt;/code&gt; relationships in order to compare family relationships.  So I first process all residents for a house to create the similarity candidate relationships and store the record linkage scores and then go through them again with the graph-based comparisons and store that score and update the total.&lt;/p&gt;
-
-&lt;p&gt;Beyond that there is the conceptual problem of determining the scoring when comparing paths.  For example, if somebody was &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;BORN_TO&lt;/code&gt; the head one year but their spouse takes over as the head, could we say that they’re &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;BORN_TO&lt;/code&gt; the spouse if they are are a step-child?  Family relationships are complicated and don’t always fit neatly into our properties and algorithms.&lt;/p&gt;
-
-&lt;h3 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h3&gt;
-
-&lt;p&gt;Most record linkage focuses on the properties of an object, but we need to remember that relationships are data about our entities too.  With Neo4j we have a powerful tool for analyzing those relationships natuarally and quickly.  Additionally I have found that the ability to create relationships on the fly to aggregate calculations like the ones discussed above is a wonderful way to find the best solution quickly.&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="neo4j" /><category term="master-data-management" /><summary type="html">For just over a year I’ve been obsessed on-and-off with a project ever since I stayed in the town of Skibbereen, Ireland. Taking data from the 1901 and 1911 Irish censuses I hoped I would be able to find a way to reliably link resident records from the two together to identify the same residents. Since then I’ve learned a bit about master data management and record linkage and so I thought I would give it another stab. Here I’d like to talk about how I’ve been matching records based on the local data space around objects to improve my record linkage scoring.</summary></entry></feed>
+&lt;p&gt;I’ll be working on a new project to create a &lt;a href=&quot;http://graphgist.neo4j.com/&quot;&gt;GraphGist portal&lt;/a&gt; based on the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;graph_starter&lt;/code&gt; gem so I plan to continue improving it!&lt;/p&gt;</content><author><name>Brian Underwood</name></author><category term="neo4j" /><category term="ruby" /><summary type="html">For a while now I’ve been building various Neo4j.rb educational resources using the example of an asset portal. There has been:</summary></entry></feed>
